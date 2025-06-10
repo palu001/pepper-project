@@ -1,0 +1,28 @@
+topic: ~example-assistant()
+language: enu
+
+concept: (myname) ["My name is" "I'm" ]
+
+proposal: %question Ok, Let's start with my tablet. Tell me "finish" when you finished with the tablet
+	u1: (finish) Ok, Do you want to do something else?
+		u2: (yes) Do you want to listen some music?
+			u3: (yes) ^goto(music1)
+			u3: (no) Ok, bye bye.
+
+
+proposal: %question2 Ok, Do you want to do something else?
+	u1: (yes) Do you want to listen some music?
+		u2: (yes) ^goto(music1)
+		u2: (no) Ok, bye bye.
+	u1: (no) Ok, bye bye.
+
+proposal: %conversate Do you want to conversate?
+	u1: (no) Ok, bye bye.
+
+proposal: %name What's your name?
+	u1: ({~myname} _*) Hi $1
+
+u: (yes) ^goto(question)
+u: (no) ^goto(question2)
+
+u:(["hi" "hello"] {_*}) ^goto(name)
