@@ -2,226 +2,110 @@ topic: ~cinema_assistant()
 language: enu
 
 # --- Concepts ---
-
-concept: (greetings) ^rand["hi" "hello" "hello there" "hey there" "good morning"
-                           "hey" "hi there" "good afternoon" "good evening"
-                           "greetings" "nice to see you" "good day" "welcome"]
-
-concept: (goodbye) ["goodbye" "bye" "see you later" "farewell" "have a nice day" "take care"]
-
-concept: (thanks) ["thank you" "thanks" "thank you very much" "thanks a lot" "appreciate it"]
-
-concept: (myname) ["My name is" "I'm" "I am" "This is" "They call me" "You can call me" 
-                   "I go by" "The name's" "It's me"]
-
-concept: (movie_genres) ["action" "comedy" "drama" "horror" "romance" "sci-fi" "science fiction"
-                        "thriller" "family" "animation" "adventure" "fantasy" "documentary"]
-
-concept: (age_groups) ["child" "kid" "young" "teen" "teenager" "adult" "senior" "elderly"]
-
-concept: (directions) ["bathroom" "restroom" "toilet" "screen" "theater" "concession" "snacks"
-                      "exit" "entrance" "parking" "lobby" "box office" "tickets"]
-
-concept: (concessions) ["popcorn" "soda" "drink" "candy" "nachos" "hot dog" "snacks" "food"]
-
-concept: (help_requests) ["help" "assistance" "lost" "emergency" "problem" "issue" "stuck"]
-
-concept: (positive) ["yes" "yeah" "sure" "okay" "ok" "absolutely" "definitely" "of course"]
-
-concept: (negative) ["no" "nope" "not really" "no thanks" "not interested"]
+concept: (myname) ["my name is" "i'm" "i am" "call me" "they call me" "you can call me" "i go by"]
+concept: (greetings) ^rand["hi" "hello" "hello there" "hey there" "good morning" "hey" "hi there" "good afternoon" "good evening" "greetings" "good day"]
+concept: (goodbye) ["goodbye" "bye" "farewell"]
+concept: (acceptance) ["yes" "yeah" "yep" "ok" "sure" "of course"]
+concept: (refusal) ["no" "nope" "nah"]
+concept: (movie_genres) ["action" "comedy" "drama" "horror" "romance" "sci-fi"]
+concept: (age_groups) ["child" "kid" "teen" "adult" "senior"]
+concept: (directions) ["bathroom" "screen" "concession" "exit" "entrance" "box office"]
+concept: (concessions) ["popcorn" "soda" "drink" "nachos" "candy" "snack" "hot dog"]
 
 # --- Global Greeting ---
 u: (~greetings)
-    Hello and welcome to our cinema! I'm Pepper, your friendly cinema assistant.
-    How can I help you today? I can tell you about movies, showtimes, help with directions, 
-    or even take a photo with you!
-    $cinema/function=greet_customer
-    ^gotoReactivate(main_help)
+    Hello! Welcome to our cinema. May I have your name, please?
+    ^gotoReactivate(get_name)
 
-# --- Main Help Menu ---
-proposal: %main_help
-    u1: (what can you do) I can help you with many things! I can recommend movies, 
-        show you showtimes, give directions around the cinema, suggest snacks, 
-        take photos, play trivia games, and provide assistance when needed.
-        What would you like to do?
-        
-    u1: (I want to see a movie) Great choice! What type of movie are you in the mood for today?
-        Action, comedy, romance, horror, sci-fi, or something else?
-        ^gotoReactivate(movie_selection)
-        
-    u1: (I need help with ~directions) 
-        I'd be happy to help you find your way! 
-        $cinema/direction_request=$1
-        $cinema/function=show_directions
-        ^gotoReactivate(direction_help)
-        
-    u1: (~concessions) Our concession stand has delicious treats! 
-        $cinema/function=concession_recommendations
-        Would you like popcorn, drinks, candy, or our special combo deals?
-        ^gotoReactivate(concession_help)
-        
-    u1: (~help_requests emergency) I'm here to help! What kind of assistance do you need?
-        $cinema/function=emergency_help
-        ^gotoReactivate(emergency_help)
+# --- Global Goodbye ---
+u: (~goodbye)
+    Thank you for visiting! Enjoy your movie!
+    ^gotoReactivate(restart)
 
-# --- Movie Selection ---
-proposal: %movie_selection
-    u1: (_~movie_genres) Excellent choice! I love $1 movies too!
+# --- Restart ---
+proposal: %restart
+    u1: (~greetings) ^gotoReactivate(get_name)
+
+# --- Get Name ---
+proposal: %get_name
+    What's your name?
+
+    u1: ({~myname} _*)
+        Nice to meet you, $1!
+        $cinema/customer_name=$1
+        $cinema/function = greet_customer
+        ^gotoReactivate(get_age)
+
+# --- Get Age Group ---
+proposal: %get_age
+    What age group do you belong to? child, teen, adult, or senior?
+
+    u1: (_~age_groups)
+        Got it, $1 Registering your profile now.
+        $cinema/customer_age=$1
+        $cinema/function=register_customer
+        What movie genre do you like? action, comedy, drama, horror, romance, or sci-fi?
+        ^gotoReactivate(get_genre)
+
+    u1: (*)
+        Sorry, I didn't get that. Please say child, teen, adult, or senior.
+
+        
+
+# --- Get Movie Genre Preference ---
+proposal: %get_genre
+    u1: (_~movie_genres)
+        You like $1 movies, right? yes/no
         $cinema/movie_preference=$1
-        $cinema/function=check_movie_preference
-        Let me suggest some great $1 movies we're showing today.
-        ^gotoReactivate(movie_details)
-        
-    u1: (~myname *) Nice to meet you, $2! 
-        $cinema/customer_name=$2
-        What type of movies do you usually enjoy?
-        
-    u1: (surprise me recommend something) I love helping people discover new movies! 
-        Let me ask - are you here with family, friends, or by yourself? 
-        This will help me give you the perfect recommendation.
-        ^gotoReactivate(personalized_recommendations)
 
-# --- Age-Based Recommendations ---
-proposal: %age_recommendations  
-    u1: (tell me more about *) Great choice! $1 is one of our popular movies.
-        $cinema/selected_movie=$1
-        $cinema/function=get_showtimes
-        Let me show you the available showtimes for $1.
-        ^gotoReactivate(showtime_selection)
-        
-    u1: (when does * play) $cinema/selected_movie=$1
-        $cinema/function=get_showtimes
-        ^gotoReactivate(showtime_info)
-        
-    u1: (something else different) No problem! Let me suggest some other options.
-        What genre interests you most - action, comedy, family-friendly, or drama?
-        ^gotoReactivate(movie_selection)
+        u2: (_~acceptance)
+            Thanks for confirming! Would you like me to recommend some $1 movies?
+            ^gotoReactivate(offer_recommendation)
 
-# --- Movie Details and Showtimes ---
-proposal: %movie_details
-    u1: (when what time does * start play) 
-        $cinema/selected_movie=$1
-        $cinema/function=get_showtimes
-        ^gotoReactivate(showtime_info)
-        
-    u1: (how long is the wait queue) Let me check the current wait time for you.
-        $cinema/function=calculate_wait_time
-        ^gotoReactivate(wait_time_info)
-        
-    u1: (tell me more about *) 
-        $cinema/selected_movie=$1
-        I'd be happy to tell you more about $1! It's a fantastic movie that I think you'll really enjoy.
-        Would you like to see the showtimes?
-        ^gotoReactivate(showtime_selection)
+        u2: (_~refusal)
+            Okay, please tell me which genre you prefer.
 
-# --- Showtime Information ---
-proposal: %showtime_info
-    u1: (book buy tickets) I can help guide you to our ticket counter! 
-        The box office is just over there, and our staff will be happy to help you purchase tickets.
-        Would you like me to show you the way?
-        ^gotoReactivate(ticket_assistance)
-        
-    u1: (how much cost price) Our ticket prices vary by showtime. 
-        Matinee shows are usually $12.50, while evening shows are $15.00. 
-        Children and seniors get special discounts too!
-        
-    u1: (different movie) Of course! What other type of movie would you like to see?
-        ^gotoReactivate(movie_selection)
+            u3: (~movie_genres)
+                Thanks! Updating your preference to $1.
+                $cinema/movie_preference=$1
+                $cinema/function=update_preferences
+                Would you like movie recommendations now?
+                ^gotoReactivate(offer_recommendation)
 
-# --- Direction Help ---
-proposal: %direction_help
-    u1: (~thanks) You're very welcome! Is there anything else I can help you with today?
-        ^gotoReactivate(main_help)
-        
-    u1: (where is *) Let me help you find $1!
-        $cinema/direction_request=$1
-        $cinema/function=show_directions
-        
-    u1: (I'm lost) Don't worry! I'm here to help you navigate our cinema. 
-        What are you looking for specifically?
+    u1: (*)
+        Sorry, I didn't recognize that genre. Please choose from action, comedy, drama, horror, romance, or sci-fi.
 
-# --- Concession Help ---
-proposal: %concession_help
-    u1: (how much does * cost) Let me check the price for $1 for you.
-        Our prices are very reasonable, and we have combo deals that save you money!
-        
-    u1: (what do you recommend) I recommend our delicious buttered popcorn and a cold drink! 
-        It's the perfect movie combination. We also have nachos and candy if you prefer something different.
-        
-    u1: (where is the concession stand) The concession stand is right over there! 
-        $cinema/direction_request=concession
-        $cinema/function=show_directions
-        I can show you the way if you'd like.
+# --- Offer Movie Recommendation ---
+proposal: %offer_recommendation
+    u1: (~acceptance)
+        $cinema/function=recommend_movies
 
+    u1: (~refusal)
+        No problem! Let me know if you need anything else.
 
-# --- Emergency Help ---
-proposal: %emergency_help
-    u1: (lost child kid) This is very important! I'm alerting our security team right now. 
-        Please stay calm. Can you describe what the child looks like and what they were wearing?
-        $cinema/emergency_type=lost_child
-        
-    u1: (medical emergency sick hurt) I'm immediately contacting our staff for medical assistance! 
-        Please stay where you are, and help will be with you very shortly.
-        $cinema/emergency_type=medical
-        
-    u1: (fire alarm evacuation) Please follow the nearest exit signs calmly and quickly. 
-        Our staff will guide you to safety. Do not use elevators.
-        $cinema/emergency_type=evacuation
+# --- Ask for Showtimes ---
+u: (when does * play)
+    $cinema/selected_movie=$1
+    $cinema/function=get_showtimes
 
-# --- Personalized Recommendations ---
-proposal: %personalized_recommendations
-    u1: (family kids children) Wonderful! I have some fantastic family-friendly movies that everyone will enjoy.
-        $cinema/age_group=family
-        $cinema/function=age_recommendations
-        ^gotoReactivate(family_movies)
-        
-    u1: (friends date romantic) Great! Are you in the mood for something romantic, action-packed, or maybe a good comedy?
-        ^gotoReactivate(movie_selection)
-        
-    u1: (alone myself) Perfect! This gives you the freedom to choose exactly what you want to see. 
-        What's your favorite movie genre?
-        ^gotoReactivate(movie_selection)
+# --- Directions ---
+u: (where is _~directions)
+    I'll point you there right away!
+    $cinema/direction_request=$1
+    $cinema/function=show_directions
 
-# --- Family Movies ---
-proposal: %family_movies
-    u1: (sounds good perfect) Excellent! These movies are rated G or PG, so they're perfect for the whole family.
-        Which one catches your interest?
-        
-    u1: (something else) No problem! Would you prefer something with more adventure, or perhaps an animated film?
-        ^gotoReactivate(movie_selection)
+# --- Concessions Info ---
+u: (i want ~concessions | what snacks do you have)
+    We have popcorn, candy, soda, nachos, and hot dogs.
+    $cinema/function=concession_info
 
-# --- Ticket Assistance ---
-proposal: %ticket_assistance
-    u1: (~positive) Great! Follow me - well, actually, I'll point you in the right direction! 
-        The box office is straight ahead past the posters. 
-        $cinema/direction_request=box office
-        $cinema/function=show_directions
-        
-    u1: (how long is the line wait) Let me check the current wait time at the box office for you.
-        $cinema/function=calculate_wait_time
+u: (i want to order _~concessions)
+    Great! Adding $1 to your order. Would you like anything else?
 
-# --- Wait Time Information ---
-proposal: %wait_time_info
-    u1: (~thanks) You're welcome! Enjoy your movie, and don't forget to grab some snacks!
-        ^gotoReactivate(main_help)
-        
-    u1: (too long) I understand waiting can be frustrating. 
-        While you wait, would you like to learn more about the movie you're seeing?
-        ^gotoReactivate(waiting_entertainment)
+# --- Fallback & Clarifications ---
+u: (~acceptance)
+    If you haven't told me your name and age yet, please do so to get started.
 
-# --- Waiting Entertainment ---
-proposal: %waiting_entertainment
-    u1: (tell me about the movie) I'd love to share some interesting facts about your movie! 
-        Which movie are you planning to see?
-
-# --- Goodbye Scenarios ---
-u: (~goodbye ~thanks)
-    Thank you for visiting our cinema! I hope you have a wonderful time watching your movie. 
-    Enjoy the show, and don't forget the popcorn! Have a great day!
-    ^gotoReactivate(main_help)
-
-# --- Catch-all for unrecognized input ---
 u: (*)
-    I'm not sure I understood that completely. I'm here to help with movies, showtimes, 
-    directions, snacks, photos, and more! What would you like to know about?
-    ^gotoReactivate(main_help)
+    Sorry, I didn't quite get that. Could you please tell me your name to begin?
+
