@@ -19,8 +19,6 @@ concept: (movie_genres) ["action" "comedy" "drama" "horror" "romance" "sci-fi" "
 
 concept: (age_groups) ["child" "kid" "young" "teen" "teenager" "adult" "senior" "elderly"]
 
-concept: (times) ["morning" "afternoon" "evening" "night" "early" "late" "now" "today" "tonight"]
-
 concept: (directions) ["bathroom" "restroom" "toilet" "screen" "theater" "concession" "snacks"
                       "exit" "entrance" "parking" "lobby" "box office" "tickets"]
 
@@ -31,10 +29,6 @@ concept: (help_requests) ["help" "assistance" "lost" "emergency" "problem" "issu
 concept: (positive) ["yes" "yeah" "sure" "okay" "ok" "absolutely" "definitely" "of course"]
 
 concept: (negative) ["no" "nope" "not really" "no thanks" "not interested"]
-
-concept: (photo_requests) ["photo" "picture" "selfie" "pic" "photograph"]
-
-concept: (entertainment) ["game" "trivia" "fun" "entertainment" "play" "activity"]
 
 # --- Global Greeting ---
 u: (~greetings)
@@ -65,11 +59,6 @@ proposal: %main_help
         $cinema/function=concession_recommendations
         Would you like popcorn, drinks, candy, or our special combo deals?
         ^gotoReactivate(concession_help)
-        
-    u1: (~photo_requests) I'd love to take a photo with you! 
-        Let me get ready for our picture.
-        $cinema/function=take_photo
-        ^gotoReactivate(photo_session)
         
     u1: (~help_requests emergency) I'm here to help! What kind of assistance do you need?
         $cinema/function=emergency_help
@@ -164,30 +153,6 @@ proposal: %concession_help
         $cinema/function=show_directions
         I can show you the way if you'd like.
 
-# --- Photo Session ---
-proposal: %photo_session
-    u1: (~positive ready) Perfect! Let me strike a pose! 
-        Say cheese! This is going to be a great photo!
-        
-    u1: (another one more) Absolutely! I love taking photos with our guests! 
-        Let's take another one - maybe a different pose this time?
-        $cinema/function=take_photo
-        
-    u1: (~thanks) You're so welcome! I hope you have a wonderful time at the movies today!
-        ^gotoReactivate(main_help)
-
-# --- Trivia Game ---
-proposal: %trivia_game
-    u1: (*) Hmm, let me think about that answer... 
-        That's a great guess! Would you like to try another trivia question?
-        $cinema/trivia_answer=$1
-        $cinema/function=play_trivia
-        
-    u1: (I don't know) That's okay! Trivia is meant to be fun, not stressful. 
-        Would you like me to give you the answer, or try a different question?
-        
-    u1: (different question another) Sure! Let me think of another movie trivia question for you.
-        $cinema/function=play_trivia
 
 # --- Emergency Help ---
 proposal: %emergency_help
@@ -241,15 +206,11 @@ proposal: %wait_time_info
         ^gotoReactivate(main_help)
         
     u1: (too long) I understand waiting can be frustrating. 
-        While you wait, would you like to play a trivia game or learn more about the movie you're seeing?
+        While you wait, would you like to learn more about the movie you're seeing?
         ^gotoReactivate(waiting_entertainment)
 
 # --- Waiting Entertainment ---
 proposal: %waiting_entertainment
-    u1: (~entertainment trivia) Great idea! Let's make the wait time fly by!
-        $cinema/function=play_trivia
-        ^gotoReactivate(trivia_game)
-        
     u1: (tell me about the movie) I'd love to share some interesting facts about your movie! 
         Which movie are you planning to see?
 
