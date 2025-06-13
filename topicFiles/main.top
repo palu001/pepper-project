@@ -83,6 +83,19 @@ proposal: %update_preferences
         Sorry, I didn't recognize that genre. 
         ^gotoReactivate(update_preferences)
 
+# --- Offer Movie Recommendation ---
+proposal: %offer_recommendation
+    Would you like me to recommend some movies?
+    u1: (~acceptance)
+        $cinema/function=recommend_movies
+        u2: (e:cinema/movie_suggestions)
+            Here some movies you could like: $cinema/movie_suggestions
+            ^gotoReactivate(choose_movie_from_recommendations)
+
+    u1: (~refusal)
+        No problem! Let me know if you need anything else.
+        ^gotoReactivate(main_hub)
+
 proposal: %choose_movie_from_recommendations
     Do any of these sound good? Just tell me which one you’d like to know more about.
 
@@ -94,18 +107,57 @@ proposal: %choose_movie_from_recommendations
     #Per ora deve scrivere il nome del film correttamente (per me si puo lasciare)
     u1: (_*)
         $cinema/selected_movie=$1
-        $cinema/function=get_showtimes
-        I'll get the showtimes for $1
+        $cinema/function=get_description
+        I'll get the description for $1
+        u2: (e:cinema/description)
+            $cinema/description
+            Are you interested in this movie?
+            u3: (~acceptance)
+                $cinema/function=get_showtimes
+            
+                u4: (e:cinema/available_times)
+                    These are the available times: $cinema/available_times , Would you like to get the tickets?
+                    u5: (~acceptance)
+                        Perfect, 
+                        ^gotoReactivate(booking_recommendation)
+                    u5:(~refusal)
+                        Allright. 
+                        ^gotoReactivate(main_hub)
+            u3: (~refusal)
+                Ok!
+                ^gotoReactivate(main_hub)
 
-        u2: (e:cinema/available_times)
-            These are the available times: $cinema/available_times
-            #Continuate qui
 
-        u2: (e:cinema/no_showtimes)
-            I am sorry but there aren't showtimes for that film.
+proposal: %booking_recommendation
+    Let's book your tickets, What time would you like to attend $cinema/selected_movie ? 
+    We have: $cinema/available_times
+        u1: (~refusal)
+            Ok! 
             ^gotoReactivate(main_hub)
-    
-
+        u1: (_*)
+            $cinema/selected_time=$1
+            $cinema/function=book_showtime
+            Booking your tickets...
+                u2: (e:cinema/booking_success)
+                    Booking success, enjoy your movie!
+                    ^gotoReactivate(main_hub)
+                u2: (e:cinema/booking_failed)
+                    Booking failed, encountered some errors. retry again
+                    ^gotoReactivate(booking_recommendation)
+  
+proposal: %booking
+    # Se il film non è stato scelto
+    $cinema/function = list_all_movies
+    u1:(e:cinema/all_movies_list)
+        We have $cinema/all_movies_list Which movie would you like to book tickets for?
+        u2: (~refusal)
+            Ok!
+            ^gotoReactivate(main_hub)
+        u2: (_*)
+            $cinema/selected_movie=$1
+            $cinema/function=get_showtimes
+            u3: (e:cinema/available_times)
+                ^gotoReactivate(booking_recommendation)
 
 proposal: %main_hub
     How can I help you? You can ask for movie recommendations, showtimes, directions, concessions, or update your preferences. If there is an emergency, just say so.
@@ -120,7 +172,8 @@ proposal: %main_hub
 
     u1: (~ask_showtimes)
         I can get you the showtimes. Which movie are you interested in?
-
+        ^gotoReactivate(booking)
+        
     u1: ({~ask_directions} * _~directions)
         I'll point you to the $2 right away!
         $cinema/direction_request=$2
@@ -141,24 +194,6 @@ proposal: %main_hub
         Sorry, I can't help with that. I can provide movie recommendations, showtimes, directions, and concession information. What would you like to do?
         ^stayInScope
 
-# --- Offer Movie Recommendation ---
-proposal: %offer_recommendation
-    Would you like me to recommend some movies?
-    u1: (~acceptance)
-        $cinema/function=recommend_movies
-        u2: (e:cinema/movie_suggestions)
-            Here some movies you could like: $cinema/movie_suggestions
-            ^gotoReactivate(choose_movie_from_recommendations)
-
-    u1: (~refusal)
-        No problem! Let me know if you need anything else.
-        ^gotoReactivate(main_hub)
-
-# --- Ask for Showtimes ---
-u: (when does * play)
-    $cinema/selected_movie=$1
-    $cinema/function=get_showtimes
-
 # --- Directions ---
 u: (where is _~directions)
     I'll point you there right away!
@@ -174,17 +209,7 @@ u: (i want to order _~concessions)
     Great! Adding $1 to your order. Would you like anything else?
 
 # --- Fallback & Clarifications ---
-# --- Confirm Recognized User ---
-u: (~acceptance)
-    Great! Welcome back, $cinema/customer_name.
-    Would you like some movie recommendations based on your preference?
-    ^gotoReactivate(offer_recommendation)
-
-u: (~refusal)
-    Oh, Fine then! Let’s get to know you better.
-    ^gotoReactivate(get_age)
-   
 
 u: (*)
-    Sorry, I didn't quite get that. Could you please tell me your name to begin?
+    Sorry Fatal error, I didn't quite get that. Could you please tell me your name to begin?
     ^gotoReactivate(get_name)

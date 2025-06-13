@@ -76,12 +76,30 @@ class CinemaAssistant(object):
         elif value == "get_showtimes":
             title = self.memory.getData("cinema/selected_movie")
             showtimes = self.db.get_showtimes_for_movie(title)
-            if showtimes:
-                times = ", ".join([s[0] for s in showtimes])
-                self.memory.raiseEvent("cinema/available_times", times)
-                #self.tablet.showWebview("file:///opt/aldebaran/www/showtimes.html")
-            else:
-                self.memory.raiseEvent("cinema/no_showtimes", "Sorry, no showtimes found for %s." % title)
+            
+            times = ", ".join([s[0] for s in showtimes])
+            self.memory.raiseEvent("cinema/available_times", times)
+            #self.tablet.showWebview("file:///opt/aldebaran/www/showtimes.html")
+
+        elif value == "get_description":
+            title = self.memory.getData("cinema/selected_movie")
+            description = self.db.get_description_for_movie(title)[0][0]
+            self.memory.raiseEvent("cinema/description", description)
+            #self.tablet.showWebview("file:///opt/aldebaran/www/showtimes.html")
+            
+        elif value == "book_showtime":
+
+            name = self.memory.getData("cinema/customer_name")
+            title = self.memory.getData("cinema/selected_movie")
+            show_time = self.memory.getData("cinema/selected_time")
+            try:
+                self.db.book_showtime(name, title, show_time)
+                self.memory.raiseEvent("cinema/booking_success", 
+                    "Booking confirmed")
+            except Exception as e:
+                print("Errore nella prenotazione:", str(e))
+                self.memory.raiseEvent("cinema/booking_failed", 
+                    "Sorry, booking failed: " + str(e))
 
         elif value == "show_directions":
             direction = self.memory.getData("cinema/direction_request")
@@ -104,6 +122,12 @@ class CinemaAssistant(object):
             else:
                 self.memory.raiseEvent("cinema/no_concessions", "Sorry, we have no concessions right now.")
 
-
+        elif value == "list_all_movies":
+            print("Listing all available movies:")
         
+            movies = self.db.get_all_movies()
+            
+            movie_list = ", ".join([movie[0] for movie in movies])
+            print("Available movies:", movie_list)
+            self.memory.raiseEvent("cinema/all_movies_list", movie_list)
 

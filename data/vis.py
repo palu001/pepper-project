@@ -45,8 +45,8 @@ def db_to_json(db_filepath, table_name):
 # Example Usage:
 if __name__ == "__main__":
     # Create a dummy database for demonstration
-    dummy_db_filepath = "/home/gabrbrr/playground/pepper-project/data/cinema.db"
-    dummy_table_name = "customers"
+    dummy_db_filepath = "cinema.db"
+    dummy_table_name = "bookings"
 
 
     # Convert the dummy database table to JSON

@@ -56,6 +56,17 @@ class CinemaDatabase(object):
         )
         ''')
 
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS bookings (
+            id INTEGER PRIMARY KEY,
+            customer_id INTEGER,
+            showtime_id INTEGER,
+            num_tickets INTEGER DEFAULT 1,
+            FOREIGN KEY (customer_id) REFERENCES customers(id),
+            FOREIGN KEY (showtime_id) REFERENCES showtimes(id)
+        )
+        ''')
+
         self.insert_sample_data(cursor)
         conn.commit()
         conn.close()
@@ -114,6 +125,18 @@ class CinemaDatabase(object):
         conn.close()
         return showtimes
 
+    def get_description_for_movie(self, movie_title):
+        conn = self._connect()
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT m.description
+            FROM movies m
+            WHERE m.title = ?
+        ''', (movie_title,))
+        description = cursor.fetchall()
+        conn.close()
+        return description
+
     def get_concessions(self):
         conn = self._connect()
         cursor = conn.cursor()
@@ -164,3 +187,48 @@ class CinemaDatabase(object):
         result = cursor.fetchone()
         conn.close()
         return result
+
+    def book_showtime(self, customer_name, movie_title, show_time):
+        conn = self._connect()
+        cursor = conn.cursor()
+
+        # Trova ID cliente
+        cursor.execute("SELECT id FROM customers WHERE name = ?", (customer_name,))
+        customer = cursor.fetchone()
+        if not customer:
+            conn.close()
+            raise ValueError("Cliente non trovato")
+        customer_id = customer[0]
+
+        # Trova ID spettacolo
+        cursor.execute('''
+            SELECT s.id
+            FROM showtimes s
+            JOIN movies m ON s.movie_id = m.id
+            WHERE m.title = ? AND s.show_time = ?
+        ''', (movie_title, show_time))
+        showtime_id = cursor.fetchone()[0]
+    
+        print("showtime_id relativo a: ",movie_title, show_time," e: ",showtime_id)
+        if not showtime_id:
+            conn.close()
+            raise ValueError("Spettacolo non trovato")
+        
+
+        # Registra prenotazione
+        cursor.execute('''
+            INSERT INTO bookings (customer_id, showtime_id)
+            VALUES (?, ?)
+        ''', (customer_id, showtime_id))
+
+        conn.commit()
+        conn.close()
+
+
+    def get_all_movies(self):
+        conn = self._connect()
+        cursor = conn.cursor()
+        cursor.execute("SELECT title FROM movies")
+        movies = cursor.fetchall()
+        conn.close()
+        return movies

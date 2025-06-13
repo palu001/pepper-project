@@ -1,30 +1,14 @@
 [
     {
         "id": 1,
-        "name": "Simone",
-        "age_group": "adult",
-        "preferences": "comedy",
-        "visit_count": 3
+        "customer_id": 7,
+        "showtime_id": 1,
+        "num_tickets": 1
     },
     {
         "id": 2,
-        "name": "Gabriel",
-        "age_group": "teen",
-        "preferences": "action",
-        "visit_count": 1
-    },
-    {
-        "id": 3,
-        "name": "gab",
-        "age_group": "teen",
-        "preferences": "action",
-        "visit_count": 1
-    },
-    {
-        "id": 4,
-        "name": "dsuhfau",
-        "age_group": "adult",
-        "preferences": "drama",
-        "visit_count": 1
+        "customer_id": 7,
+        "showtime_id": 5,
+        "num_tickets": 1
     }
 ]
