@@ -29,12 +29,11 @@ class CinemaAssistant(object):
             name = self.memory.getData("cinema/customer_name")
             age = self.memory.getData("cinema/customer_age")
             genre=self.memory.getData("cinema/movie_preference")
-            if name and age:
-                print("Registering customer")
-                self.db.register_customer(name, age,genre)
-                print("Customer registered successfully.")
-            else:
-                print("Name or age missing for registration.")
+            
+            print("Registering customer")
+            self.db.register_customer(name, age,genre)
+            print("Customer registered successfully.")
+
 
         elif value == "update_preferences":
             name = self.memory.getData("cinema/customer_name")
@@ -47,14 +46,9 @@ class CinemaAssistant(object):
 
         elif value == "recommend_movies":
             name = self.memory.getData("cinema/customer_name")
-            age = self.memory.getData("cinema/customer_age")
-            genre = self.memory.getData("cinema/movie_preference")
-
-            # Fetch missing age or genre from DB
-            if not age or not genre:
-                customer = self.db.get_customer_by_name(name)
-                age, genre = customer[1], customer[2]
-                print(age, genre)
+            customer = self.db.get_customer_by_name(name)
+            age, genre = customer[1], customer[2]
+            print(age, genre)
 
             # Fetch movies by genre and age group
             movies_by_genre = self.db.get_movies_by_genre(genre)  # Returns list of tuples
@@ -68,28 +62,24 @@ class CinemaAssistant(object):
             common_titles = list(titles_genre & titles_age)
 
             if len(common_titles) < 3:
-                # Fill remaining spots with genre-specific titles (if needed)
-                remaining = list(titles_genre - set(common_titles))
+                # Fill remaining spots with age-specific titles (if needed)
+                #Cosi te ne consiglia 3 al momento perche ora ci sono solo un film per genere
+                # mentre per eta ci sono piu film
+                remaining = list(titles_age - set(common_titles))
                 suggestions = common_titles + remaining[:3 - len(common_titles)]
             else:
                 suggestions = common_titles[:3]
 
             suggestion_str = ", ".join(suggestions)
-            self.memory.raiseEvent("cinema/movie_suggestions",
-                "Here are some %s movies you might like: %s." % (genre, suggestion_str))
-
-           
+            self.memory.raiseEvent("cinema/movie_suggestions", suggestion_str)
 
         elif value == "get_showtimes":
             title = self.memory.getData("cinema/selected_movie")
-            if not title:
-                self.memory.raiseEvent("cinema/request_movie", "Please specify the movie you want showtimes for.")
-                return
             showtimes = self.db.get_showtimes_for_movie(title)
             if showtimes:
                 times = ", ".join([s[0] for s in showtimes])
                 self.memory.raiseEvent("cinema/available_times", times)
-                self.tablet.showWebview("file:///opt/aldebaran/www/showtimes.html")
+                #self.tablet.showWebview("file:///opt/aldebaran/www/showtimes.html")
             else:
                 self.memory.raiseEvent("cinema/no_showtimes", "Sorry, no showtimes found for %s." % title)
 

@@ -53,22 +53,19 @@ proposal: %get_age
     u1: (_~age_groups)
         Got it, $1 
         $cinema/customer_age=$1
-       
         ^gotoReactivate(get_genre)
 
     u1: (*)
         Sorry, I didn't get that. 
         ^gotoReactivate(get_age)
 
-
-
 # --- Get Movie Genre Preference ---
 proposal: %get_genre
     What movie genre do you like? 
     u1: ({*} _~movie_genres {*})
         $cinema/movie_preference=$1
+        $cinema/function = register_customer
         ^gotoReactivate(main_hub)
-        
 
     u1: (*)
         Sorry, I didn't recognize that genre. 
@@ -82,12 +79,33 @@ proposal: %update_preferences
         $cinema/function=update_preferences
         ^gotoReactivate(main_hub)
         
-
     u1: (*)
         Sorry, I didn't recognize that genre. 
         ^gotoReactivate(update_preferences)
 
-     
+proposal: %choose_movie_from_recommendations
+    Do any of these sound good? Just tell me which one you’d like to know more about.
+
+    #Importante che sia qui
+    u1: (~refusal)
+        No problem! Let me know if you need anything else.
+        ^gotoReactivate(main_hub)
+
+    #Per ora deve scrivere il nome del film correttamente (per me si puo lasciare)
+    u1: (_*)
+        $cinema/selected_movie=$1
+        $cinema/function=get_showtimes
+        I'll get the showtimes for $1
+
+        u2: (e:cinema/available_times)
+            These are the available times: $cinema/available_times
+            #Continuate qui
+
+        u2: (e:cinema/no_showtimes)
+            I am sorry but there aren't showtimes for that film.
+            ^gotoReactivate(main_hub)
+    
+
 
 proposal: %main_hub
     How can I help you? You can ask for movie recommendations, showtimes, directions, concessions, or update your preferences. If there is an emergency, just say so.
@@ -128,8 +146,9 @@ proposal: %offer_recommendation
     Would you like me to recommend some movies?
     u1: (~acceptance)
         $cinema/function=recommend_movies
-        u2: (e:cinema/movie_suggestions )
-            $cinema/movie_suggestions
+        u2: (e:cinema/movie_suggestions)
+            Here some movies you could like: $cinema/movie_suggestions
+            ^gotoReactivate(choose_movie_from_recommendations)
 
     u1: (~refusal)
         No problem! Let me know if you need anything else.
