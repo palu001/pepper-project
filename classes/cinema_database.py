@@ -60,16 +60,16 @@ class CinemaDatabase(object):
         conn.commit()
         conn.close()
 
-    def register_customer(self, name, age_group):
+    def register_customer(self, name, age_group, genre):
         conn = self._connect()
         cursor = conn.cursor()
         cursor.execute("SELECT id FROM customers WHERE name = ?", (name,))
         row = cursor.fetchone()
         if row:
-            cursor.execute("UPDATE customers SET visit_count = visit_count + 1 WHERE name = ?", (name,))
+            cursor.execute("UPDATE customers SET visit_count = visit_count + 1, preferences = ? WHERE name = ?", (genre, name))
         else:
-            cursor.execute("INSERT INTO customers (name, age_group, preferences, visit_count) VALUES (?, ?, '', 1)",
-                           (name, age_group))
+            cursor.execute("INSERT INTO customers (name, age_group, preferences, visit_count) VALUES (?, ?, ?, 1)",
+                        (name, age_group, genre))
         conn.commit()
         conn.close()
 
@@ -155,3 +155,12 @@ class CinemaDatabase(object):
             (5, "Hot Dog", "Food", 9.00, "All-beef hot dog with toppings")
         ]
         cursor.executemany('INSERT OR REPLACE INTO concessions VALUES (?,?,?,?,?)', concessions)
+    
+
+    def get_customer_by_name(self, name):
+        conn = self._connect()
+        cursor = conn.cursor()
+        cursor.execute("SELECT name, age_group, preferences FROM customers WHERE name = ?", (name,))
+        result = cursor.fetchone()
+        conn.close()
+        return result
