@@ -14,8 +14,9 @@ concept: (concessions) ["popcorn" "soda" "drink" "beverage" "nachos" "candy" "sw
 concept: (update_prefs) ["update" "preferences" "change" "info" "details" "profile"]
 concept: (ask_recommendation) ["recommend" "watch" "recommendations" "recommendation" "see"]
 concept: (ask_showtimes) ["showtimes" "movie times" "what time are the movies playing" "get showtimes" "what's playing"]
-concept: (ask_directions) ["directions" "show me the way" "how do i get to" "where is"]
+concept: (ask_directions) ["directions" "where" "get to" "where is"]
 concept: (ask_concessions) ["concessions" "buy snacks" "order food" "what food do you have" "menu" "i'm hungry"]
+concept: (done) ["i'm done" "i am done" "done" "all done" "that's it" "finished" "i'm finished" "i’m good now"]
 concept: (emergency) ["help" "emergency" "i need help now" "assistance" "urgent help"]
 
 # --- Global Greeting ---   
@@ -139,11 +140,81 @@ proposal: %booking_recommendation
             $cinema/function=book_showtime
             Booking your tickets...
                 u2: (e:cinema/booking_success)
-                    Booking success, enjoy your movie!
-                    ^gotoReactivate(main_hub)
+                    $cinema/direction_request=box_office
+                    $cinema/function=show_directions
+                    Booking success! You can retrieve your tickets at the ticket office on your right.
+                    Let me know when you're ready to go to your screen.
+
+                    u3: (~done)
+                        ^gotoReactivate(offer_screen_guidance)
+                    u3: (~refusal)
+                        Alright! Enjoy your movie!
+                        ^gotoReactivate(main_hub)
                 u2: (e:cinema/booking_failed)
                     Booking failed, encountered some errors. retry again
                     ^gotoReactivate(booking_recommendation)
+
+proposal: %offer_screen_guidance
+        Would you like me to guide you to the screen for $cinema/selected_movie ?
+
+        u2: (~acceptance)
+            Great, follow me.
+            $cinema/function=guide_to_screen
+            ^gotoReactivate(on_screen_arrival)
+
+        u2: (~refusal)
+            Alright! Enjoy your movie!
+            ^gotoReactivate(main_hub)
+
+    u1: (*)
+        Let me know when you're done or if you need anything else.
+        ^repeatProposal
+
+proposal: %on_guidance_complete
+    u1: (e:cinema/guidance_complete)
+        We have arrived at the $cinema/target_location . Is there anything else I can help you with?
+        ^gotoReactivate(main_hub)
+    u1: (e:cinema/guidance_failed)
+        Sorry, I couldn't guide you there. Let me know if you need help with something else.
+        ^gotoReactivate(main_hub)
+
+proposal: %on_screen_arrival
+    u1: (e:cinema/screen_guidance_complete)
+        We have arrived at screen $cinema/screen_guidance_complete  Enjoy the movie!
+        ^gotoReactivate(main_hub)
+    u1: (e:cinema/screen_guidance_failed)
+        Sorry, I couldn't find the screen information. Let me know if you need help with something else.
+        ^gotoReactivate(main_hub)
+
+proposal: %offer_general_guidance
+    Where would you like me to guide you?
+    u1: (bathroom|restroom|toilet)
+        $cinema/target_location=bathroom
+        $cinema/function=guide_to_location
+        ^gotoReactivate(on_guidance_complete)
+    u1: (concession|snacks|food|drinks)
+        $cinema/target_location=concession
+        $cinema/function=guide_to_location
+        ^gotoReactivate(on_guidance_complete)
+    u1: (exit|way out|leave)
+        $cinema/target_location=exit
+        $cinema/function=guide_to_location
+        ^gotoReactivate(on_guidance_complete)
+    u1: (entrance|front|lobby)
+        $cinema/target_location=entrance
+        $cinema/function=guide_to_location
+        ^gotoReactivate(on_guidance_complete)
+    u1: (box office|ticket office|tickets)
+        $cinema/target_location=box_office
+        $cinema/function=guide_to_location
+        ^gotoReactivate(on_guidance_complete)
+    u1: (screen|theater|cinema)
+        $cinema/target_location=screen
+        $cinema/function=guide_to_location
+        ^gotoReactivate(on_guidance_complete)
+    u1: (~refusal)
+        Alright! Let me know if you need anything else.
+        ^gotoReactivate(main_hub)
   
 proposal: %booking
     # Se il film non è stato scelto
@@ -175,12 +246,20 @@ proposal: %main_hub
         ^gotoReactivate(booking)
         
     u1: ({~ask_directions} * _~directions)
-        I'll point you to the $2 right away!
-        $cinema/direction_request=$2
+        I'll point you to the $1 right away!
+        $cinema/direction_request=$1
         $cinema/function=show_directions
+        Would you like me to guide you there?
+        u2: (~acceptance)
+            Great, follow me.
+            $cinema/target_location=$cinema/direction_request
+            $cinema/function=guide_to_location
+            ^gotoReactivate(on_guidance_complete)
 
-    u1: (~ask_directions)
-        I can certainly help with that. Where would you like to go? 
+        u2: (~refusal)
+            Alright! Enjoy your movie!
+            ^gotoReactivate(main_hub)
+
 
     u1: (~emergency)
         Alerting staff for immediate assistance. If this is a medical emergency, please stay calm. Help is on the way.
@@ -195,7 +274,7 @@ proposal: %main_hub
         ^stayInScope
 
 # --- Directions ---
-u: (where is _~directions)
+proposal:% specific_directions
     I'll point you there right away!
     $cinema/direction_request=$1
     $cinema/function=show_directions

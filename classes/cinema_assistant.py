@@ -103,11 +103,65 @@ class CinemaAssistant(object):
 
         elif value == "show_directions":
             direction = self.memory.getData("cinema/direction_request")
+            screen_number = None
+            
+            # If directing to screen, get the screen number
+            if direction and direction.lower() == "screen":
+                screen_number = self.db.get_screen_for_movie(self.memory.getData("cinema/selected_movie"))
+            
             if direction:
-                self.tablet.showWebview("file:///opt/aldebaran/www/cinema_map.html")
-                self.motion.point_direction(direction)
+                #self.tablet.showWebview("file:///opt/aldebaran/www/cinema_map.html")
+                self.motion.point_direction(direction, screen_number)
             else:
                 self.memory.raiseEvent("cinema/no_direction", "Sorry, I didn't understand where you want to go.")
+
+        
+        elif value == "guide_to_screen":
+            screen_number = self.db.get_screen_for_movie(self.memory.getData("cinema/selected_movie"))
+            if screen_number:
+                # Store screen number in memory for dialog reference
+                # Use the generalized guide function with specific screen number
+                self.motion.guide_to_location("screen", screen_number)
+                self.memory.raiseEvent("cinema/screen_guidance_complete", str(screen_number))
+            else:
+                print("Screen not found for movie.")
+                self.memory.raiseEvent("cinema/screen_guidance_failed", "Screen not found for movie.")
+                
+        elif value == "guide_to_location":
+            # New generalized guidance function
+            location = self.memory.getData("cinema/target_location")
+            screen_number = None
+            
+            # If guiding to screen, get the screen number
+            if location and location.lower() == "screen":
+                # Check if specific screen number was requested
+                target_screen = self.memory.getData("cinema/target_screen_number")
+                if target_screen:
+                    try:
+                        screen_number = int(target_screen)
+                    except ValueError:
+                        print("Invalid screen number format.")
+                        self.memory.raiseEvent("cinema/guidance_failed", "Invalid screen number.")
+                        return
+                else:
+                    # Use screen for current movie
+                    screen_number = self.db.get_screen_for_movie(self.memory.getData("cinema/selected_movie"))
+                
+                if not screen_number:
+                    print("Screen not found.")
+                    self.memory.raiseEvent("cinema/guidance_failed", "Screen not found.")
+                    return
+                    
+            
+            if location:
+                self.motion.guide_to_location(location, screen_number)
+                event_message = "Arrived at {}".format(location)
+                if screen_number:
+                    event_message += " {}".format(screen_number)
+                self.memory.raiseEvent("cinema/guidance_complete", event_message)
+            else:
+                print("No target location specified.")
+                self.memory.raiseEvent("cinema/guidance_failed", "No target location specified.")
 
         elif value == "emergency_help":
             self.motion.emergency()

@@ -136,6 +136,19 @@ class CinemaDatabase(object):
         description = cursor.fetchall()
         conn.close()
         return description
+    
+    def get_screen_for_movie(self, title):
+        conn = self._connect()
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT s.screen_number
+            FROM showtimes s
+            JOIN movies m ON s.movie_id = m.id
+            WHERE m.title = ?
+        ''', (title,))
+        result = cursor.fetchone()
+        return result[0] if result else None
+
 
     def get_concessions(self):
         conn = self._connect()
