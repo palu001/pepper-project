@@ -6,7 +6,7 @@ class CinemaAssistant(object):
         self.db = database
         self.tablet = tablet
         self.motion = motion_manager
-    
+        self.current_order = []  # Track items for order
     def handle_function(self, value):
         print("Handling function:", value)
 
@@ -184,4 +184,31 @@ class CinemaAssistant(object):
             movie_list = ", ".join([movie[0] for movie in movies])
             print("Available movies:", movie_list)
             self.memory.raiseEvent("cinema/all_movies_list", movie_list)
+
+        elif value == "add_to_order":
+            item = self.memory.getData("cinema/selected_concession")
+            item_db = self.db.get_concession_item(item)
+
+            if item_db:
+                self.current_order.append((item_db[1],item_db[3]))
+                self.memory.raiseEvent("cinema/concession_found", "True")
+            else:
+                self.memory.raiseEvent("cinema/concession_found", "False")
+    
+        elif value == "finalize_order":
+            if not self.current_order:
+                self.memory.raiseEvent("cinema/order_error", "Empty order")
+            else:
+                complete_order = ", ".join(item[0] for item in self.current_order)
+                self.memory.insertData("cinema/complete_order", complete_order)
+                total = sum(item[1] for item in self.current_order)  # Assuming price is index 1
+                self.memory.insertData("cinema/order_total", total)
+                self.memory.raiseEvent("cinema/order_complete", str(total))
+                self.current_order = []  # Clear after processing
+            
+        
+        elif value == "cancel_order":
+            self.current_order = []
+
+
 

@@ -158,6 +158,15 @@ class CinemaDatabase(object):
         conn.close()
         return items
 
+    def get_concession_item(self, item_name):
+        conn = self._connect()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM concessions WHERE item_name = ?", (item_name,))
+        item = cursor.fetchone()
+        conn.close()
+        print("my item is: ", item)
+        return item
+
     def insert_sample_data(self, cursor):
         """Insert sample cinema data"""
         movies = [

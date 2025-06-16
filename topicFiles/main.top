@@ -117,7 +117,7 @@ proposal: %choose_movie_from_recommendations
                 $cinema/function=get_showtimes
             
                 u4: (e:cinema/available_times)
-                    These are the available times: $cinema/available_times , Would you like to get the tickets?
+                    These are the available times:  $cinema/available_times , Would you like to get the tickets?
                     u5: (~acceptance)
                         Perfect, 
                         ^gotoReactivate(booking_recommendation)
@@ -131,7 +131,7 @@ proposal: %choose_movie_from_recommendations
 
 proposal: %booking_recommendation
     Let's book your tickets, What time would you like to attend $cinema/selected_movie ? 
-    We have: $cinema/available_times
+    We have:  $cinema/available_times
         u1: (~refusal)
             Ok! 
             ^gotoReactivate(main_hub)
@@ -266,8 +266,9 @@ proposal: %main_hub
         $cinema/function=emergency_alert
 
     u1: (~ask_concessions)
-        We have popcorn, candy, soda, nachos, and hot dogs. You can ask for our menu or tell me what you'd like to order.
+        We have: Popcorn Large, Soda Large, Nachos, Candy Mix, Hot Dog, what do you want?
         $cinema/function=concession_info
+        ^gotoReactivate(buy_concession)
 
     u1: (*)
         Sorry, I can't help with that. I can provide movie recommendations, showtimes, directions, and concession information. What would you like to do?
@@ -280,12 +281,39 @@ proposal:% specific_directions
     $cinema/function=show_directions
 
 # --- Concessions Info ---
-u: (i want ~concessions | what snacks do you have)
-    We have popcorn, candy, soda, nachos, and hot dogs.
-    $cinema/function=concession_info
 
-u: (i want to order _~concessions)
-    Great! Adding $1 to your order. Would you like anything else?
+proposal: %buy_concession
+    u1: (i want _*) 
+        Adding $1 to your order ...
+        $cinema/selected_concession=$1
+        $cinema/function=add_to_order
+
+        u2:(e:cinema/concession_found $cinema/concession_found==True)
+            Item correctly added
+            ^gotoReactivate(buy_concession)
+
+        u2:(e:cinema/concession_found $cinema/concession_found==False)
+            Item doesen't exists
+            ^gotoReactivate(buy_concession)
+
+    u1: (that's all)
+        $cinema/function=finalize_order
+        u2: (e:cinema/order_complete)
+            You ordered $cinema/complete_order 
+            Your total is $cinema/order_total Please pay at the concession stand.
+            ^gotoReactivate(main_hub)
+
+        u2: (e:cinema/order_error)
+            your order is empty, write something to buy
+            ^gotoReactivate(buy_concession)
+    u1: (~refusal)
+        Ok, cancelling your order.
+        $cinema/function=cancel_order
+        ^gotoReactivate(main_hub)
+
+    u1: (*)
+        I didn't understood your order, please write it again
+        ^stayInScope
 
 # --- Fallback & Clarifications ---
 

@@ -207,11 +207,26 @@ class MotionManager(object):
 
     def concession(self):
         try:
+            # Giunti coinvolti per il gesto di concessione/indicazione
             names = ["RShoulderPitch", "RShoulderRoll", "RElbowYaw", "RElbowRoll", "RWristYaw"]
-            self.motion.angleInterpolation(names, [-0.8, -0.1, 0.5, 1.2, -0.5], [1.0], True)
-            for _ in range(2):
-                self.motion.angleInterpolation(names, [-0.6, -0.1, 0.5, 1.0, -0.5], [0.3], True)
-                self.motion.angleInterpolation(names, [-0.8, -0.1, 0.5, 1.2, -0.5], [0.3], True)
-            self.motion.angleInterpolation(names, [1.5, -0.15, 0.0, 0.0, 0.0], [1.0], True)
+
+            # Salva le posizioni iniziali
+            initial_angles = self.motion.getAngles(names, True)
+
+            # Movimento per portare il braccio in avanti come a indicare un menu
+            target_angles = [0.5, -0.3, 1.2, 0.4, 0.0]
+            self.motion.angleInterpolation(names, target_angles, [1.0]*5, True)
+
+            # Piccolo gesto con il polso (simile a un invito a scegliere)
+            self.motion.angleInterpolation(["RWristYaw"], [0.5], [0.4], True)
+            self.motion.angleInterpolation(["RWristYaw"], [-0.5], [0.4], True)
+            self.motion.angleInterpolation(["RWristYaw"], [0.0], [0.3], True)
+
+            # Pausa breve per enfatizzare il gesto
+            self.motion.wait(0.5)
+
+            # Ritorna alla posizione iniziale
+            self.motion.angleInterpolation(names, initial_angles, [1.0]*5, True)
+
         except Exception as e:
             print("Concession gesture failed:", e)
