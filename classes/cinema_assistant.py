@@ -1,4 +1,5 @@
 from datetime import datetime
+import re
 
 class CinemaAssistant(object):
     def __init__(self, memory, database, tablet, motion_manager):
@@ -101,26 +102,25 @@ class CinemaAssistant(object):
                 self.memory.raiseEvent("cinema/booking_failed", 
                     "Sorry, booking failed: " + str(e))
 
-        elif value == "show_directions":
-            direction = self.memory.getData("cinema/direction_request")
+        if value == "show_directions":
+            # Point and give verbal directions without moving
+            location = self.memory.getData("cinema/direction_request")
             screen_number = None
-            
-            # If directing to screen, get the screen number
-            if direction and direction.lower() == "screen":
-                screen_number = self.db.get_screen_for_movie(self.memory.getData("cinema/selected_movie"))
-            
-            if direction:
-                #self.tablet.showWebview("file:///opt/aldebaran/www/cinema_map.html")
-                self.motion.point_direction(direction, screen_number)
-            else:
-                self.memory.raiseEvent("cinema/no_direction", "Sorry, I didn't understand where you want to go.")
 
+            if location:
+                # Try to extract screen number from location string
+                match = re.search(r"screen\s*([0-9]+)", location.lower())
+                if match:
+                    screen_number = int(match.group(1))
+                    location="screen"
+
+                verbal_direction = self.motion.point_and_describe_direction(location, screen_number)
+                self.memory.raiseEvent("cinema/direction_indication", verbal_direction)
         
         elif value == "guide_to_screen":
             screen_number = self.db.get_screen_for_movie(self.memory.getData("cinema/selected_movie"))
             if screen_number:
                 # Store screen number in memory for dialog reference
-                # Use the generalized guide function with specific screen number
                 self.motion.guide_to_location("screen", screen_number)
                 self.memory.raiseEvent("cinema/screen_guidance_complete", str(screen_number))
             else:
@@ -132,28 +132,12 @@ class CinemaAssistant(object):
             location = self.memory.getData("cinema/target_location")
             screen_number = None
             
-            # If guiding to screen, get the screen number
-            if location and location.lower() == "screen":
-                # Check if specific screen number was requested
-                target_screen = self.memory.getData("cinema/target_screen_number")
-                if target_screen:
-                    try:
-                        screen_number = int(target_screen)
-                    except ValueError:
-                        print("Invalid screen number format.")
-                        self.memory.raiseEvent("cinema/guidance_failed", "Invalid screen number.")
-                        return
-                else:
-                    # Use screen for current movie
-                    screen_number = self.db.get_screen_for_movie(self.memory.getData("cinema/selected_movie"))
-                
-                if not screen_number:
-                    print("Screen not found.")
-                    self.memory.raiseEvent("cinema/guidance_failed", "Screen not found.")
-                    return
-                    
             
             if location:
+                match = re.search(r"screen\s*([0-9]+)", location.lower())
+                if match:
+                    screen_number = int(match.group(1))
+                    location="screen"
                 self.motion.guide_to_location(location, screen_number)
                 event_message = "Arrived at {}".format(location)
                 if screen_number:
