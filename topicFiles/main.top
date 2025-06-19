@@ -110,6 +110,9 @@ proposal: %choose_movie_from_recommendations
         $cinema/selected_movie=$1
         $cinema/function=get_description
         I'll get the description for $1
+        u2: (e:cinema/description_failed)
+            $cinema/description_failed , Write the name of a suggested film
+            ^gotoReactivate(choose_movie_from_recommendations)
         u2: (e:cinema/description)
             $cinema/description
             Are you interested in this movie?
@@ -124,10 +127,15 @@ proposal: %choose_movie_from_recommendations
                     u5:(~refusal)
                         Allright. 
                         ^gotoReactivate(main_hub)
+                    u5: (*)
+                        Sorry, didn't understand, would you like to get the tickets?
+                        ^stayInScope
             u3: (~refusal)
                 Ok!
                 ^gotoReactivate(main_hub)
-
+            u3: (*)
+                Sorry, didn't understand, Are you interested in this movie ?
+                ^stayInScope
 
 proposal: %booking_recommendation
     Let's book your tickets, What time would you like to attend $cinema/selected_movie ? 
@@ -154,6 +162,8 @@ proposal: %booking_recommendation
                     Booking failed, encountered some errors. retry again
                     ^gotoReactivate(booking_recommendation)
 
+                u2: (*)
+                    ^stayInScope
 proposal: %offer_screen_guidance
         Would you like me to guide you to the screen for $cinema/selected_movie ?
 
@@ -216,10 +226,14 @@ proposal: %main_hub
         I can get you the showtimes. Which movie are you interested in?
         ^gotoReactivate(booking)
         
-    u1: ({~ask_directions} * _~directions{*})
+    u1: ({~ask_directions} {*} _~directions{*})
         I'll point you to the $1 right away!
         $cinema/direction_request=$1
         $cinema/function=show_directions
+        u2: (e:cinema/already_there)
+            $cinema/already_there 
+            ^gotoReactivate(main_hub)
+            
         u2: (e:cinema/direction_indication)
             $cinema/direction_indication
             Would you like me to guide you there?
@@ -233,6 +247,9 @@ proposal: %main_hub
                 Alright! Enjoy your movie!
                 ^gotoReactivate(main_hub)
 
+            u3: (*)
+                Answer yes or no
+                ^stayInScope
 
     u1: (~emergency)
         Alerting staff for immediate assistance. If this is a medical emergency, please stay calm. Help is on the way.

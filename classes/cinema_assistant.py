@@ -84,8 +84,14 @@ class CinemaAssistant(object):
 
         elif value == "get_description":
             title = self.memory.getData("cinema/selected_movie")
-            description = self.db.get_description_for_movie(title)[0][0]
-            self.memory.raiseEvent("cinema/description", description)
+            try:
+                description = self.db.get_description_for_movie(title)[0][0]
+                self.memory.raiseEvent("cinema/description", description)
+            
+            except Exception as e:
+                print("The film is not in our Cinema:", str(e))
+                self.memory.raiseEvent("cinema/description_failed", 
+                    "Sorry, The film is not in our Cinema")
             #self.tablet.showWebview("file:///opt/aldebaran/www/showtimes.html")
             
         elif value == "book_showtime":
@@ -115,7 +121,10 @@ class CinemaAssistant(object):
                     location="screen"
 
                 verbal_direction = self.motion.point_and_describe_direction(location, screen_number)
-                self.memory.raiseEvent("cinema/direction_indication", verbal_direction)
+                if verbal_direction == "You're already there!":
+                    self.memory.raiseEvent("cinema/already_there", verbal_direction)
+                else:
+                    self.memory.raiseEvent("cinema/direction_indication", verbal_direction)
         
         elif value == "guide_to_screen":
             screen_number = self.db.get_screen_for_movie(self.memory.getData("cinema/selected_movie"))
