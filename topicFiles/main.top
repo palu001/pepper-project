@@ -8,7 +8,7 @@ concept: (goodbye) ["goodbye" "bye" "farewell" "see you later" "take care"]
 concept: (acceptance) ["yes" "yeah" "yep" "ok" "sure" "of course" "sounds good" "alright"]
 concept: (refusal) ["no" "nope" "nah" "not now" "maybe later" "i'm good"]
 concept: (movie_genres) ["action" "comedy" "drama" "horror" "romance" "sci-fi" "science fiction" "thriller" "documentary" "animated" "family" "adventure" "fantasy"]
-concept: (age_groups) ["child" "kid" "children" "teen" "teenager" "adult" "senior" "grown-up"]
+concept: (age_groups) ["child" "teen"  "adult" "senior"]
 concept: (directions) ["bathroom" "restroom" "washroom" "screen 1" "screen 2" "screen 3" "screen 4" "screen 5" "screen 6" "screen 7" "screen 8" "theater" "auditorium" "concession" "concession stand" "exit" "entrance" "box office" "ticket office"]
 concept: (concessions) ["popcorn" "soda" "drink" "beverage" "nachos" "candy" "sweets" "snack" "hot dog" "food"]
 concept: (update_prefs) ["update" "preferences" "change" "info" "details" "profile"]
@@ -24,12 +24,12 @@ u: (~greetings)
     Hello! Welcome to our cinema.
     ^gotoReactivate(get_name)
 
-# --- Global Goodbye --- DA PROVARE
+# --- Global Goodbye 
 u: (~goodbye)
-    Thank you for visiting! Enjoy your movie!
+    Thank you for visiting!
     ^gotoReactivate(restart)
 
-# --- Restart ---       Da provare
+# --- Restart --- 
 proposal: %restart
     u1: (~greetings) ^gotoReactivate(get_name)
 
@@ -38,101 +38,102 @@ proposal: %get_name
     What's your name?
 
     u1: ({~myname} _*)
-        Nice to meet you, $1! 
         $cinema/customer_name=$1
         $cinema/function = greet_customer
         u2: (e:cinema/customer_identity_check $cinema/customer_identity_check==True) 
             Great! Welcome back, $cinema/customer_name
                 ^gotoReactivate(main_hub)
         u2: (e:cinema/customer_identity_check $cinema/customer_identity_check==False) 
-                Let's get to know you better.
+                Nice to meet you, $cinema/customer_name! Let's get to know you better.
                 ^gotoReactivate(get_age)
 
 # --- Get Age Group ---
 proposal: %get_age
     What age group do you belong to? child, teen, adult, or senior?
-    u1: (_~age_groups)
+
+    u1: ({*} _~age_groups {*})
         Got it, $1 
         $cinema/customer_age=$1
         ^gotoReactivate(get_genre)
 
     u1: (*)
-        Sorry, I didn't get that. 
-        ^gotoReactivate(get_age)
-
+        Sorry, I didn't get that. Retry.
+        ^stayInScope
+        
 # --- Get Movie Genre Preference ---
 proposal: %get_genre
     What movie genre do you like? 
+
     u1: ({*} _~movie_genres {*})
         $cinema/movie_preference=$1
         $cinema/function = register_customer
         ^gotoReactivate(main_hub)
 
     u1: (*)
-        Sorry, I didn't recognize that genre. 
-        ^gotoReactivate(get_genre)
+        Sorry, I didn't recognize that genre. Retry.
+        ^stayInScope
 
 proposal: %update_preferences
     What movie genre do you like? 
     u1: ({*} _~movie_genres {*})
-        Ok updated 
+        Ok, I will update it.
         $cinema/movie_preference=$1
         $cinema/function=update_preferences
         ^gotoReactivate(main_hub)
         
     u1: (*)
-        Sorry, I didn't recognize that genre. 
-        ^gotoReactivate(update_preferences)
+        Sorry, I didn't recognize that genre. Retry.
+        ^stayInScope
 
 # --- Offer Movie Recommendation ---
 proposal: %offer_recommendation
-    Would you like me to recommend some movies?
-    u1: (~acceptance)
-        $cinema/function=recommend_movies
-        u2: (e:cinema/movie_suggestions)
-            Here some movies you could like: $cinema/movie_suggestions
-            ^gotoReactivate(choose_movie_from_recommendations)
+    $cinema/function=recommend_movies
+    u1: (e:cinema/movie_suggestions)
+        ^gotoReactivate(choose_movie_from_recommendations)
 
-    u1: (~refusal)
-        No problem! Let me know if you need anything else.
-        ^gotoReactivate(main_hub)
-
+# --- Choose a Movie given a Recommendation ---
 proposal: %choose_movie_from_recommendations
+    Here some movies you could like: $cinema/movie_suggestions .
     Do any of these sound good? Just tell me which one you’d like to know more about.
 
-    #Importante che sia qui
     u1: (~refusal)
         No problem! Let me know if you need anything else.
         ^gotoReactivate(main_hub)
 
-    #Per ora deve scrivere il nome del film correttamente (per me si puo lasciare)
     u1: (_*)
         $cinema/selected_movie=$1
         $cinema/function=get_description
         I'll get the description for $1
+
         u2: (e:cinema/description_failed)
-            $cinema/description_failed , Write the name of a suggested film
-            ^gotoReactivate(choose_movie_from_recommendations)
+            $cinema/description_failed . 
+            ^previousProposal
+
         u2: (e:cinema/description)
             $cinema/description
             Are you interested in this movie?
+
             u3: (~acceptance)
                 $cinema/function=get_showtimes
-            
+
                 u4: (e:cinema/available_times)
-                    These are the available times:  $cinema/available_times , Would you like to get the tickets?
+                    These are the available times:  $cinema/available_times , would you like to get the tickets?
+
                     u5: (~acceptance)
-                        Perfect, 
                         ^gotoReactivate(booking_recommendation)
+
                     u5:(~refusal)
                         Allright. 
                         ^gotoReactivate(main_hub)
+
                     u5: (*)
                         Sorry, didn't understand, would you like to get the tickets?
                         ^stayInScope
+
             u3: (~refusal)
                 Ok!
                 ^gotoReactivate(main_hub)
+
             u3: (*)
                 Sorry, didn't understand, Are you interested in this movie ?
                 ^stayInScope
@@ -140,9 +141,11 @@ proposal: %choose_movie_from_recommendations
 proposal: %booking_recommendation
     Let's book your tickets, What time would you like to attend $cinema/selected_movie ? 
     We have:  $cinema/available_times
+
         u1: (~refusal)
             Ok! 
             ^gotoReactivate(main_hub)
+            
         u1: (_*)
             $cinema/selected_time=$1
             $cinema/function=book_showtime
@@ -201,15 +204,58 @@ proposal: %booking
     # Se il film non è stato scelto
     $cinema/function = list_all_movies
     u1:(e:cinema/all_movies_list)
-        We have $cinema/all_movies_list Which movie would you like to book tickets for?
+        We have $cinema/all_movies_list , which movie would you like to book tickets for?
+
         u2: (~refusal)
             Ok!
             ^gotoReactivate(main_hub)
+
         u2: (_*)
             $cinema/selected_movie=$1
             $cinema/function=get_showtimes
+            
             u3: (e:cinema/available_times)
                 ^gotoReactivate(booking_recommendation)
+
+# --- Directions ---
+proposal:% specific_directions
+    I'll point you there right away!
+    $cinema/direction_request=$1
+    $cinema/function=show_directions
+
+# --- Concessions Info ---
+proposal: %buy_concession
+    u1: (i want _*) 
+        Adding $1 to your order ...
+        $cinema/selected_concession=$1
+        $cinema/function=add_to_order
+
+        u2:(e:cinema/concession_found $cinema/concession_found==True)
+            Item correctly added
+            ^gotoReactivate(buy_concession)
+
+        u2:(e:cinema/concession_found $cinema/concession_found==False)
+            Item doesen't exists
+            ^gotoReactivate(buy_concession)
+
+    u1: (that's all)
+        $cinema/function=finalize_order
+        u2: (e:cinema/order_complete)
+            You ordered $cinema/complete_order 
+            Your total is $cinema/order_total Please pay at the concession stand.
+            ^gotoReactivate(main_hub)
+
+        u2: (e:cinema/order_error)
+            your order is empty, write something to buy
+            ^gotoReactivate(buy_concession)
+    u1: (~refusal)
+        Ok, cancelling your order.
+        $cinema/function=cancel_order
+        ^gotoReactivate(main_hub)
+
+    u1: (*)
+        I didn't understood your order, please write it again
+        ^stayInScope
 
 proposal: %main_hub
     How can I help you? You can ask for movie recommendations, showtimes, directions, concessions, or update your preferences. If there is an emergency, just say so.
@@ -264,49 +310,11 @@ proposal: %main_hub
         Sorry, I can't help with that. I can provide movie recommendations, showtimes, directions, and concession information. What would you like to do?
         ^stayInScope
 
-# --- Directions ---
-proposal:% specific_directions
-    I'll point you there right away!
-    $cinema/direction_request=$1
-    $cinema/function=show_directions
-
-# --- Concessions Info ---
-
-proposal: %buy_concession
-    u1: (i want _*) 
-        Adding $1 to your order ...
-        $cinema/selected_concession=$1
-        $cinema/function=add_to_order
-
-        u2:(e:cinema/concession_found $cinema/concession_found==True)
-            Item correctly added
-            ^gotoReactivate(buy_concession)
-
-        u2:(e:cinema/concession_found $cinema/concession_found==False)
-            Item doesen't exists
-            ^gotoReactivate(buy_concession)
-
-    u1: (that's all)
-        $cinema/function=finalize_order
-        u2: (e:cinema/order_complete)
-            You ordered $cinema/complete_order 
-            Your total is $cinema/order_total Please pay at the concession stand.
-            ^gotoReactivate(main_hub)
-
-        u2: (e:cinema/order_error)
-            your order is empty, write something to buy
-            ^gotoReactivate(buy_concession)
-    u1: (~refusal)
-        Ok, cancelling your order.
-        $cinema/function=cancel_order
-        ^gotoReactivate(main_hub)
-
-    u1: (*)
-        I didn't understood your order, please write it again
-        ^stayInScope
 
 # --- Fallback & Clarifications ---
 
 u: (*)
-    Sorry Fatal error, I didn't quite get that. Could you please tell me your name to begin?
-    ^gotoReactivate(get_name)
+    Sorry Fatal error, I didn't quite get that.
+    ^gotoReactivate(restart)
+
+   

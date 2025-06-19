@@ -35,15 +35,10 @@ class CinemaAssistant(object):
             self.db.register_customer(name, age,genre)
             print("Customer registered successfully.")
 
-
         elif value == "update_preferences":
             name = self.memory.getData("cinema/customer_name")
             genre = self.memory.getData("cinema/movie_preference")
-            if name and genre:
-                self.db.update_customer_preferences(name, genre)
-                self.genre_confirmed = True
-            else:
-                print("Name or genre missing for updating preferences.")
+            self.db.update_customer_preferences(name, genre)
 
         elif value == "recommend_movies":
             name = self.memory.getData("cinema/customer_name")
@@ -80,8 +75,9 @@ class CinemaAssistant(object):
             
             times = ", ".join([s[0] for s in showtimes])
             self.memory.raiseEvent("cinema/available_times", times)
-            #self.tablet.showWebview("file:///opt/aldebaran/www/showtimes.html")
+            
 
+        #Prende un film (anche uno non tra i consigliati)
         elif value == "get_description":
             title = self.memory.getData("cinema/selected_movie")
             try:
@@ -91,8 +87,8 @@ class CinemaAssistant(object):
             except Exception as e:
                 print("The film is not in our Cinema:", str(e))
                 self.memory.raiseEvent("cinema/description_failed", 
-                    "Sorry, The film is not in our Cinema")
-            #self.tablet.showWebview("file:///opt/aldebaran/www/showtimes.html")
+                    "Sorry, the film is not in our cinema")
+            
             
         elif value == "book_showtime":
 

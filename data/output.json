@@ -1,14 +1,86 @@
 [
     {
         "id": 1,
-        "customer_id": 7,
-        "showtime_id": 1,
-        "num_tickets": 1
+        "name": "Simone",
+        "age_group": "adult",
+        "preferences": "science fiction",
+        "visit_count": 3
     },
     {
         "id": 2,
-        "customer_id": 7,
-        "showtime_id": 5,
-        "num_tickets": 1
+        "name": "Gabriel",
+        "age_group": "teen",
+        "preferences": "action",
+        "visit_count": 1
+    },
+    {
+        "id": 3,
+        "name": "gab",
+        "age_group": "teen",
+        "preferences": "action",
+        "visit_count": 1
+    },
+    {
+        "id": 4,
+        "name": "dsuhfau",
+        "age_group": "adult",
+        "preferences": "drama",
+        "visit_count": 1
+    },
+    {
+        "id": 5,
+        "name": "Lucertola",
+        "age_group": "adult",
+        "preferences": "action",
+        "visit_count": 1
+    },
+    {
+        "id": 6,
+        "name": "francesco",
+        "age_group": "adult",
+        "preferences": "adventure",
+        "visit_count": 1
+    },
+    {
+        "id": 7,
+        "name": "pietro",
+        "age_group": "adult",
+        "preferences": "action",
+        "visit_count": 1
+    },
+    {
+        "id": 8,
+        "name": "Alessandra",
+        "age_group": "senior",
+        "preferences": "horror",
+        "visit_count": 1
+    },
+    {
+        "id": 9,
+        "name": "giacomo",
+        "age_group": "child",
+        "preferences": "action",
+        "visit_count": 1
+    },
+    {
+        "id": 10,
+        "name": "alessandra",
+        "age_group": "teen",
+        "preferences": "action",
+        "visit_count": 1
+    },
+    {
+        "id": 11,
+        "name": "francesc",
+        "age_group": "adult",
+        "preferences": "action",
+        "visit_count": 1
+    },
+    {
+        "id": 12,
+        "name": "hi",
+        "age_group": "senior",
+        "preferences": "action",
+        "visit_count": 1
     }
 ]
