@@ -1,0 +1,16 @@
+IMAGE
+<*, *, *, *>:  img/health.jpeg
+----
+TEXT
+<*,*,it,*>: I passaporti vaccinali infiammano il dibattito su privacy vs. salute pubblica
+<*,*,*,*>: Vaccine passports ignite debate over privacy vs. public health
+----
+TTS
+<*,*,it,*>: I passaporti vaccinali infiammano il dibattito su privacy vs. salute pubblica
+<*,*,*,*>: Vaccine passports ignite debate over privacy vs. public health
+----
+BUTTONS
+back
+<*,*,it,*>: Indietro
+<*,*,*,*>: Back
+----

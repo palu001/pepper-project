@@ -1,0 +1,16 @@
+IMAGE
+<*, *, *, *>:  img/politics.jpeg
+----
+TEXT
+<*,*,it,*>: Italia e Francia ora unite sulla Libia, dice Macron
+<*,*,*,*>: Italy-France now united on Libya, Macron says
+----
+TTS
+<*,*,it,*>: Italia e Francia ora unite sulla Libia, dice Macron
+<*,*,*,*>: Italy-France now united on Libya, Macron says
+----
+BUTTONS
+back
+<*,*,it,*>: Indietro
+<*,*,*,*>: Back
+----

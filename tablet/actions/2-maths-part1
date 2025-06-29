@@ -1,0 +1,28 @@
+IMAGE
+<*,*,*,*>:  img/maths.png
+----
+TEXT
+<*,*,it,*>: Risolvi la seguente operazione: "2+5 = *" 
+<*,*,*,*>:  Solve the following operation: "2+5 = *"
+----
+TTS
+<*,*,it,*>: Risolvi la seguente operazione: "2+5 = *" 
+<*,*,*,*>:  Solve the following operation: "2+5 = *"
+----
+BUTTONS
+uno
+<*,*,it,*>: 1
+<*,*,*,*>:  1
+dieci
+<*,*,it,*>: 10
+<*,*,*,*>:  10
+otto
+<*,*,it,*>: 8 
+<*,*,*,*>:  8
+trentatre
+<*,*,it,*>: 33
+<*,*,*,*>:  33
+sette
+<*,*,it,*>: 7
+<*,*,*,*>:  7
+----

@@ -11,6 +11,16 @@ from classes.motion_manager import MotionManager
 from classes.cinema_database import CinemaDatabase
 from classes.cinema_assistant import CinemaAssistant
 
+try:
+    sys.path.insert(0, os.getenv('MODIM_HOME')+'/src/GUI')
+except Exception as e:
+    print("Please set MODIM_HOME environment variable to MODIM folder.")
+    sys.exit(1)
+
+from ws_client import *
+
+def init_client():
+    im.init()
 
 def main():
     parser = argparse.ArgumentParser()
@@ -34,18 +44,12 @@ def main():
     ALMemory = session.service("ALMemory")
     ALMotion = session.service("ALMotion")
 
-    try:
-        ALTabletService = session.service("ALTabletService")
-    except Exception:
-        print("Tablet service unavailable.")
-        ALTabletService = None
-
     db = CinemaDatabase(project_path)
     db.initialize_database()
 
     motion = MotionManager(ALMotion)
     try:
-        cinema_assistant = CinemaAssistant(ALMemory, db, ALTabletService, motion)
+        cinema_assistant = CinemaAssistant(ALMemory, db, None, motion)
     except Exception as e:
         print("Failed to initialize Cinema Assistant:", e)
         sys.exit(1)
@@ -68,6 +72,17 @@ def main():
 
     function_sub = ALMemory.subscriber("cinema/function")
     function_sub.signal.connect(cinema_assistant.handle_function)
+
+
+    #Initialize tablet
+
+    mws = ModimWSClient()
+    path = os.path.join(project_path,"tablet/scripts/placeholder")
+    mws.setDemoPathAuto(path)
+    mws.run_interaction(init_client)
+    mws.cconnect()
+
+
 
     print("Cinema Assistant is running...")
     try:

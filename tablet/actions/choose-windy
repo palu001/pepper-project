@@ -1,0 +1,16 @@
+IMAGE
+<*, *, *, *>:  img/wind.png
+----
+TEXT
+<*,*,it,*>: Giornata particolarmente ventosa, vento proveniente verso sud. Ci potrebbero essere delle forte raffiche verso le ore più calde, si raccomanda di chiudersi in casa.
+<*,*,*,*>: Particularly windy day, wind coming to the south. There may be strong gusts towards the hottest hours, it is recommended to lock yourself indoors.
+----
+TTS
+<*,*,it,*>: Giornata particolarmente ventosa, vento proveniente verso sud. Ci potrebbero essere delle forte raffiche verso le ore più calde, si raccomanda di chiudersi in casa.
+<*,*,*,*>: Particularly windy day, wind coming to the south. There may be strong gusts towards the hottest hours, it is recommended to lock yourself indoors.
+----
+BUTTONS
+back
+<*,*,it,*>: Indietro
+<*,*,*,*>: Back
+----

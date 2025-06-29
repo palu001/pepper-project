@@ -1,0 +1,28 @@
+IMAGE
+<*,*,*,*>:  img/amatriciana.jpeg
+----
+TEXT
+<*,*,it,*>: Che tipo di piatto di pasta è rappresentato in figura?
+<*,*,*,*>:  What kind of pasta dish is represented in the picture?
+----
+TTS
+<*,*,it,*>: Che tipo di piatto di pasta è rappresentato in figura?
+<*,*,*,*>:  What kind of pasta dish is represented in the picture?
+----
+BUTTONS
+carbonara
+<*,*,it,*>: Carbonara
+<*,*,*,*>:  Carbonara
+pomodoro
+<*,*,it,*>: Pomodoro
+<*,*,*,*>:  Tomato
+sausage
+<*,*,it,*>: Salsiccia 
+<*,*,*,*>:  Sausage
+amatriciana
+<*,*,it,*>: Amatriciana
+<*,*,*,*>: Amatriciana
+tuna
+<*,*,it,*>: Tonno
+<*,*,*,*>:  Tuna
+----

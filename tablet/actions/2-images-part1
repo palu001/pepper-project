@@ -1,0 +1,28 @@
+IMAGE
+<*,*,*,*>:  img/tulipano.jpeg
+----
+TEXT
+<*,*,it,*>: Quale fiore è rappresentato in figura?
+<*,*,*,*>:  Which flower is shown in the figure?
+----
+TTS
+<*,*,it,*>: Quale fiore è rappresentato in figura?
+<*,*,*,*>:  Which flower is shown in the figure?
+----
+BUTTONS
+daisy
+<*,*,it,*>: Margherita
+<*,*,*,*>:  Daisy
+tulip
+<*,*,it,*>: Tulipano
+<*,*,*,*>:  Tulip
+rose
+<*,*,it,*>: Rosa 
+<*,*,*,*>:  Rose
+orchid
+<*,*,it,*>: Orchidea
+<*,*,*,*>:  Orchid
+sunflower
+<*,*,it,*>: girasole
+<*,*,*,*>:  sunflower
+----

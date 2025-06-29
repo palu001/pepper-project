@@ -1,0 +1,16 @@
+IMAGE
+<*, *, *, *>:  img/sun.png
+----
+TEXT
+<*,*,it,*>: La giornata risulta essere soleggiata, nessuna nuvola è prevista nel cielo! Le temperature sono piuttosto elevate tra i 30 e i 40 gradi. Si raccomanda alle persone anziane di non uscire di casa nelle ore più calde della giornata. Portare sempre con se dell'acqua per dissetarsi. 
+<*,*,*,*>: The day turns out to be sunny, no clouds are expected in the sky! Temperatures are quite high between 30 and 40 degrees. Older people are advised not to leave the house during the hottest hours of the day. Always carry water with you to quench your thirst.
+----
+TTS
+<*,*,it,*>: La giornata risulta essere soleggiata, nessuna nuvola è prevista nel cielo! Le temperature sono piuttosto elevate tra i 30 e i 40 gradi. Si raccomanda alle persone anziane di non uscire di casa nelle ore più calde della giornata. Portare sempre con se dell'acqua per dissetarsi. 
+<*,*,*,*>: The day turns out to be sunny, no clouds are expected in the sky! Temperatures are quite high between 30 and 40 degrees. Older people are advised not to leave the house during the hottest hours of the day. Always carry water with you to quench your thirst.
+----
+BUTTONS
+back
+<*,*,it,*>: Indietro
+<*,*,*,*>: Back
+----

@@ -1,0 +1,16 @@
+IMAGE
+<*, *, *, *>:  img/science.jpeg
+----
+TEXT
+<*,*,it,*>: Gli scienziati di DeepMind: il Reinforcement Learning non è abbastanza per l'IA generale
+<*,*,*,*>: DeepMind scientists: Reinforcement Learning is enough for general AI
+----
+TTS
+<*,*,it,*>: Gli scienziati di DeepMind: il Reinforcement Learning non è abbastanza per l'IA generale
+<*,*,*,*>: DeepMind scientists: Reinforcement Learning is enough for general AI
+----
+BUTTONS
+back
+<*,*,it,*>: Indietro
+<*,*,*,*>: Back
+----

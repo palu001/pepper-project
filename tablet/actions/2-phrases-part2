@@ -1,0 +1,28 @@
+IMAGE
+<*,*,*,*>:  img/words.png
+----
+TEXT
+<*,*,it,*>: Indovina la parola mancante nella frase: "I pinguini vivono in ********* ." 
+<*,*,*,*>:  Guess the missing word in the phrase: "The penguins live in **********."
+----
+TTS
+<*,*,it,*>: Indovina la parola mancante nella frase: "I pinguini vivono in ********* ." 
+<*,*,*,*>:  Guess the missing word in the phrase: "The penguins live in **********."."
+----
+BUTTONS
+antarctica
+<*,*,it,*>: Antartide
+<*,*,*,*>:  Antarctica
+russia
+<*,*,it,*>: Russia
+<*,*,*,*>:  Russia
+giardino
+<*,*,it,*>: Giardino
+<*,*,*,*>:  Garden
+chiesa
+<*,*,it,*>: Chiesa
+<*,*,*,*>:  Church
+africa
+<*,*,it,*>: Africa 
+<*,*,*,*>:  Africa
+----

@@ -1,0 +1,16 @@
+IMAGE
+<*, *, *, *>:  img/entertainment.jpeg
+----
+TEXT
+<*,*,it,*>: A Quiet Place 2 mantiene il primo posto al box-office del weekend
+<*,*,*,*>: A Quiet Place 2 mantains the first place at the weekend box-office
+----
+TTS
+<*,*,it,*>: A Quiet Place 2 mantiene il primo posto al box-office italiano del weekend
+<*,*,*,*>: A Quiet Place 2 mantains the first place at the weekend box-office
+----
+BUTTONS
+back
+<*,*,it,*>: Indietro
+<*,*,*,*>: Back
+----

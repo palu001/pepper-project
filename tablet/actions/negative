@@ -1,0 +1,19 @@
+IMAGE
+<*,*,*,*>:  img/sad.jpeg
+----
+TEXT
+<*,*,it,*>: Mi dispiace! Test non Superato! Clicca su Riprova per tentare ancora
+<*,*,*,*>:  Sorry! Test not Passed! Click on Try again if you want to restart the game
+----
+TTS
+<*,*,it,*>: Mi dispiace! Test non Superato! Clicca su Riprova per tentare ancora
+<*,*,*,*>:  Sorry! Test not Passed! Click on Try again if you want to restart the game
+----
+BUTTONS
+try
+<*,*,it,*>: Riprova
+<*,*,*,*>:  Try again
+back
+<*,*,it,*>: Indietro
+<*,*,*,*>:  Back
+----

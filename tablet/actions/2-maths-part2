@@ -1,0 +1,28 @@
+IMAGE
+<*,*,*,*>:  img/maths.png
+----
+TEXT
+<*,*,it,*>: Risolvi la seguente operazione: "15 / * = 5" 
+<*,*,*,*>:  Solve the following operation: "15 / * = 5"
+----
+TTS
+<*,*,it,*>: Risolvi la seguente operazione: "15 / * = 5"
+<*,*,*,*>:  Solve the following operation: "15 / * = 5"
+----
+BUTTONS
+cinque
+<*,*,it,*>: 5
+<*,*,*,*>:  5
+dieci
+<*,*,it,*>: 10
+<*,*,*,*>:  10
+quattro
+<*,*,it,*>: 4 
+<*,*,*,*>:  4
+tre
+<*,*,it,*>: 3
+<*,*,*,*>:  3
+venti
+<*,*,it,*>: 20
+<*,*,*,*>:  20
+----

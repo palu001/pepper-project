@@ -1,0 +1,16 @@
+IMAGE
+<*, *, *, *>:  img/sport.jpeg
+----
+TEXT
+<*,*,it,*>: Wimbledon 2021: Roger Federer supera Cameron Norrie e raggiunge gli ottavi
+<*,*,*,*>: Wimbledon 2021: Roger Federer beats Cameron Norrie to reach last 16
+----
+TTS
+<*,*,it,*>: Wimbledon 2021: Roger Federer supera Cameron Norrie e raggiunge gli ottavi
+<*,*,*,*>: Wimbledon 2021: Roger Federer beats Cameron Norrie to reach last 16
+----
+BUTTONS
+back
+<*,*,it,*>: Indietro
+<*,*,*,*>: Back
+----

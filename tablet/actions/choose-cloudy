@@ -1,0 +1,16 @@
+IMAGE
+<*, *, *, *>:  img/cloud.png
+----
+TEXT
+<*,*,it,*>: Giornata prevalentemente nuvolosa ma con schiarite durante il giorno, il rischio di pioggia non è elevato ma le temperature si abbasseranno molto. Vestitevi a cipolla.
+<*,*,*,*>: Mostly cloudy day but with bright spells during the day, the risk of rain is not high but the temperatures will drop a lot. Dress like an onion.
+----
+TTS
+<*,*,it,*>: Giornata prevalentemente nuvolosa ma con schiarite durante il giorno, il rischio di pioggia non è elevato ma le temperature si abbasseranno molto. Vestitevi a cipolla.
+<*,*,*,*>: Mostly cloudy day but with bright spells during the day, the risk of rain is not high but the temperatures will drop a lot. Dress like an onion.
+----
+BUTTONS
+back
+<*,*,it,*>: Indietro
+<*,*,*,*>: Back
+----

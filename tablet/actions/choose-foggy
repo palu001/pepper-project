@@ -1,0 +1,16 @@
+IMAGE
+<*, *, *, *>:  img/fog.png
+----
+TEXT
+<*,*,it,*>: Foschia e nebbia su tutta la citta, non uscire al mattino presto, evitare di uscire da soliti, potreste perdervi.
+<*,*,*,*>: Mist and fog all over the city, do not go out early in the morning, avoid going out alone, you could get lost.
+----
+TTS
+<*,*,it,*>: Foschia e nebbia su tutta la citta, non uscire al mattino presto, evitare di uscire da soliti, potreste perdervi.
+<*,*,*,*>: Mist and fog all over the city, do not go out early in the morning, avoid going out alone, you could get lost.
+----
+BUTTONS
+back
+<*,*,it,*>: Indietro
+<*,*,*,*>: Back
+----

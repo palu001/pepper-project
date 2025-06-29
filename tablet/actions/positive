@@ -1,0 +1,11 @@
+IMAGE
+<*,*,*,*>:  img/passed.png
+----
+TEXT
+<*,*,it,*>: Ottimo lavoro! Test Superato!
+<*,*,*,*>:  Good job! Test Passed!
+----
+TTS
+<*,*,it,*>: Ottimo lavoro! Test Superato!
+<*,*,*,*>:  Good job! Test Passed!
+----

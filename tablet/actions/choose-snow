@@ -1,0 +1,16 @@
+IMAGE
+<*, *, *, *>:  img/snow.png
+----
+TEXT
+<*,*,it,*>: Nevicate tutto il giorno, che potrebbero raggiungere fino ad un metro di altezza, non uscire per nessun motivo di casa.
+<*,*,*,*>: Snowfall all day, which could reach up to one meter high, do not leave the house for any reason.
+----
+TTS
+<*,*,it,*>: Nevicate tutto il giorno, che potrebbero raggiungere fino ad un metro di altezza, non uscire per nessun motivo di casa. 
+<*,*,*,*>: Snowfall all day, which could reach up to one meter high, do not leave the house for any reason.
+----
+BUTTONS
+back
+<*,*,it,*>: Indietro
+<*,*,*,*>: Back
+----

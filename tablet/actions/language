@@ -1,0 +1,12 @@
+IMAGE
+<*,*,*,*>:  img/diaglogo.jpg
+----
+TEXT
+<*,*,*,*>: What is your language?/Qual è la tua lingua?
+----
+BUTTONS
+en
+<*,*,*,*>: English
+it
+<*,*,*,*>: Italian
+----

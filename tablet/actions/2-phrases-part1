@@ -1,0 +1,28 @@
+IMAGE
+<*,*,*,*>:  img/words.png
+----
+TEXT
+<*,*,it,*>: Indovina la parola mancante nella frase: "Il **** mangia il topo." 
+<*,*,*,*>:  Guess the missing word in the phrase: "The *** eats the mouse."
+----
+TTS
+<*,*,it,*>: Indovina la parola mancante nella frase: "Il **** mangia il topo." 
+<*,*,*,*>:  Guess the missing word in the phrase: "The *** eats the mouse."
+----
+BUTTONS
+dog
+<*,*,it,*>: Cane
+<*,*,*,*>:  Dog
+elephant
+<*,*,it,*>: Elefante
+<*,*,*,*>:  Elephant
+cat
+<*,*,it,*>: Gatto
+<*,*,*,*>:  Cat
+gardener
+<*,*,it,*>: Giardiniere
+<*,*,*,*>:  Gardener
+desk
+<*,*,it,*>: Scrivania
+<*,*,*,*>:  Desk
+----
