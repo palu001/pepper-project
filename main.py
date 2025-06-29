@@ -66,9 +66,6 @@ def main():
         print("Failed to load or activate dialog topic:", e)
         sys.exit(1)
 
-    for key in ALMemory.getDataList("cinema/"):
-        ALMemory.insertData(key, "")
-
     function_sub = ALMemory.subscriber("cinema/function")
     function_sub.signal.connect(cinema_assistant.handle_function)
 

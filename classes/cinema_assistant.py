@@ -163,19 +163,12 @@ class CinemaAssistant(object):
                 print("No target location specified.")
                 self.memory.raiseEvent("cinema/guidance_failed", "No target location specified.")
 
-        #Sono qua e non funziona
-        elif value == "emergency_help":
-            self.motion.emergency()
-            self.memory.raiseEvent("cinema/emergency_alert", "true")
-
         elif value == "concession_info":
             self.motion.concession()
             items = self.db.get_concessions()
-            if items:
-                names = ", ".join([item[0] for item in items])
-                self.memory.raiseEvent("cinema/concession_list", "We have: " + names + ". Would you like to order something?")
-            else:
-                self.memory.raiseEvent("cinema/no_concessions", "Sorry, we have no concessions right now.")
+            names = ", ".join([item[0] for item in items])
+            self.memory.raiseEvent("cinema/concession_list", "We have: " + names + ". Would you like to order something?")
+
 
         elif value == "list_all_movies":
             print("Listing all available movies:")
@@ -206,8 +199,12 @@ class CinemaAssistant(object):
                 self.memory.insertData("cinema/order_total", total)
                 self.memory.raiseEvent("cinema/order_complete", str(total))
                 self.current_order = []  # Clear after processing
-            
         
+        elif value == "restart":
+            for key in self.memory.getDataList("cinema/"):
+                self.memory.insertData(key, "")
+            self.memory.raiseEvent("cinema/restart", "True")
+            
         elif value == "cancel_order":
             self.current_order = []
 

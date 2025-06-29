@@ -24,14 +24,17 @@ u: (~greetings)
     Hello! Welcome to our cinema.
     ^gotoReactivate(get_name)
 
-# --- Global Goodbye 
+# --- Global Goodbye (Capire se rimuovere o meno)
 u: (~goodbye)
     Thank you for visiting!
-    ^gotoReactivate(restart)
+    $cinema/function = restart
+    u1: (e:cinema/restart)
+        ^gotoReactivate(restart)
 
 # --- Restart --- 
 proposal: %restart
     u1: (~greetings) ^gotoReactivate(get_name)
+
 
 # --- Get Name ---
 proposal: %get_name
@@ -46,6 +49,7 @@ proposal: %get_name
         u2: (e:cinema/customer_identity_check $cinema/customer_identity_check==False) 
                 Nice to meet you, $cinema/customer_name! Let's get to know you better.
                 ^gotoReactivate(get_age)
+                
 
 # --- Get Age Group ---
 proposal: %get_age
@@ -213,13 +217,14 @@ proposal: %buy_concession
 
         u2:(e:cinema/concession_found $cinema/concession_found==True)
             Item correctly added
+            Do you want something else?
             ^gotoReactivate(buy_concession)
 
         u2:(e:cinema/concession_found $cinema/concession_found==False)
-            Item doesen't exists
+            Item doesen't exists. Retry.
             ^gotoReactivate(buy_concession)
 
-    u1: (that's all)
+    u1: (~done)
         $cinema/function=finalize_order
         u2: (e:cinema/order_complete)
             You ordered $cinema/complete_order 
@@ -227,19 +232,20 @@ proposal: %buy_concession
             ^gotoReactivate(main_hub)
 
         u2: (e:cinema/order_error)
-            your order is empty, write something to buy
+            Your order is empty. Retry.
             ^gotoReactivate(buy_concession)
+
     u1: (~refusal)
         Ok, cancelling your order.
         $cinema/function=cancel_order
         ^gotoReactivate(main_hub)
 
     u1: (*)
-        I didn't understood your order, please write it again
+        I didn't understand your order, please order again
         ^stayInScope
 
 proposal: %main_hub
-    How can I help you? You can ask for movie recommendations, showtimes, directions, concessions, or update your preferences. If there is an emergency, just say so.
+    How can I help you? You can ask for movie recommendations, showtimes, directions, concessions, or update your preferences.
 
     u1: ({*} _~update_prefs {*}) 
         Of course. Let's update your preferences.
@@ -277,26 +283,27 @@ proposal: %main_hub
             u3: (*)
                 Sorry, i didn't understand. Retry with yes or no.
                 ^stayInScope
-
-    #Sono qua e non funziona
-    u1: (~emergency)
-        Alerting staff for immediate assistance. If this is a medical emergency, please stay calm. Help is on the way.
-        $cinema/function=emergency_alert
+    
+    u1: (~goodbye)
+        Thank you for visiting!
+        $cinema/function = restart
+        u1: (e:cinema/restart)
+            ^gotoReactivate(restart)
 
     u1: (~ask_concessions)
-        We have: Popcorn Large, Soda Large, Nachos, Candy Mix, Hot Dog, what do you want?
         $cinema/function=concession_info
-        ^gotoReactivate(buy_concession)
-
+        u2: (e:cinema/concession_list)
+            $cinema/concession_list
+            ^gotoReactivate(buy_concession)
+        
     u1: (*)
         Sorry, I can't help with that. I can provide movie recommendations, showtimes, directions, and concession information. What would you like to do?
         ^stayInScope
 
 
 # --- Fallback & Clarifications ---
-
 u: (*)
-    Sorry Fatal error, I didn't quite get that.
+    Sorry Fatal error, I didn't quite get that. Now you can restart.
     ^gotoReactivate(restart)
 
    
