@@ -117,18 +117,7 @@ proposal: %choose_movie_from_recommendations
                 $cinema/function=get_showtimes
 
                 u4: (e:cinema/available_times)
-                    These are the available times:  $cinema/available_times , would you like to get the tickets?
-
-                    u5: (~acceptance)
-                        ^gotoReactivate(booking_recommendation)
-
-                    u5:(~refusal)
-                        Allright. 
-                        ^gotoReactivate(main_hub)
-
-                    u5: (*)
-                        Sorry, didn't understand, would you like to get the tickets?
-                        ^stayInScope
+                    ^gotoReactivate(booking_recommendation)
 
             u3: (~refusal)
                 Ok!
@@ -150,38 +139,32 @@ proposal: %booking_recommendation
             $cinema/selected_time=$1
             $cinema/function=book_showtime
             Booking your tickets...
+
                 u2: (e:cinema/booking_success)
                     $cinema/direction_request=box_office
                     $cinema/function=show_directions
                     Booking success! You can retrieve your tickets at the ticket office.
-                    Let me know when you're ready to go to your screen.
+                    ^gotoReactivate(offer_screen_guidance)
 
-                    u3: (~done)
-                        ^gotoReactivate(offer_screen_guidance)
-                    u3: (~refusal)
-                        Alright! Enjoy your movie!
-                        ^gotoReactivate(main_hub)
                 u2: (e:cinema/booking_failed)
-                    Booking failed, encountered some errors. retry again
+                    Booking failed, encountered some errors. Retry again.
                     ^gotoReactivate(booking_recommendation)
 
-                u2: (*)
-                    ^stayInScope
 proposal: %offer_screen_guidance
         Would you like me to guide you to the screen for $cinema/selected_movie ?
 
-        u2: (~acceptance)
+        u1: (~acceptance)
             Great, follow me.
             $cinema/function=guide_to_screen
             ^gotoReactivate(on_screen_arrival)
 
-        u2: (~refusal)
+        u1: (~refusal)
             Alright! Enjoy your movie!
             ^gotoReactivate(main_hub)
 
-    u1: (*)
-        Let me know when you're done or if you need anything else.
-        ^repeatProposal
+        u1: (*)
+            Sorry, didn't understand. Retry.
+            ^stayInScope
 
 proposal: %on_guidance_complete
     u1: (e:cinema/guidance_complete)
@@ -199,7 +182,6 @@ proposal: %on_screen_arrival
         Sorry, I couldn't find the screen information. Let me know if you need help with something else.
         ^gotoReactivate(main_hub)
 
-
 proposal: %booking
     # Se il film non è stato scelto
     $cinema/function = list_all_movies
@@ -211,17 +193,16 @@ proposal: %booking
             ^gotoReactivate(main_hub)
 
         u2: (_*)
+            #Qui se è scritto male, ci sono errori
             $cinema/selected_movie=$1
             $cinema/function=get_showtimes
             
             u3: (e:cinema/available_times)
                 ^gotoReactivate(booking_recommendation)
-
-# --- Directions ---
-proposal:% specific_directions
-    I'll point you there right away!
-    $cinema/direction_request=$1
-    $cinema/function=show_directions
+            
+            u3: (e:cinema/showtimes_failed)
+                $cinema/showtimes_failed . 
+                ^previousProposal
 
 # --- Concessions Info ---
 proposal: %buy_concession
@@ -294,9 +275,10 @@ proposal: %main_hub
                 ^gotoReactivate(main_hub)
 
             u3: (*)
-                Answer yes or no
+                Sorry, i didn't understand. Retry with yes or no.
                 ^stayInScope
 
+    #Sono qua e non funziona
     u1: (~emergency)
         Alerting staff for immediate assistance. If this is a medical emergency, please stay calm. Help is on the way.
         $cinema/function=emergency_alert

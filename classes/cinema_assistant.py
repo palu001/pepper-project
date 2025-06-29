@@ -8,10 +8,12 @@ class CinemaAssistant(object):
         self.tablet = tablet
         self.motion = motion_manager
         self.current_order = []  # Track items for order
+    
     def handle_function(self, value):
         print("Handling function:", value)
 
         if value == "greet_customer":
+
             self.motion.greeting()
             
             # Reset flags on new greeting
@@ -71,11 +73,19 @@ class CinemaAssistant(object):
 
         elif value == "get_showtimes":
             title = self.memory.getData("cinema/selected_movie")
-            showtimes = self.db.get_showtimes_for_movie(title)
+            try:
+                showtimes = self.db.get_showtimes_for_movie(title)
+
+                #Really important to check if showtimes is empty and send exception
+                var_used_to_get_exception = showtimes[0][0]  
+
+                times = ", ".join([s[0] for s in showtimes])
+                self.memory.raiseEvent("cinema/available_times", times)
             
-            times = ", ".join([s[0] for s in showtimes])
-            self.memory.raiseEvent("cinema/available_times", times)
-            
+            except Exception as e:
+                print("The film is not in our Cinema:", str(e))
+                self.memory.raiseEvent("cinema/showtimes_failed", 
+                    "Sorry, the film is not in our cinema")
 
         #Prende un film (anche uno non tra i consigliati)
         elif value == "get_description":
@@ -112,6 +122,8 @@ class CinemaAssistant(object):
             if location:
                 # Try to extract screen number from location string
                 match = re.search(r"screen\s*([0-9]+)", location.lower())
+                print("Location:", location)
+                print("Match:", match)
                 if match:
                     screen_number = int(match.group(1))
                     location="screen"
@@ -137,7 +149,6 @@ class CinemaAssistant(object):
             location = self.memory.getData("cinema/target_location")
             screen_number = None
             
-            
             if location:
                 match = re.search(r"screen\s*([0-9]+)", location.lower())
                 if match:
@@ -152,6 +163,7 @@ class CinemaAssistant(object):
                 print("No target location specified.")
                 self.memory.raiseEvent("cinema/guidance_failed", "No target location specified.")
 
+        #Sono qua e non funziona
         elif value == "emergency_help":
             self.motion.emergency()
             self.memory.raiseEvent("cinema/emergency_alert", "true")
