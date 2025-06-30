@@ -46,10 +46,18 @@ def main():
 
     db = CinemaDatabase(project_path)
     db.initialize_database()
+    #Initialize tablet
+
+    mws = ModimWSClient()
+    path = os.path.join(project_path,"tablet/placeholder/another")
+    
+    mws.setDemoPathAuto(path)
+    mws.run_interaction(init_client)
+    mws.cconnect()
 
     motion = MotionManager(ALMotion)
     try:
-        cinema_assistant = CinemaAssistant(ALMemory, db, None, motion)
+        cinema_assistant = CinemaAssistant(ALMemory, db, mws , motion)
     except Exception as e:
         print("Failed to initialize Cinema Assistant:", e)
         sys.exit(1)
@@ -73,14 +81,6 @@ def main():
     function_sub = ALMemory.subscriber("cinema/function")
     function_sub.signal.connect(cinema_assistant.handle_function)
 
-
-    #Initialize tablet
-
-    mws = ModimWSClient()
-    path = os.path.join(project_path,"tablet/scripts/placeholder")
-    mws.setDemoPathAuto(path)
-    mws.run_interaction(init_client)
-    mws.cconnect()
 
 
 

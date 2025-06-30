@@ -2,20 +2,25 @@ from datetime import datetime
 import re
 
 class CinemaAssistant(object):
-    def __init__(self, memory, database, tablet, motion_manager):
+    def __init__(self, memory, database, mws, motion_manager):
         self.memory = memory
         self.db = database
-        self.tablet = tablet
+        self.mws = mws
         self.motion = motion_manager
         self.current_order = []  # Track items for order
     
+        action = "goodbye"
+        # remove old buttons
+        mws.csend("im.executeModality('BUTTONS', [])")
+        mws.csend("im.execute('{}')".format(action))
+        print("ESEGUITO ACTION ")
+        
     def handle_function(self, value):
         print("Handling function:", value)
 
         if value == "greet_customer":
 
             self.motion.greeting()
-            
             # Reset flags on new greeting
             name = self.memory.getData("cinema/customer_name")
             customer = self.db.get_customer_by_name(name)

@@ -1,10 +1,8 @@
 import sys
-import time
 import os
 import random
+import qi
 import argparse
-
-global user
 
 try:
     sys.path.insert(0, os.getenv('MODIM_HOME')+'/src/GUI')
@@ -12,111 +10,60 @@ except Exception as e:
     print("Please set MODIM_HOME environment variable to MODIM folder.")
     sys.exit(1)
 
-try:
-    sys.path.insert(1, '/home/robot/playground/Pepper-Interaction/project-pepper')
-except Exception as e:
-    print("Please set HOME environment variable to plaground folder.")
-    sys.exit(1)
-
-# Set MODIM_IP to connnect to remote MODIM server
-
-import ws_client
 from ws_client import *
 
-def i1():
-
+def init_client():
     im.init()
-    lan = im.ask('language')
 
-    if lan == "it":
-        im.setProfile(['*','*','it','*'])
+def main(mws):
 
-    q = 'choose-activity'
-    a = im.ask(q)
-    while a != "exit":
-        if a == "meteo":
-            while a != "back":
-                q = "choose-" + str(random.choice(["sunny", "cloudy", "snow", "stormy", "foggy", "rainy", "windy"]))
-                a = im.ask(q)
-            a = im.ask("choose-activity")
+    # parse arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--pip", type=str, default=os.environ['PEPPER_IP'], help="Robot IP address. On robot or Local Naoqi: use '127.0.0.1'.")
+    parser.add_argument("--pport", type=int, required=True, help="Naoqi port number")
+    args = parser.parse_args()
 
-        elif a == "news":
-            # list_news = database.patients[user]["tablet"]
-            # count, a = max(list_news)
-            while a != "back":
-                a = im.ask("choose-topic")
-                if a == "politics":
-                    im.ask("choose-politics")
-                elif a == "sport":
-                    im.ask("choose-sport")
-                elif a == "health":
-                    im.ask("choose-health")
-                elif a == "science":
-                    im.ask("choose-science")    
-                elif a == "entertainment":
-                    im.ask("choose-entertainment")
-            
-            a = im.ask("choose-activity")
+    # connect to the session
+    try:
+        connection_url = "tcp://{}:{}".format(args.pip, args.pport) 
+        print("Connecting to {}".format(connection_url))
+        app = qi.Application(["Memory Write", "--qi-url=" + connection_url])
+    except RuntimeError:
+        print("Can't connect to Naoqi at ip {} on port {}.".format(args.pip, args.pport))
+        sys.exit(1)
+    app.start()
+    session = app.session
 
-        elif a == "game":
-            try_again = True
-            while try_again:
-                a = im.ask("game-intro")
-                if a == "play":
-                    points = 0
-                    a = im.ask("2-phrases-part1", timeout= 999)
-                    if a == "cat":
-                        points+=1
-                    a = im.ask("2-phrases-part2",  timeout= 999)
-                    if a == "antarctica":
-                        points+=1
-                    a = im.ask("2-maths-part1",  timeout= 999)
-                    if a == "sette":
-                        points+=1
-                    a = im.ask("2-maths-part2",  timeout= 999)
-                    if a == "tre":
-                        points+=1
-                    a = im.ask("2-images-part1",  timeout= 999)
-                    if a == "tulip":
-                        points+=1
-                    a = im.ask("2-images-part2",  timeout= 999)
-                    if a == "amatriciana":
-                        points+=1
-                    
-                    if points>=4:
-                        im.execute("positive")
-                        try_again = False
-                    else:
-                        a = im.ask("negative", timeout=999)
-                        if a == "try":
-                            try_again = True
+    ALMemory = session.service('ALMemory')
+    try:
+        username = ALMemory.getData('username')
+    except:
+        username = None
 
-                        elif a == "back":
-                            try_again = False
+    mws.run_interaction(init_client)
 
-            a = im.ask("choose-activity")
+    mws.cconnect()
 
-    im.execute('goodbye')
-    
-    #im.init()
+    mws.csend("im.ask('welcome')")
 
+    q = random.choice(['color'])
+
+    a = mws.csend("im.ask('{}', timeout=999)".format(q))
+
+    if a != 'timeout':
+        mws.csend("im.execute('{}')".format(a))
+        mws.csend("im.execute('goodbye')")
 
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--user", type=str, required=True, help="user name")
-
-    args = parser.parse_args()
-    user = args.user    
 
     mws = ModimWSClient()
 
     # local execution
     mws.setDemoPathAuto(__file__)
+    print("QUESTO E IL FILE: ", __file__)
     # remote execution
     # mws.setDemoPath('<ABSOLUTE_DEMO_PATH_ON_REMOTE_SERVER>')
 
-    mws.run_interaction(i1)
-
-
+    main(mws)

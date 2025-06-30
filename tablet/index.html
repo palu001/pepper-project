@@ -1,81 +1,132 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <title>Welcome</title>
-
   <script src="qaws.js"></script>
-
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      background-color: #fff;
-      font-family: sans-serif;
-    }
-    h1 {
-      font-weight: normal;
-      font-size: 300%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to bottom, #f5f7fa, #c3cfe2);
+      color: #333;
+      padding: 20px;
+      height: 100vh;
     }
 
-    input[type=button] {
-      background-color: #A01010; /* Red */
-      border: none;
-      border-radius: 8px;
-      color: white;
-      padding: 14px 24px;
+    #status {
+      text-align: right;
+      font-weight: bold;
+      padding: 10px;
+      color: #c0392b;
+      font-size: 1.1rem;
+    }
+
+    .container {
+      max-width: 70vw;
+      margin: 0 auto;
       text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      font-size: 24px;
-      margin:10px 10px 10px 10px;
+      padding-top: 40px;
     }
 
+    img {
+      max-height: 300px;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: 300;
+      margin: 30px 0 20px;
+      color: #2c3e50;
+    }
+
+    input[type="button"] {
+      background-color: #e74c3c;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      padding: 14px 28px;
+      font-size: 1.5rem;
+      margin: 12px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    input[type="button"]:hover {
+      background-color: #c0392b;
+    }
+
+    #buttons {
+      margin-top: 30px;
+    }
+
+    /*
+    #input {
+      width: 50vw;
+      height: 50px;
+      padding: 0 20px;
+      font-size: 1.2rem;
+      border: 2px solid #ccc;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    #input:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+    } */
   </style>
 </head>
 <body>
 
-    <!-- status -->
-    <div align='right' id='status'> <font color='red'>NOT CONNECTED</font> </div>
+  <!-- status -->
+  <div id="status">
+    <span>NOT CONNECTED</span>
+  </div>
+
+  <div class="container">
 
     <!-- image -->
-    <p>
-    <div align='center'> <img height=300 id='image_default' src="./img/diaglogo.jpg" alt="No image"/> </div>
-    </p>
+    <div>
+      <img id="image_default" src="img/cinema.png" alt="No image"/>
+    </div>
 
-    <!-- text -->
-
-    <p>
-    <h1>
-    <div align='center' id='text_default'>Welcome to MARIO's tablet</div>
-    </h1>
-    </p>
+    <!-- title -->
+    <h1 id="text_default">Welcome</h1>
 
     <!-- buttons -->
-  
-    <p>
-      <div align='center' id='buttons'>
-        <!-- input type="button" id="hello" value="Hello" onclick="hello()" -->
-      </div>
-    </p>
+    <div id="buttons">
+      <!-- Example button:
+      <input type="button" id="hello" value="Hello" onclick="hello()">
+      -->
+    </div>
+
+    <!--  <input type="text" id="input"/> -->
+
+  </div>
 
   <!-- ****** SCRIPTS ****** -->
-
   <script>
-
-    var ip=window.location.hostname;
-    if (ip=='')
-        ip='127.0.0.1';
+    var ip = window.location.hostname || '127.0.0.1';
     var port = 9100;
 
-    console.log("Trying connection...")
-    wsrobot_init(ip,port);
+    console.log("Trying connection...");
+    wsrobot_init(ip, port);
 
     function hello() {
-        console.log("runnig interaction...");
-        codews.send("im.robot.say('hello')\n");
+      console.log("running interaction...");
+      codews.send("im.robot.say('hello')\n");
     }
-
   </script>
-
 </body>
 </html>
-
