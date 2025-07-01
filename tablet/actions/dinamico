@@ -1,0 +1,31 @@
+IMAGE
+<*, *, *, *>:  img/science.jpeg
+----
+TEXT
+<*, *, it, *>: Cosa ti piacerebbe leggere?
+<*, *, *, *>: What would you like to read?
+----
+TTS
+<*, *, it, *>: Cosa ti piacerebbe leggere?
+<*, *, *, *>: What would you like to read?
+----
+BUTTONS
+entertainment
+<*,*,it,*>: Intrattenimento
+<*,*,*,*>:  Entertainment
+science
+<*,*,it,*>: Scienza e Tecnologia
+<*,*,*,*>:  Science and Technologies
+back
+<*,*,it,*>: Indietro
+<*,*,*,*>:  Back
+health
+<*,*,it,*>: Salute
+<*,*,*,*>:  Health
+politics
+<*,*,it,*>: Politica
+<*,*,*,*>:  Politics
+sport
+<*,*,it,*>: Sport
+<*,*,*,*>:  Sport
+----

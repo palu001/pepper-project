@@ -17,8 +17,7 @@ concept: (ask_showtimes) ["showtimes" "movie times" "what time are the movies pl
 concept: (ask_directions) ["directions" "where" "get to" "where is"]
 concept: (ask_concessions) ["concessions" "buy snacks" "order food" "what food do you have" "menu" "i'm hungry"]
 concept: (done) ["i'm done" "i am done" "done" "all done" "that's it" "finished" "i'm finished" "i’m good now"]
-concept: (emergency) ["help" "emergency" "i need help now" "assistance" "urgent help"]
-
+concept: (use_tablet) ["tablet" "use the screen" "use tablet" "use the tablet"]
 # --- Global Greeting ---   
 u: (~greetings)
     Hello! Welcome to our cinema.

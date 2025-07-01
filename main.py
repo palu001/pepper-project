@@ -81,7 +81,8 @@ def main():
     function_sub = ALMemory.subscriber("cinema/function")
     function_sub.signal.connect(cinema_assistant.handle_function)
 
-
+    tablet_sub = ALMemory.subscriber("cinema/tablet")
+    tablet_sub.signal.connect(cinema_assistant.handle_tablet)
 
 
     print("Cinema Assistant is running...")

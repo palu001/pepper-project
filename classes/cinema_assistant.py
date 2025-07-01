@@ -1,5 +1,7 @@
 from datetime import datetime
 import re
+import io
+import os
 
 class CinemaAssistant(object):
     def __init__(self, memory, database, mws, motion_manager):
@@ -8,12 +10,33 @@ class CinemaAssistant(object):
         self.mws = mws
         self.motion = motion_manager
         self.current_order = []  # Track items for order
-    
-        action = "goodbye"
-        # remove old buttons
-        mws.csend("im.executeModality('BUTTONS', [])")
-        mws.csend("im.execute('{}')".format(action))
-        print("ESEGUITO ACTION ")
+
+        # image = "img/science.jpeg"
+
+        # text = {
+        #     ("*", "*", "it", "*"): "Cosa ti piacerebbe leggere?",
+        #     ("*", "*", "*", "*"): "What would you like to read?"
+        # }
+
+        # tts = {
+        #     ("*", "*", "it", "*"): "Cosa ti piacerebbe leggere?",
+        #     ("*", "*", "*", "*"): "What would you like to read?"
+        # }
+
+        # buttons = {
+        #     "politics": {"it": "Politica", "en": "Politics"},
+        #     "sport": {"it": "Sport", "en": "Sport"},
+        #     "health": {"it": "Salute", "en": "Health"},
+        #     "science": {"it": "Scienza e Tecnologia", "en": "Science and Technologies"},
+        #     "entertainment": {"it": "Intrattenimento", "en": "Entertainment"},
+        #     "back": {"it": "Indietro", "en": "Back"}
+        # }
+
+        # self.create_action(image, text, tts, buttons, filename="dinamico")
+        # action = "dinamico"
+        # mws.csend("im.executeModality('BUTTONS', [])")
+        # mws.csend("im.ask('{}')".format(action))
+        # print("ESEGUITO ACTION ")
         
     def handle_function(self, value):
         print("Handling function:", value)
@@ -29,6 +52,16 @@ class CinemaAssistant(object):
                     "True")
                 self.current_customer = customer
 
+                text = {
+                    ("*", "*", "it", "*"): "Bentornato {}".format(name),
+                    ("*", "*", "*", "*"): "Welcome back {}".format(name)
+                }
+
+                self.create_action(text = text, filename="welcome-back")
+                action = "welcome-back"
+                self.mws.csend("im.executeModality('BUTTONS', [])")
+                self.mws.csend("im.execute('{}')".format(action))
+                
             else:
                 self.memory.raiseEvent("cinema/customer_identity_check", 
                     "False")
@@ -214,4 +247,47 @@ class CinemaAssistant(object):
             self.current_order = []
 
 
+
+    def handle_tablet(self, value):
+        print("Handling tablet:", value)
+
+    def create_action(self, image=None, text=None, tts=None, buttons=None, filename="actions"):
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        actions_dir = os.path.join(base_dir, "tablet", "actions")
+        if not os.path.exists(actions_dir):
+            os.makedirs(actions_dir)
+
+        full_path = os.path.join(actions_dir, filename)
+
+        with open(full_path, "w") as f:
+            # IMAGE Section
+            if image:
+                f.write(u"IMAGE\n<*, *, *, *>:  {}\n----\n".format(unicode(image)))
+
+            # TEXT Section
+            if text:
+                f.write(u"TEXT\n")
+                for key, value in text.items():
+                    key_str = u", ".join([unicode(k) for k in key])
+                    f.write(u"<{}>: {}\n".format(key_str, unicode(value)))
+                f.write(u"----\n")
+
+            # TTS Section
+            if tts:
+                f.write(u"TTS\n")
+                for key, value in tts.items():
+                    key_str = u", ".join([unicode(k) for k in key])
+                    f.write(u"<{}>: {}\n".format(key_str, unicode(value)))
+                f.write(u"----\n")
+
+            # BUTTONS Section
+            if buttons:
+                f.write(u"BUTTONS\n")
+                for btn_key, translations in buttons.items():
+                    it_text = translations.get("it", "")
+                    en_text = translations.get("en", "")
+                    f.write(u"{}\n".format(unicode(btn_key)))
+                    f.write(u"<*,*,it,*>: {}\n".format(unicode(it_text)))
+                    f.write(u"<*,*,*,*>:  {}\n".format(unicode(en_text)))
+                f.write(u"----\n")
 
