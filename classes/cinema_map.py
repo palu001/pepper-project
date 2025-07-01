@@ -1,12 +1,14 @@
 
 from datetime import datetime
 import math
+import matplotlib.pyplot as plt
 
 class CinemaMap:
     """Graph-based representation of the cinema layout"""
     
     def __init__(self):
         # Define nodes in the cinema (x, y coordinates in meters)
+        self.current_position="entrance"
         self.nodes = {
             'entrance': (0, 0),
             'lobby_center': (-3, 0),
@@ -69,6 +71,7 @@ class CinemaMap:
             'concession': 'concession',
             'concession stand': 'concession',
             'box office': 'box_office',
+            'box_office':'box_office',
             'ticket office': 'box_office',
             'entrance': 'entrance',
             'exit': 'exit',
@@ -81,8 +84,9 @@ class CinemaMap:
         x2, y2 = self.nodes[node2]
         return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
     
-    def find_shortest_path(self, start, end):
+    def find_shortest_path(self, end):
         """Find shortest path using Dijkstra's algorithm"""
+        start=self.current_position
         if start not in self.nodes or end not in self.nodes:
             return None
         
@@ -123,3 +127,43 @@ class CinemaMap:
             current = previous.get(current)
             
         return path if path[0] == start else None
+    
+    def draw_map_with_path(self, end):
+        path = self.find_shortest_path(end)
+        if not path:
+            print("No path found.")
+            return
+
+        # Draw all nodes
+        for node, (x, y) in self.nodes.items():
+            plt.plot(x, y, 'ko')  # black dot
+            plt.text(x + 0.2, y + 0.2, node, fontsize=8)
+
+        # Draw edges
+        for start, neighbors in self.edges.items():
+            for neighbor in neighbors:
+                x_vals = [self.nodes[start][0], self.nodes[neighbor][0]]
+                y_vals = [self.nodes[start][1], self.nodes[neighbor][1]]
+                plt.plot(x_vals, y_vals, 'gray', linewidth=0.5)
+
+        # Highlight path
+        path_coords = [self.nodes[node] for node in path]
+        x_path, y_path = zip(*path_coords)
+        plt.plot(x_path, y_path, 'r-', linewidth=2, label='Path')
+
+        # Highlight start and end
+        start_node = self.current_position
+        end_node = end
+        plt.plot(self.nodes[start_node][0], self.nodes[start_node][1], 'go', markersize=10, label='Start')
+        plt.plot(self.nodes[end_node][0], self.nodes[end_node][1], 'bo', markersize=10, label='End')
+
+        plt.title('Cinema Map with Route')
+        plt.axis('equal')
+        plt.legend()
+        plt.grid(True)
+        plt.savefig('cinema_map_path.png')
+        plt.close()
+        print("Map saved as 'cinema_map_path.png'")
+    
+
+    

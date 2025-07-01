@@ -23,12 +23,6 @@ u: (~greetings)
     Hello! Welcome to our cinema.
     ^gotoReactivate(get_name)
 
-# --- Global Goodbye (Capire se rimuovere o meno)
-u: (~goodbye)
-    Thank you for visiting!
-    $cinema/function = restart
-    u1: (e:cinema/restart)
-        ^gotoReactivate(restart)
 
 # --- Restart --- 
 proposal: %restart
@@ -146,7 +140,7 @@ proposal: %booking_recommendation
                 u2: (e:cinema/booking_success)
                     $cinema/direction_request=box_office
                     $cinema/function=show_directions
-                    Booking success! You can retrieve your tickets at the ticket office.
+                    Booking success! You can retrieve your tickets at the ticket office straight ahead and on your right.
                     ^gotoReactivate(offer_screen_guidance)
 
                 u2: (e:cinema/booking_failed)
@@ -171,7 +165,7 @@ proposal: %offer_screen_guidance
 
 proposal: %on_guidance_complete
     u1: (e:cinema/guidance_complete)
-        We have arrived at the $cinema/target_location . Is there anything else I can help you with?
+        We have arrived at the $cinema/target_location
         ^gotoReactivate(main_hub)
     u1: (e:cinema/guidance_failed)
         Sorry, I couldn't guide you there. Let me know if you need help with something else.
@@ -227,7 +221,9 @@ proposal: %buy_concession
         $cinema/function=finalize_order
         u2: (e:cinema/order_complete)
             You ordered $cinema/complete_order 
-            Your total is $cinema/order_total Please pay at the concession stand.
+            Your total is $cinema/order_total Please pay at the concession stand. 
+            $cinema/direction_request=concession
+            $cinema/function=show_directions
             ^gotoReactivate(main_hub)
 
         u2: (e:cinema/order_error)

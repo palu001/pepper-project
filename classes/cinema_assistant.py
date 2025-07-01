@@ -241,7 +241,9 @@ class CinemaAssistant(object):
         elif value == "restart":
             for key in self.memory.getDataList("cinema/"):
                 self.memory.insertData(key, "")
+            self.motion.guide_to_location("entrance")
             self.memory.raiseEvent("cinema/restart", "True")
+            
             
         elif value == "cancel_order":
             self.current_order = []

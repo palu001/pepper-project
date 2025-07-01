@@ -4,7 +4,6 @@ class MotionManager(object):
     def __init__(self, motion_proxy):
         self.motion = motion_proxy
         self.cinema_map = CinemaMap()
-        self.current_position = "entrance"
         self.current_orientation=0
 
     def greeting(self):
@@ -49,7 +48,7 @@ class MotionManager(object):
                 return "I'm not sure where that is."
                 
             # Find path from current position to target
-            path = self.cinema_map.find_shortest_path(self.current_position, target_node)
+            path = self.cinema_map.find_shortest_path(target_node)
             
             if not path or len(path) < 2:
                 return "You're already there!"
@@ -58,7 +57,7 @@ class MotionManager(object):
             next_node = path[1]
             
             # Calculate pointing angle for robot
-            current_pos = self.cinema_map.nodes[self.current_position]
+            current_pos = self.cinema_map.nodes[self.cinema_map.current_position]
             next_pos = self.cinema_map.nodes[next_node]
             
             dx = next_pos[0] - current_pos[0]
@@ -139,7 +138,10 @@ class MotionManager(object):
                 return
                 
             # Find shortest path
-            path = self.cinema_map.find_shortest_path(self.current_position, target_node)
+            path = self.cinema_map.find_shortest_path( target_node)
+            if len(path)<2:
+                print("Already there")
+                return
             
             if not path:
                 print("No path found to {}".format(target_node))
@@ -184,11 +186,12 @@ class MotionManager(object):
                 self.motion.moveTo(distance, 0.0, 0.0)
                 
                 # Update current position
-                self.current_position = next_node
+                self.cinema_map.current_position = next_node
             
             # Face customer at destination
             self.current_orientation+=math.pi
-            self.face_customer()
+            if target_node!="entrance":
+                self.face_customer()
             
         except Exception as e:
             print("Guidance failed:", e)
