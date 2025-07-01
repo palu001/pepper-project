@@ -2,6 +2,8 @@
 from datetime import datetime
 import math
 import matplotlib.pyplot as plt
+from matplotlib.patches import FancyBboxPatch
+import os
 
 class CinemaMap:
     """Graph-based representation of the cinema layout"""
@@ -128,42 +130,61 @@ class CinemaMap:
             
         return path if path[0] == start else None
     
-    def draw_map_with_path(self, end):
+    def draw_map_with_path(self, end, save_path='cinema_map_path.png'):
         path = self.find_shortest_path(end)
         if not path:
             print("No path found.")
             return
 
-        # Draw all nodes
-        for node, (x, y) in self.nodes.items():
-            plt.plot(x, y, 'ko')  # black dot
-            plt.text(x + 0.2, y + 0.2, node, fontsize=8)
+        fig, ax = plt.subplots(figsize=(10, 6))
+        ax.set_facecolor('#f8f9fa')  # Light background for web
 
-        # Draw edges
+        # Draw all edges (connections)
         for start, neighbors in self.edges.items():
             for neighbor in neighbors:
                 x_vals = [self.nodes[start][0], self.nodes[neighbor][0]]
                 y_vals = [self.nodes[start][1], self.nodes[neighbor][1]]
-                plt.plot(x_vals, y_vals, 'gray', linewidth=0.5)
+                ax.plot(x_vals, y_vals, color='lightgray', linewidth=1, zorder=1)
+
+        # Draw all nodes
+        for node, (x, y) in self.nodes.items():
+            color = 'black'
+            size = 30
+            ax.scatter(x, y, c=color, s=size, zorder=2)
+
+            # Use readable label (shorten names for clarity)
+            label = node.replace('_', ' ').title()
+            if "Screen" in label and "_" in node:
+                label = label.replace(" Entrance", "")
+            ax.text(x + 0.2, y + 0.2, label, fontsize=7, color='black', zorder=3)
 
         # Highlight path
         path_coords = [self.nodes[node] for node in path]
         x_path, y_path = zip(*path_coords)
-        plt.plot(x_path, y_path, 'r-', linewidth=2, label='Path')
+        ax.plot(x_path, y_path, 'red', linewidth=3, zorder=4, label='Path')
 
-        # Highlight start and end
+        # Highlight start and end nodes
         start_node = self.current_position
         end_node = end
-        plt.plot(self.nodes[start_node][0], self.nodes[start_node][1], 'go', markersize=10, label='Start')
-        plt.plot(self.nodes[end_node][0], self.nodes[end_node][1], 'bo', markersize=10, label='End')
+        sx, sy = self.nodes[start_node]
+        ex, ey = self.nodes[end_node]
 
-        plt.title('Cinema Map with Route')
-        plt.axis('equal')
-        plt.legend()
-        plt.grid(True)
-        plt.savefig('cinema_map_path.png')
+        ax.scatter(sx, sy, c='green', s=80, label='Start', zorder=5)
+        ax.scatter(ex, ey, c='blue', s=80, label='End', zorder=5)
+
+        # Clean and format
+        ax.set_title('Cinema Map with Path', fontsize=14)
+        ax.axis('equal')
+        ax.axis('off')  # Hide axes for a cleaner look
+        ax.legend(loc='lower left', fontsize=8)
+
+        # Save for web use
+        plt.tight_layout()
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        save_path = os.path.join(base_dir, "tablet/img", "cinema_map_path.png")
+        plt.savefig(save_path, dpi=150, transparent=True)
         plt.close()
-        print("Map saved as 'cinema_map_path.png'")
-    
+        print("Map saved")
+        return path
 
-    
+        

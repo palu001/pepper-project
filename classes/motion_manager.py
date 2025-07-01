@@ -1,5 +1,6 @@
 from classes.cinema_map import CinemaMap
 import math
+
 class MotionManager(object):
     def __init__(self, motion_proxy):
         self.motion = motion_proxy
@@ -47,11 +48,12 @@ class MotionManager(object):
                 print("Unknown location: {}".format(target_location))
                 return "I'm not sure where that is."
                 
-            # Find path from current position to target
-            path = self.cinema_map.find_shortest_path(target_node)
+            path=self.cinema_map.draw_map_with_path(target_node)
             
             if not path or len(path) < 2:
                 return "You're already there!"
+            
+            
                 
             # Get next node in path for pointing direction
             next_node = path[1]

@@ -1,0 +1,13 @@
+IMAGE
+<*, *, *, *>:  images/booking_success.jpg
+----
+TEXT
+<*, *, it, *>: Prenotazione confermata!
+Film: The Amazing Adventure
+Orario: 14:00
+Ritira i biglietti alla biglietteria.
+<*, *, *, *>: Booking confirmed!
+Movie: The Amazing Adventure
+Time: 14:00
+Collect your tickets at the box office.
+----
