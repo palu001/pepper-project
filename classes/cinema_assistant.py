@@ -238,28 +238,21 @@ class CinemaAssistant(object):
                     screen_number = int(match.group(1))
                     location="screen"
 
-                try:
-                    verbal_direction = self.motion.point_and_describe_direction(location, screen_number)
+                verbal_direction = self.motion.point_and_describe_direction(location, screen_number)
 
-                except: 
-                    print("prob 1")
-                try:
-                    text = {
-                        ("*", "*", "it", "*"): "Direzioni per {}".format(location),
-                        ("*", "*", "*", "*"): "Directions to {}" .format(location)
-                    }
-                    
-                    
-                    
-                    self.create_action(
-                        image="img/cinema_map_path.png",  # The generated map
-                        text=text,
-                        filename="directions-with-map"
-                    )
-                    self.mws.csend("im.executeModality('BUTTONS', [])")
-                    self.mws.csend("im.execute('directions-with-map')")
-                except:
-                    print("prob 2")
+                text = {
+                    ("*", "*", "it", "*"): "Direzioni per {}".format(location),
+                    ("*", "*", "*", "*"): "Directions to {}" .format(location)
+                }
+                
+                self.create_action(
+                    image="img/cinema_map_path.png",  # The generated map
+                    text=text,
+                    filename="directions-with-map"
+                )
+                self.mws.csend("im.executeModality('BUTTONS', [])")
+                self.mws.csend("im.execute('directions-with-map')")
+            
 
                 if verbal_direction == "You're already there!":
                     self.memory.raiseEvent("cinema/already_there", verbal_direction)
@@ -370,6 +363,20 @@ class CinemaAssistant(object):
 
     def handle_tablet(self, value):
         print("Handling tablet:", value)
+        if value == "tablet_main_hub":
+            text = {
+                ("*", "*", "it", "*"): "Siamo nel main hub.",
+                ("*", "*", "*", "*"): "We are in main hub."
+            }
+
+            self.create_action(
+                image="img/cinema.png",
+                text=text,
+                filename="main-hub"
+            )
+            self.mws.csend("im.executeModality('BUTTONS', [])")
+            self.mws.csend("im.execute('main-hub')")
+
 
     def create_action(self, image=None, text=None, tts=None, buttons=None, filename="actions"):
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

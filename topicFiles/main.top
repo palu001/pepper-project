@@ -18,11 +18,18 @@ concept: (ask_directions) ["directions" "where" "get to" "where is"]
 concept: (ask_concessions) ["concessions" "buy snacks" "order food" "what food do you have" "menu" "i'm hungry"]
 concept: (done) ["i'm done" "i am done" "done" "all done" "that's it" "finished" "i'm finished" "i’m good now"]
 concept: (use_tablet) ["tablet" "use the screen" "use tablet" "use the tablet"]
+
 # --- Global Greeting ---   
 u: (~greetings)
     Hello! Welcome to our cinema.
     ^gotoReactivate(get_name)
 
+# --- Global Goodbye (Capire se rimuovere o meno)
+u: (~goodbye)
+    Thank you for visiting!
+    $cinema/function = restart
+    u1: (e:cinema/restart)
+        ^gotoReactivate(restart)
 
 # --- Restart --- 
 proposal: %restart
@@ -140,7 +147,7 @@ proposal: %booking_recommendation
                 u2: (e:cinema/booking_success)
                     $cinema/direction_request=box_office
                     $cinema/function=show_directions
-                    Booking success! You can retrieve your tickets at the ticket office straight ahead and on your right.
+                    Booking success! You can retrieve your tickets at the ticket office.
                     ^gotoReactivate(offer_screen_guidance)
 
                 u2: (e:cinema/booking_failed)
@@ -165,7 +172,7 @@ proposal: %offer_screen_guidance
 
 proposal: %on_guidance_complete
     u1: (e:cinema/guidance_complete)
-        We have arrived at the $cinema/target_location
+        We have arrived at the $cinema/target_location . Is there anything else I can help you with?
         ^gotoReactivate(main_hub)
     u1: (e:cinema/guidance_failed)
         Sorry, I couldn't guide you there. Let me know if you need help with something else.
@@ -221,9 +228,7 @@ proposal: %buy_concession
         $cinema/function=finalize_order
         u2: (e:cinema/order_complete)
             You ordered $cinema/complete_order 
-            Your total is $cinema/order_total Please pay at the concession stand. 
-            $cinema/direction_request=concession
-            $cinema/function=show_directions
+            Your total is $cinema/order_total Please pay at the concession stand.
             ^gotoReactivate(main_hub)
 
         u2: (e:cinema/order_error)
@@ -241,7 +246,7 @@ proposal: %buy_concession
 
 proposal: %main_hub
     How can I help you? You can ask for movie recommendations, showtimes, directions, concessions, or update your preferences.
-
+    $cinema/tablet = tablet_main_hub
     u1: ({*} _~update_prefs {*}) 
         Of course. Let's update your preferences.
         ^gotoReactivate(update_preferences)
@@ -278,7 +283,10 @@ proposal: %main_hub
             u3: (*)
                 Sorry, i didn't understand. Retry with yes or no.
                 ^stayInScope
-    
+                
+    u1: (~use_tablet)
+        Let's use the tablet
+
     u1: (~goodbye)
         Thank you for visiting!
         $cinema/function = restart
