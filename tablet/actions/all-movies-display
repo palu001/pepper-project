@@ -1,0 +1,24 @@
+IMAGE
+<*, *, *, *>:  images/all_movies.jpg
+----
+TEXT
+<*, *, it, *>: Film attualmente in programmazione:
+<*, *, *, *>: Movies currently showing:
+----
+BUTTONS
+movie_4
+<*,*,it,*>: Family Fun Time
+<*,*,*,*>:  Family Fun Time
+movie_2
+<*,*,it,*>: Space Warriors
+<*,*,*,*>:  Space Warriors
+movie_3
+<*,*,it,*>: The Mystery House
+<*,*,*,*>:  The Mystery House
+movie_0
+<*,*,it,*>: The Amazing Adventure
+<*,*,*,*>:  The Amazing Adventure
+movie_1
+<*,*,it,*>: Love in Paris
+<*,*,*,*>:  Love in Paris
+----

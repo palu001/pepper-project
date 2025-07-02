@@ -2,6 +2,6 @@ IMAGE
 <*, *, *, *>:  images/registration_success.jpg
 ----
 TEXT
-<*, *, it, *>: Perfetto paperino! Il tuo profilo e stato creato. Preferenza: adventure per eta senior.
-<*, *, *, *>: Perfect paperino! Your profile has been created. Preference: adventure for age group senior.
+<*, *, it, *>: Perfetto Simone! Il tuo profilo e stato aggiornato. Preferenza: romance.
+<*, *, *, *>: Perfect Simone! Your profile has been updated. Preference: romance.
 ----

@@ -1,0 +1,7 @@
+IMAGE
+<*, *, *, *>:  images/order_complete.jpg
+----
+TEXT
+<*, *, it, *>: Il tuo ordine e completo: Popcorn Large, Soda Large. Totale: 14.5 euro.
+<*, *, *, *>: Your order is complete: Popcorn Large, Soda Large. Total: 14.5 euros.
+----

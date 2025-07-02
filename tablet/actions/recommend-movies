@@ -1,0 +1,7 @@
+IMAGE
+<*, *, *, *>:  images/recommend_movies.jpg
+----
+TEXT
+<*, *, it, *>: ****
+<*, *, *, *>: Some movies you could like are: Love in Paris, The Amazing Adventure, The Mystery House
+----

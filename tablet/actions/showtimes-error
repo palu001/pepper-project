@@ -1,0 +1,7 @@
+IMAGE
+<*, *, *, *>:  images/showtimes-error.jpg
+----
+TEXT
+<*, *, it, *>: Scusate, il film non e disponibile nel nostro cinema.
+<*, *, *, *>: Sorry, the film is not available in our cinema.
+----

@@ -2,6 +2,6 @@ IMAGE
 <*, *, *, *>:  img/cinema_map_path.png
 ----
 TEXT
-<*, *, it, *>: Direzioni per screen
-<*, *, *, *>: Directions to screen
+<*, *, it, *>: Direzioni per concession
+<*, *, *, *>: Directions to concession
 ----

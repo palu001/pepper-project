@@ -2,17 +2,6 @@ IMAGE
 <*, *, *, *>:  images/showtimes.jpg
 ----
 TEXT
-<*, *, it, *>: Orari disponibili per 'The Amazing Adventure': 14:00, 17:00, 20:00
-<*, *, *, *>: Available showtimes for 'The Amazing Adventure': 14:00, 17:00, 20:00
-----
-BUTTONS
-time_0
-<*,*,it,*>: 14:00
-<*,*,*,*>:  14:00
-time_1
-<*,*,it,*>: 17:00
-<*,*,*,*>:  17:00
-time_2
-<*,*,it,*>: 20:00
-<*,*,*,*>:  20:00
+<*, *, it, *>: Orari disponibili per 'Love in Paris': 15:30, 18:30
+<*, *, *, *>: Available showtimes for 'Love in Paris': 15:30, 18:30
 ----

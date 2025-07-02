@@ -1,8 +1,7 @@
-TEXT
-<*,*,it,*>: Spero ti sia divertito. Arrivederci.
-<*,*,*,*>:  I hope you have enjoyed. Goodbye.
+IMAGE
+<*, *, *, *>:  images/goodbye.jpg
 ----
-TTS
-<*,*,it,*>: Spero ti sia divertito. Arrivederci.
-<*,*,*,*>:  I hope you have enjoyed. Goodbye.
+TEXT
+<*, *, it, *>: Addio.
+<*, *, *, *>: Goodbye.
 ----

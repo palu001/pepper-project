@@ -1,0 +1,7 @@
+IMAGE
+<*, *, *, *>:  images/booking_error.jpg
+----
+TEXT
+<*, *, it, *>: Prenotazione fallita
+<*, *, *, *>: Booking failed
+----

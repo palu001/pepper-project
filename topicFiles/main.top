@@ -24,13 +24,6 @@ u: (~greetings)
     Hello! Welcome to our cinema.
     ^gotoReactivate(get_name)
 
-# --- Global Goodbye (Capire se rimuovere o meno)
-u: (~goodbye)
-    Thank you for visiting!
-    $cinema/function = restart
-    u1: (e:cinema/restart)
-        ^gotoReactivate(restart)
-
 # --- Restart --- 
 proposal: %restart
     u1: (~greetings) ^gotoReactivate(get_name)

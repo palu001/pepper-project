@@ -23,8 +23,6 @@ class CinemaAssistant(object):
             name = self.memory.getData("cinema/customer_name")
             customer = self.db.get_customer_by_name(name)
             if customer:
-                self.memory.raiseEvent("cinema/customer_identity_check", 
-                    "True")
                 self.current_customer = customer
 
                 text = {
@@ -36,6 +34,8 @@ class CinemaAssistant(object):
                 action = "welcome-back"
                 self.mws.csend("im.executeModality('BUTTONS', [])")
                 self.mws.csend("im.execute('{}')".format(action))
+                self.memory.raiseEvent("cinema/customer_identity_check", 
+                    "True")
                 
             else:
                 # Create new customer welcome action
@@ -83,17 +83,17 @@ class CinemaAssistant(object):
             self.db.update_customer_preferences(name, genre)
             # Create registration success action
             text = {
-                ("*", "*", "it", "*"): "Perfetto {}! Il tuo profilo e stato aggiornato. Preferenza: {} per eta {}.".format(name, genre, age),
-                ("*", "*", "*", "*"): "Perfect {}! Your profile has been updated. Preference: {} for age group {}.".format(name, genre, age)
+                ("*", "*", "it", "*"): "Perfetto {}! Il tuo profilo e stato aggiornato. Preferenza: {}.".format(name, genre),
+                ("*", "*", "*", "*"): "Perfect {}! Your profile has been updated. Preference: {}.".format(name, genre)
             }
             
             self.create_action(
-                image="images/registration_success.jpg",
+                image="images/update_success.jpg",
                 text=text,
-                filename="registration-success"
+                filename="update-success"
             )
             self.mws.csend("im.executeModality('BUTTONS', [])")
-            self.mws.csend("im.execute('registration-success')")
+            self.mws.csend("im.execute('update-success')")
 
         elif value == "recommend_movies":
             name = self.memory.getData("cinema/customer_name")
@@ -122,6 +122,19 @@ class CinemaAssistant(object):
                 suggestions = common_titles[:3]
 
             suggestion_str = ", ".join(suggestions)
+            text = {
+                ("*", "*", "it", "*"): "****",
+                ("*", "*", "*", "*"): "Some movies you could like are: {}".format(suggestion_str)
+            }
+            
+            self.create_action(
+                image="images/recommend_movies.jpg",
+                text=text,
+                filename="recommend-movies"
+            )
+            self.mws.csend("im.executeModality('BUTTONS', [])")
+            self.mws.csend("im.execute('recommend-movies')")
+
             self.memory.raiseEvent("cinema/movie_suggestions", suggestion_str)
 
         elif value == "get_showtimes":
@@ -140,29 +153,41 @@ class CinemaAssistant(object):
                     ("*", "*", "*", "*"): "Available showtimes for '{}': {}".format(title, times)
                 }
                 
-                # Create buttons for each showtime
-                buttons = {}
-                for i, showtime in enumerate(showtimes):
-                    buttons["time_{}".format(i)] = {
-                        "it": showtime[0],
-                        "en": showtime[0]
-                    }
+                # # Create buttons for each showtime (Non serve, solo execute)
+                # buttons = {}
+                # for i, showtime in enumerate(showtimes):
+                #     buttons["time_{}".format(i)] = {
+                #         "it": showtime[0],
+                #         "en": showtime[0]
+                #     }
                 
                 self.create_action(
                     image="images/showtimes.jpg",
                     text=text,
-                    buttons=buttons,
                     filename="showtimes-display"
                 )
                 self.mws.csend("im.executeModality('BUTTONS', [])")
                 self.mws.csend("im.execute('showtimes-display')")
-
 
                 self.memory.raiseEvent("cinema/available_times", times)
                 
             
             except Exception as e:
                 print("The film is not in our Cinema:", str(e))
+
+                text = {
+                    ("*", "*", "it", "*"): "Scusate, il film non e disponibile nel nostro cinema.",
+                    ("*", "*", "*", "*"): "Sorry, the film is not available in our cinema."
+                }
+
+                self.create_action(
+                    image="images/showtimes-error.jpg",
+                    text=text,
+                    filename="showtimes-error"
+                )
+                self.mws.csend("im.executeModality('BUTTONS', [])")
+                self.mws.csend("im.execute('showtimes-error')")
+
                 self.memory.raiseEvent("cinema/showtimes_failed", 
                     "Sorry, the film is not in our cinema")
 
@@ -177,8 +202,6 @@ class CinemaAssistant(object):
                     ("*", "*", "*", "*"): "{}".format(description)
                 }
                 
-                
-                
                 self.create_action(
                     image="images/movie_poster_{}.jpg".format(title.lower().replace(" ", "_")),
                     text=text,
@@ -186,13 +209,24 @@ class CinemaAssistant(object):
                 )
                 self.mws.csend("im.executeModality('BUTTONS', [])")
                 self.mws.csend("im.execute('movie-description')")
-                
-
 
                 self.memory.raiseEvent("cinema/description", description)
             
             except Exception as e:
                 print("The film is not in our Cinema:", str(e))
+                
+                text = {
+                    ("*", "*", "it", "*"): "Scusate, il film non e disponibile nel nostro cinema.",
+                    ("*", "*", "*", "*"): "Sorry, the film is not available in our cinema."
+                }
+
+                self.create_action(
+                    image="images/description-error.jpg",
+                    text=text,
+                    filename="description-error"
+                )
+                self.mws.csend("im.executeModality('BUTTONS', [])")
+                self.mws.csend("im.execute('description-error')")
                 self.memory.raiseEvent("cinema/description_failed", 
                     "Sorry, the film is not in our cinema")
             
@@ -221,6 +255,19 @@ class CinemaAssistant(object):
                     "Booking confirmed")
             except Exception as e:
                 print("Errore nella prenotazione:", str(e))
+
+                text = {
+                    ("*", "*", "it", "*"): "Prenotazione fallita. Riprova.",
+                    ("*", "*", "*", "*"): "Booking failed. Retry."
+                }
+                self.create_action(
+                    image="images/booking_error.jpg",
+                    text=text,
+                    filename="booking-error"
+                )
+                self.mws.csend("im.executeModality('BUTTONS', [])")
+                self.mws.csend("im.execute('booking-error')")
+
                 self.memory.raiseEvent("cinema/booking_failed", 
                     "Sorry, booking failed: " + str(e))
 
@@ -292,6 +339,19 @@ class CinemaAssistant(object):
             self.motion.concession()
             items = self.db.get_concessions()
             names = ", ".join([item[0] for item in items])
+
+            text = {
+                ("*", "*", "it", "*"): "Abbiamo: {}. Vuoi ordinare qualcosa?".format(names),
+                ("*", "*", "*", "*"): "We have: {}. Would you like to order something?".format(names)
+            }
+            self.create_action(
+                image="images/concessions.jpg",
+                text=text,
+                filename="concession-list"
+            )
+            self.mws.csend("im.executeModality('BUTTONS', [])")
+            self.mws.csend("im.execute('concession-list')")
+
             self.memory.raiseEvent("cinema/concession_list", "We have: " + names + ". Would you like to order something?")
 
 
@@ -305,22 +365,21 @@ class CinemaAssistant(object):
 
             # Create all movies display action
             text = {
-                ("*", "*", "it", "*"): "Film attualmente in programmazione:",
-                ("*", "*", "*", "*"): "Movies currently showing:"
+                ("*", "*", "it", "*"): "Film attualmente in programmazione: {}".format(movie_list),
+                ("*", "*", "*", "*"): "Movies currently showing: {}".format(movie_list)
             }
             
             # Create buttons for each movie
-            buttons = {}
-            for i, movie in enumerate(movies[:8]):  # Limit to 8 movies for display
-                buttons["movie_{}".format(i)] = {
-                    "it": movie[0],
-                    "en": movie[0]
-                }
+            # buttons = {}
+            # for i, movie in enumerate(movies[:8]):  # Limit to 8 movies for display
+            #     buttons["movie_{}".format(i)] = {
+            #         "it": movie[0],
+            #         "en": movie[0]
+            #     }
             
             self.create_action(
                 image="images/all_movies.jpg",
                 text=text,
-                buttons=buttons,
                 filename="all-movies-display"
             )
             self.mws.csend("im.executeModality('BUTTONS', [])")
@@ -334,18 +393,67 @@ class CinemaAssistant(object):
 
             if item_db:
                 self.current_order.append((item_db[1],item_db[3]))
+
+                text = {
+                    ("*", "*", "it", "*"): "{} aggiunto al tuo ordine.".format(item_db[1]),
+                    ("*", "*", "*", "*"): "{} added to your order.".format(item_db[1])
+                }
+                self.create_action(
+                    image="images/order_success.jpg",
+                    text=text,
+                    filename="order-success"
+                )
+                self.mws.csend("im.executeModality('BUTTONS', [])")
+                self.mws.csend("im.execute('order-success')")
+
                 self.memory.raiseEvent("cinema/concession_found", "True")
             else:
+
+                text = {
+                    ("*", "*", "it", "*"): "Scusate, l'articolo non e disponibile.",
+                    ("*", "*", "*", "*"): "Sorry, the item is not available."
+                }
+                self.create_action(
+                    image="images/concession_error.jpg",
+                    text=text,
+                    filename="concession-error"
+                )
+                self.mws.csend("im.executeModality('BUTTONS', [])")
+                self.mws.csend("im.execute('concession-error')")
+
                 self.memory.raiseEvent("cinema/concession_found", "False")
     
         elif value == "finalize_order":
             if not self.current_order:
+                text = {
+                    ("*", "*", "it", "*"): "Il tuo ordine e vuoto.",
+                    ("*", "*", "*", "*"): "Your order is empty."
+                }
+                self.create_action(
+                    image="images/order_empty.jpg",
+                    text=text,
+                    filename="order-empty"
+                )
+                self.mws.csend("im.executeModality('BUTTONS', [])")
+                self.mws.csend("im.execute('order-empty')")
                 self.memory.raiseEvent("cinema/order_error", "Empty order")
             else:
                 complete_order = ", ".join(item[0] for item in self.current_order)
                 self.memory.insertData("cinema/complete_order", complete_order)
                 total = sum(item[1] for item in self.current_order)  # Assuming price is index 1
                 self.memory.insertData("cinema/order_total", total)
+                text = {
+                    ("*", "*", "it", "*"): "Il tuo ordine e completo: {}. Totale: {} euro.".format(complete_order, total),
+                    ("*", "*", "*", "*"): "Your order is complete: {}. Total: {} euros.".format(complete_order, total)
+                }
+                self.create_action(
+                    image="images/order_complete.jpg",  
+                    text=text,
+                    filename="order-complete"
+                )
+                self.mws.csend("im.executeModality('BUTTONS', [])")
+                self.mws.csend("im.execute('order-complete')")
+
                 self.memory.raiseEvent("cinema/order_complete", str(total))
                 self.current_order = []  # Clear after processing
         
@@ -353,10 +461,32 @@ class CinemaAssistant(object):
             for key in self.memory.getDataList("cinema/"):
                 self.memory.insertData(key, "")
             self.motion.guide_to_location("entrance")
+            text = {
+                ("*", "*", "it", "*"): "Addio.",
+                ("*", "*", "*", "*"): "Goodbye."
+            }
+            self.create_action(
+                image="images/goodbye.jpg",
+                text=text,
+                filename="goodbye"
+            )
+            self.mws.csend("im.executeModality('BUTTONS', [])")
+            self.mws.csend("im.execute('goodbye')")
             self.memory.raiseEvent("cinema/restart", "True")
             
             
         elif value == "cancel_order":
+            text = {
+                ("*", "*", "it", "*"): "Il tuo ordine e stato cancellato.",
+                ("*", "*", "*", "*"): "Your order has been cancelled."
+            }
+            self.create_action(
+                image="images/order_cancelled.jpg",
+                text=text,
+                filename="order-cancelled"
+            )
+            self.mws.csend("im.executeModality('BUTTONS', [])")
+            self.mws.csend("im.execute('order-cancelled')")
             self.current_order = []
 
 

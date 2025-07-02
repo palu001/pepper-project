@@ -1,0 +1,9 @@
+IMAGES
+<*,*,*,*>: img/amatriciana.jpeg
+<*,*,*,*>: img/activity.jpeg
+<*,*,*,*>: img/amatriciana.jpeg
+----
+TEXT
+<*, *, it, *>: Ecco tre film consigliati per te:
+<*, *, *, *>: Here are three movies recommended for you:
+----
