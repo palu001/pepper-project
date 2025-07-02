@@ -1,7 +1,7 @@
 IMAGE
-<*, *, *, *>:  images/recommend_movies.jpg
+<*, *, *, *>:  img/recommend_movies.jpeg
 ----
 TEXT
 <*, *, it, *>: ****
-<*, *, *, *>: Some movies you could like are: Love in Paris, The Amazing Adventure, The Mystery House
+<*, *, *, *>: Some movies you could like are: The Amazing Adventure, Family Fun Time, The Mystery House
 ----

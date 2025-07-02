@@ -1,0 +1,7 @@
+IMAGE
+<*, *, *, *>:  img/booking_error.jpeg
+----
+TEXT
+<*, *, it, *>: Il tuo ordine e stato cancellato.
+<*, *, *, *>: Your order has been cancelled.
+----

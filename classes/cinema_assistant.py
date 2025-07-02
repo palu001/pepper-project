@@ -45,7 +45,7 @@ class CinemaAssistant(object):
                 }
                 
                 self.create_action(
-                    image="images/new_customer_welcome.jpg",
+                    image="img/cinema.png",
                     text=text,
                     filename="new-customer-welcome"
                 )
@@ -69,7 +69,7 @@ class CinemaAssistant(object):
             }
             
             self.create_action(
-                image="images/registration_success.jpg",
+                image="img/registration_success.jpeg",
                 text=text,
                 filename="registration-success"
             )
@@ -88,7 +88,7 @@ class CinemaAssistant(object):
             }
             
             self.create_action(
-                image="images/update_success.jpg",
+                image="img/booking_success.png",
                 text=text,
                 filename="update-success"
             )
@@ -128,7 +128,7 @@ class CinemaAssistant(object):
             }
             
             self.create_action(
-                image="images/recommend_movies.jpg",
+                image="img/recommend_movies.jpeg",
                 text=text,
                 filename="recommend-movies"
             )
@@ -162,7 +162,7 @@ class CinemaAssistant(object):
                 #     }
                 
                 self.create_action(
-                    image="images/showtimes.jpg",
+                    image="img/movie_poster_{}.jpeg".format(title.lower().replace(" ", "_")),
                     text=text,
                     filename="showtimes-display"
                 )
@@ -181,7 +181,7 @@ class CinemaAssistant(object):
                 }
 
                 self.create_action(
-                    image="images/showtimes-error.jpg",
+                    image="img/showtimes-error.jpeg",
                     text=text,
                     filename="showtimes-error"
                 )
@@ -203,7 +203,7 @@ class CinemaAssistant(object):
                 }
                 
                 self.create_action(
-                    image="images/movie_poster_{}.jpg".format(title.lower().replace(" ", "_")),
+                    image="img/movie_poster_{}.jpeg".format(title.lower().replace(" ", "_")),
                     text=text,
                     filename="movie-description"
                 )
@@ -221,7 +221,7 @@ class CinemaAssistant(object):
                 }
 
                 self.create_action(
-                    image="images/description-error.jpg",
+                    image="img/description-error.jpg",
                     text=text,
                     filename="description-error"
                 )
@@ -244,7 +244,7 @@ class CinemaAssistant(object):
                 }
                 
                 self.create_action(
-                    image="images/booking_success.jpg",
+                    image="img/booking_success.png",
                     text=text,
                     filename="booking-success"
                 )
@@ -261,7 +261,7 @@ class CinemaAssistant(object):
                     ("*", "*", "*", "*"): "Booking failed. Retry."
                 }
                 self.create_action(
-                    image="images/booking_error.jpg",
+                    image="img/booking_error.jpeg",
                     text=text,
                     filename="booking-error"
                 )
@@ -345,7 +345,7 @@ class CinemaAssistant(object):
                 ("*", "*", "*", "*"): "We have: {}. Would you like to order something?".format(names)
             }
             self.create_action(
-                image="images/concessions.jpg",
+                image="img/concessions.jpeg",
                 text=text,
                 filename="concession-list"
             )
@@ -378,7 +378,7 @@ class CinemaAssistant(object):
             #     }
             
             self.create_action(
-                image="images/all_movies.jpg",
+                image="img/all_movies.jpeg",
                 text=text,
                 filename="all-movies-display"
             )
@@ -399,7 +399,7 @@ class CinemaAssistant(object):
                     ("*", "*", "*", "*"): "{} added to your order.".format(item_db[1])
                 }
                 self.create_action(
-                    image="images/order_success.jpg",
+                    image="img/order_success.png",
                     text=text,
                     filename="order-success"
                 )
@@ -414,7 +414,7 @@ class CinemaAssistant(object):
                     ("*", "*", "*", "*"): "Sorry, the item is not available."
                 }
                 self.create_action(
-                    image="images/concession_error.jpg",
+                    image="img/concession_error.jpeg",
                     text=text,
                     filename="concession-error"
                 )
@@ -430,7 +430,7 @@ class CinemaAssistant(object):
                     ("*", "*", "*", "*"): "Your order is empty."
                 }
                 self.create_action(
-                    image="images/order_empty.jpg",
+                    image="img/booking_error.jpeg",
                     text=text,
                     filename="order-empty"
                 )
@@ -447,7 +447,7 @@ class CinemaAssistant(object):
                     ("*", "*", "*", "*"): "Your order is complete: {}. Total: {} euros.".format(complete_order, total)
                 }
                 self.create_action(
-                    image="images/order_complete.jpg",  
+                    image="img/order_complete.jpg",  
                     text=text,
                     filename="order-complete"
                 )
@@ -466,7 +466,7 @@ class CinemaAssistant(object):
                 ("*", "*", "*", "*"): "Goodbye."
             }
             self.create_action(
-                image="images/goodbye.jpg",
+                image="img/goodbye.jpg",
                 text=text,
                 filename="goodbye"
             )
@@ -481,7 +481,7 @@ class CinemaAssistant(object):
                 ("*", "*", "*", "*"): "Your order has been cancelled."
             }
             self.create_action(
-                image="images/order_cancelled.jpg",
+                image="img/booking_error.jpeg",
                 text=text,
                 filename="order-cancelled"
             )

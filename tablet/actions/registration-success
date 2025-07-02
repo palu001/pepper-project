@@ -1,7 +1,7 @@
 IMAGE
-<*, *, *, *>:  images/registration_success.jpg
+<*, *, *, *>:  img/registration_success.jpeg
 ----
 TEXT
-<*, *, it, *>: Perfetto Simone! Il tuo profilo e stato aggiornato. Preferenza: romance.
-<*, *, *, *>: Perfect Simone! Your profile has been updated. Preference: romance.
+<*, *, it, *>: Perfetto franc! Il tuo profilo e stato creato. Preferenza: action per eta adult.
+<*, *, *, *>: Perfect franc! Your profile has been created. Preference: action for age group adult.
 ----

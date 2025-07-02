@@ -1,7 +1,7 @@
 IMAGE
-<*, *, *, *>:  images/showtimes.jpg
+<*, *, *, *>:  img/movie_poster_the_mystery_house.jpeg
 ----
 TEXT
-<*, *, it, *>: Orari disponibili per 'Love in Paris': 15:30, 18:30
-<*, *, *, *>: Available showtimes for 'Love in Paris': 15:30, 18:30
+<*, *, it, *>: Orari disponibili per 'The Mystery House': 21:00
+<*, *, *, *>: Available showtimes for 'The Mystery House': 21:00
 ----

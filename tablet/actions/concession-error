@@ -1,0 +1,7 @@
+IMAGE
+<*, *, *, *>:  img/concession_error.jpeg
+----
+TEXT
+<*, *, it, *>: Scusate, l'articolo non e disponibile.
+<*, *, *, *>: Sorry, the item is not available.
+----
