@@ -47,8 +47,9 @@ class MotionManager(object):
             if not target_node or target_node not in self.cinema_map.nodes:
                 print("Unknown location: {}".format(target_location))
                 return "I'm not sure where that is."
-                
-            path=self.cinema_map.draw_map_with_path(target_node)
+            
+            save_path = target_node + "_path.png"
+            path=self.cinema_map.draw_map_with_path(target_node, save_path=save_path)
             
             if not path or len(path) < 2:
                 return "You're already there!"

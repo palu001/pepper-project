@@ -2,6 +2,6 @@ IMAGE
 <*, *, *, *>:  img/cinema.png
 ----
 TEXT
-<*, *, it, *>: Siamo nel main hub.
-<*, *, *, *>: We are in main hub.
+<*, *, it, *>: Come posso aiutarti? Puoi chiedere consigli sui film, orari, indicazioni, concessioni o aggiornare le tue preferenze.
+<*, *, *, *>: How can I help you? You can ask for movie recommendations, showtimes, directions, concessions, or update your preferences.
 ----

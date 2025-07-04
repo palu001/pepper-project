@@ -182,7 +182,7 @@ class CinemaMap:
         # Save for web use
         plt.tight_layout()
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        save_path = os.path.join(base_dir, "tablet/img", "cinema_map_path.png")
+        save_path = os.path.join(base_dir, "tablet/img", save_path)
         plt.savefig(save_path, dpi=150, transparent=True)
         plt.close()
         print("Map saved")

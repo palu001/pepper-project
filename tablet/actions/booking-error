@@ -1,7 +1,7 @@
 IMAGE
-<*, *, *, *>:  images/booking_error.jpg
+<*, *, *, *>:  img/booking_error.jpeg
 ----
 TEXT
-<*, *, it, *>: Prenotazione fallita
-<*, *, *, *>: Booking failed
+<*, *, it, *>: Prenotazione fallita. Riprova.
+<*, *, *, *>: Booking failed. Retry.
 ----

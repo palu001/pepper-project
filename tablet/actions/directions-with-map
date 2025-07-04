@@ -1,7 +1,7 @@
 IMAGE
-<*, *, *, *>:  img/cinema_map_path.png
+<*, *, *, *>:  img/box_office_path.png
 ----
 TEXT
-<*, *, it, *>: Direzioni per concession
-<*, *, *, *>: Directions to concession
+<*, *, it, *>: Direzioni per box_office
+<*, *, *, *>: Directions to box_office
 ----
