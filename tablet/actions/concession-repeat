@@ -6,22 +6,13 @@ TEXT
 <*, *, *, *>: Candy Mix added to your order. Anything else?
 ----
 BUTTONS
-concession_1
-<*,*,it,*>: Soda Large
-<*,*,*,*>:  Soda Large
-concession_0
-<*,*,it,*>: Popcorn Large
-<*,*,*,*>:  Popcorn Large
-concession_3
-<*,*,it,*>: Candy Mix
-<*,*,*,*>:  Candy Mix
-concession_2
-<*,*,it,*>: Nachos
-<*,*,*,*>:  Nachos
-done
-<*,*,it,*>: done
-<*,*,*,*>:  done
-concession_4
-<*,*,it,*>: Hot Dog
-<*,*,*,*>:  Hot Dog
+cancel
+<*,*,it,*>: cancel
+<*,*,*,*>:  cancel
+yes
+<*,*,it,*>: yes
+<*,*,*,*>:  yes
+no
+<*,*,it,*>: no
+<*,*,*,*>:  no
 ----

@@ -28,7 +28,7 @@ class CinemaAssistant(object):
 
                 text = {
                     ("*", "*", "it", "*"): "Bentornato {}".format(name),
-                    ("*", "*", "*", "*"): "Welcome back {}".format(name)
+                    ("*", "*", "*", "*"): "Welcome back to our cinema {}!".format(name)
                 }
                 self.mws.csend("im.executeModality('BUTTONS', [])")
                 self.create_action(text = text, filename="welcome-back")
@@ -126,7 +126,7 @@ class CinemaAssistant(object):
 
             text = {
                 ("*", "*", "it", "*"): "****",
-                ("*", "*", "*", "*"): "Some movies you could like are: {}".format(suggestion_str)
+                ("*", "*", "*", "*"): "Some movies you could like are: "
             }
 
             buttons = {}
@@ -168,8 +168,8 @@ class CinemaAssistant(object):
 
                 # Create showtimes display action
                 text = {
-                    ("*", "*", "it", "*"): "Orari disponibili per '{}': {}".format(title, times),
-                    ("*", "*", "*", "*"): "Available showtimes for '{}': {}".format(title, times)
+                    ("*", "*", "it", "*"): "Orari disponibili per '{}': ".format(title),
+                    ("*", "*", "*", "*"): "Available showtimes for '{}': ".format(title)
                 }
                 
                 # Create buttons for each showtime (Non serve, solo execute)
@@ -401,8 +401,8 @@ class CinemaAssistant(object):
             self.memory.raiseEvent("cinema/concession_list", "We have: " + names + ". Would you like to order something?")
 
             text = {
-                ("*", "*", "it", "*"): "Abbiamo: {}. Vuoi ordinare qualcosa?".format(names),
-                ("*", "*", "*", "*"): "We have: {}. Would you like to order something?".format(names)
+                ("*", "*", "it", "*"): "Vuoi ordinare qualcosa? Abbiamo: ",
+                ("*", "*", "*", "*"): "Would you like to order something? We have: " 
             }
             buttons={}
             for i, concession in enumerate(concessions_split):
@@ -410,10 +410,6 @@ class CinemaAssistant(object):
                         "it": concession,
                         "en": concession
                     }
-            buttons["done"]={
-                "it": "done",
-                "en": "done"
-            }
 
             self.create_action(
                 image="img/concessions.jpeg",
@@ -442,13 +438,13 @@ class CinemaAssistant(object):
         
             print("movie_split",movie_split)
             self.memory.raiseEvent("cinema/all_movies_list", movie_list)
-
+ 
 
 
             # Create all movies display action
             text = {
-                ("*", "*", "it", "*"): "Film attualmente in programmazione: {}".format(movie_list),
-                ("*", "*", "*", "*"): "Movies currently showing: {}".format(movie_list)
+                ("*", "*", "it", "*"): "Film attualmente in programmazione: ",
+                ("*", "*", "*", "*"): "Movies currently showing: "
             }
             
             buttons = {}
@@ -477,25 +473,25 @@ class CinemaAssistant(object):
 
             if item_db:
                 self.current_order.append((item_db[1],item_db[3]))
-                items = self.db.get_concessions()
-                names = ", ".join([item[0] for item in items])
-                concessions_split=[s.strip() for s in names.split(',')]
             
                 text = {
                     ("*", "*", "it", "*"): "{} aggiunto al tuo ordine. Qualcos'altro?".format(item_db[1]),
                     ("*", "*", "*", "*"): "{} added to your order. Anything else?".format(item_db[1])
                 }
                 buttons={}
-                for i, concession in enumerate(concessions_split):
-                        buttons["concession_{}".format(i)] = {
-                            "it": concession,
-                            "en": concession
-                        }
-                buttons["done"]={
-                    "it": "done",
-                    "en": "done"
+        
+                buttons["yes"]={
+                    "it": "yes",
+                    "en": "yes"
                 }
-
+                buttons["no"]={
+                    "it": "no",
+                    "en": "no"
+                }
+                buttons["cancel"]={
+                    "it": "cancel",
+                    "en": "cancel"
+                }
                 self.create_action(
                     image="img/order_success.png",
                     text=text,
@@ -505,9 +501,7 @@ class CinemaAssistant(object):
                 self.mws.csend("im.executeModality('BUTTONS', [])")
                 answer=self.mws.csend("im.ask('concession-repeat',timeout=999)")
                 if answer:
-                    selected_concession = buttons[answer]["it"]
-                    self.memory.insertData("cinema/selected_concession", selected_concession)
-                    self.memory.raiseEvent("cinema/selected_concession_from_tablet", "True")
+                    self.memory.raiseEvent("cinema/continue_order_from_tablet", answer)
             else:
 
                 text = {
@@ -593,7 +587,7 @@ class CinemaAssistant(object):
         
         elif value == "tablet_main_hub":
             text = {
-                ("*", "*", "it", "*"): "Come posso aiutarti? Puoi chiedere consigli sui film, orari, indicazioni, concessioni o aggiornare le tue preferenze.",
+                ("*", "*", "it", "*"): "Come posso aiutarti? Puoi chiedere consigli su: film, orari, indicazioni, concessioni o aggiornare le tue preferenze.",
                 ("*", "*", "*", "*"): "How can I help you? You can ask for movie recommendations, showtimes, directions, concessions, or update your preferences."
             }
             self.create_action(

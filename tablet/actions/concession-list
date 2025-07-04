@@ -18,9 +18,6 @@ concession_3
 concession_2
 <*,*,it,*>: Nachos
 <*,*,*,*>:  Nachos
-done
-<*,*,it,*>: done
-<*,*,*,*>:  done
 concession_4
 <*,*,it,*>: Hot Dog
 <*,*,*,*>:  Hot Dog

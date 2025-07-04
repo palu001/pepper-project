@@ -262,71 +262,80 @@ proposal: %booking
 
 # --- Concessions Info ---
 proposal: %buy_concession
-    u1: (e:cinema/selected_concession_from_tablet)
-        Adding $cinema/selected_concession to your order 
-        $cinema/function=add_to_order
-        ^gotoReactivate(buy_concession)
+    $cinema/function=concession_info
+    u1: (e:cinema/concession_list)
+            $cinema/concession_list
+                
+        u2: (e:cinema/selected_concession_from_tablet)
+            Adding $cinema/selected_concession to your order 
+            $cinema/function=add_to_order
+            u3: (e:cinema/continue_order_from_tablet $cinema/continue_order_from_tablet==yes):
+                ^gotoReactivate(buy_concession)
 
-    u1: (i want _*) 
-        Adding $1 to your order ...
-        $cinema/selected_concession=$1
-        $cinema/function=add_to_order
-
-        u2:(e:cinema/concession_found $cinema/concession_found==True)
-            Item correctly added
-            Do you want something else?
-            ^gotoReactivate(buy_concession)
-
-        u2:(e:cinema/concession_found $cinema/concession_found==False)
-            Item doesen't exists. Retry.
-            ^gotoReactivate(buy_concession)
-
-    u1: (~done)
-        $cinema/function=finalize_order
-        u2: (e:cinema/order_complete)
-            $cinema/direction_request=concession
-            $cinema/function=show_directions
-            You ordered $cinema/complete_order 
-            Your total is $cinema/order_total Please pay at the concession stand. I will show you on the tablet. Tell me when you have finished.
-            u3: (~done)
+            u3: (e:cinema/continue_order_from_tablet $cinema/continue_order_from_tablet==cancel):
+                ok, cancelling your order.
+                $cinema/function=cancel_order
                 ^gotoReactivate(main_hub)
 
-        u2: (e:cinema/order_error)
-            Your order is empty. Retry.
-            ^gotoReactivate(buy_concession)
+            u3: (e:cinema/continue_order_from_tablet $cinema/continue_order_from_tablet==no):
+                $cinema/function=finalize_order
+                u4: (e:cinema/order_complete)
+                    $cinema/direction_request=concession
+                    $cinema/function=show_directions
+                    You ordered $cinema/complete_order 
+                    Your total is $cinema/order_total Please pay at the concession stand. I will show you on the tablet. Tell me when you have finished.
+                    u5: (~done)
+                        ^gotoReactivate(main_hub)
 
-    u1: (~refusal)
-        $cinema/function=finalize_order
-        u2: (e:cinema/order_complete)
-            $cinema/direction_request=concession
-            $cinema/function=show_directions
-            You ordered $cinema/complete_order 
-            Your total is $cinema/order_total Please pay at the concession stand. I will show you on the tablet. Tell me when you have finished.
-            u3: (~done)
-                ^gotoReactivate(main_hub)
+        u2: (i want _*) 
+            Adding $1 to your order ...
+            $cinema/selected_concession=$1
+            $cinema/function=add_to_order
 
-        u2: (e:cinema/order_error)
-            Your order is empty. Retry.
-            ^gotoReactivate(buy_concession)
+            u3:(e:cinema/concession_found $cinema/concession_found==True)
+                Item correctly added
+                Do you want something else?
+                ^gotoReactivate(buy_concession)
 
-    u1: (cancel)
-        Ok, cancelling your order.
-        $cinema/function=cancel_order
-        ^gotoReactivate(main_hub)
+            u3:(e:cinema/concession_found $cinema/concession_found==False)
+                Item doesen't exists. Retry.
+                ^gotoReactivate(buy_concession)
 
-    u1: (_*)
-        Adding $1 to your order ...
-        $cinema/selected_concession=$1
-        $cinema/function=add_to_order
+        u2: ([
+            ~done
+            ~refusal
+              ])
+            $cinema/function=finalize_order
+            u3: (e:cinema/order_complete)
+                $cinema/direction_request=concession
+                $cinema/function=show_directions
+                You ordered $cinema/complete_order 
+                Your total is $cinema/order_total Please pay at the concession stand. I will show you on the tablet. Tell me when you have finished.
+                u4: (~done)
+                    ^gotoReactivate(main_hub)
 
-        u2:(e:cinema/concession_found $cinema/concession_found==True)
-            Item correctly added
-            Do you want something else?
-            ^gotoReactivate(buy_concession)
+            u3: (e:cinema/order_error)
+                Your order is empty. Retry.
+                ^gotoReactivate(buy_concession)
 
-        u2:(e:cinema/concession_found $cinema/concession_found==False)
-            Item doesen't exists. Retry.
-            ^gotoReactivate(buy_concession)
+        u2: (cancel)
+            Ok, cancelling your order.
+            $cinema/function=cancel_order
+            ^gotoReactivate(main_hub)
+
+        u2: (_*)
+            Adding $1 to your order ...
+            $cinema/selected_concession=$1
+            $cinema/function=add_to_order
+
+            u3:(e:cinema/concession_found $cinema/concession_found==True)
+                Item correctly added
+                Do you want something else?
+                ^gotoReactivate(buy_concession)
+
+            u3:(e:cinema/concession_found $cinema/concession_found==False)
+                Item doesen't exists. Retry.
+                ^gotoReactivate(buy_concession)
 
 proposal: %main_hub
     How can I help you? You can ask for movie recommendations, showtimes, directions, concessions, or update your preferences.
@@ -377,10 +386,8 @@ proposal: %main_hub
             ^gotoReactivate(restart)
 
     u1: (~ask_concessions)
-        $cinema/function=concession_info
-        u2: (e:cinema/concession_list)
-            $cinema/concession_list
-            ^gotoReactivate(buy_concession)
+        
+        ^gotoReactivate(buy_concession)
         
     u1: (*)
         Sorry, I can't help with that. I can provide movie recommendations, showtimes, directions, and concession information. What would you like to do?

@@ -2,8 +2,8 @@ IMAGE
 <*, *, *, *>:  img/all_movies.jpeg
 ----
 TEXT
-<*, *, it, *>: Film attualmente in programmazione: The Amazing Adventure, Love in Paris, Space Warriors, The Mystery House, Family Fun Time
-<*, *, *, *>: Movies currently showing: The Amazing Adventure, Love in Paris, Space Warriors, The Mystery House, Family Fun Time
+<*, *, it, *>: Film attualmente in programmazione: 
+<*, *, *, *>: Movies currently showing: 
 ----
 BUTTONS
 movie_4

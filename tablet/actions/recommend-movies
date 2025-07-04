@@ -3,16 +3,16 @@ IMAGE
 ----
 TEXT
 <*, *, it, *>: ****
-<*, *, *, *>: Some movies you could like are: The Amazing Adventure, Space Warriors, Love in Paris
+<*, *, *, *>: Some movies you could like are: 
 ----
 BUTTONS
 movie_2
-<*,*,it,*>: Love in Paris
-<*,*,*,*>:  Love in Paris
+<*,*,it,*>: The Mystery House
+<*,*,*,*>:  The Mystery House
 movie_0
 <*,*,it,*>: The Amazing Adventure
 <*,*,*,*>:  The Amazing Adventure
 movie_1
-<*,*,it,*>: Space Warriors
-<*,*,*,*>:  Space Warriors
+<*,*,it,*>: Family Fun Time
+<*,*,*,*>:  Family Fun Time
 ----

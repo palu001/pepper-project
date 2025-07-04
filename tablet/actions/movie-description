@@ -1,9 +1,9 @@
 IMAGE
-<*, *, *, *>:  img/movie_poster_space_warriors.jpeg
+<*, *, *, *>:  img/movie_poster_the_amazing_adventure.jpeg
 ----
 TEXT
-<*, *, it, *>: Battle for the galaxy
-<*, *, *, *>: Battle for the galaxy
+<*, *, it, *>: An epic journey of heroes
+<*, *, *, *>: An epic journey of heroes
 ----
 BUTTONS
 yes

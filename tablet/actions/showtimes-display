@@ -1,15 +1,12 @@
 IMAGE
-<*, *, *, *>:  img/movie_poster_space_warriors.jpeg
+<*, *, *, *>:  img/movie_poster_the_mystery_house.jpeg
 ----
 TEXT
-<*, *, it, *>: Orari disponibili per 'Space Warriors': 16:00, 19:30
-<*, *, *, *>: Available showtimes for 'Space Warriors': 16:00, 19:30
+<*, *, it, *>: Orari disponibili per 'The Mystery House': 
+<*, *, *, *>: Available showtimes for 'The Mystery House': 
 ----
 BUTTONS
 time_0
-<*,*,it,*>: 16:00
-<*,*,*,*>:  16:00
-time_1
-<*,*,it,*>: 19:30
-<*,*,*,*>:  19:30
+<*,*,it,*>: 21:00
+<*,*,*,*>:  21:00
 ----
