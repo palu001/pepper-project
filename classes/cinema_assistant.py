@@ -3,6 +3,7 @@ import re
 import io
 import os
 import time
+import ast
 
 class CinemaAssistant(object):
     def __init__(self, memory, database, mws, motion_manager):
@@ -148,7 +149,7 @@ class CinemaAssistant(object):
             if answer:
                 selected_movie = buttons[answer]["it"]
                 self.memory.insertData("cinema/selected_movie", selected_movie)
-                self.memory.raiseEvent("cinema/selected_movie_from_tablet", "True")
+                self.memory.raiseEvent("cinema/selected_movie_from_tablet_choose", "True")
                 print("Selected movie:", selected_movie)
 
         #Da modificare per ask
@@ -161,6 +162,9 @@ class CinemaAssistant(object):
                 var_used_to_get_exception = showtimes[0][0]  
 
                 times = ", ".join([s[0] for s in showtimes])
+                times_split=[s.strip() for s in times.split(',')]
+
+                self.memory.raiseEvent("cinema/available_times", times)
 
                 # Create showtimes display action
                 text = {
@@ -168,23 +172,31 @@ class CinemaAssistant(object):
                     ("*", "*", "*", "*"): "Available showtimes for '{}': {}".format(title, times)
                 }
                 
-                # # Create buttons for each showtime (Non serve, solo execute)
-                # buttons = {}
-                # for i, showtime in enumerate(showtimes):
-                #     buttons["time_{}".format(i)] = {
-                #         "it": showtime[0],
-                #         "en": showtime[0]
-                #     }
+                # Create buttons for each showtime (Non serve, solo execute)
+                buttons = {}
+                for i, showtime in enumerate(times_split):
+                    buttons["time_{}".format(i)] = {
+                        "it": showtime,
+                        "en": showtime
+                    }
                 
                 self.create_action(
                     image="img/movie_poster_{}.jpeg".format(title.lower().replace(" ", "_")),
                     text=text,
+                    buttons=buttons,
                     filename="showtimes-display"
                 )
                 self.mws.csend("im.executeModality('BUTTONS', [])")
-                self.mws.csend("im.execute('showtimes-display')")
+                answer=self.mws.csend("im.ask('showtimes-display', timeout=999)")
 
-                self.memory.raiseEvent("cinema/available_times", times)
+                
+
+                if answer:
+                    selected_time = buttons[answer]["it"]
+                    self.memory.insertData("cinema/selected_time", selected_time)
+                    self.memory.raiseEvent("cinema/selected_time_from_tablet", "True")
+                    print("Selected time:", selected_time)
+
                 
             
             except Exception as e:
@@ -384,20 +396,39 @@ class CinemaAssistant(object):
             self.motion.concession()
             items = self.db.get_concessions()
             names = ", ".join([item[0] for item in items])
+            concessions_split=[s.strip() for s in names.split(',')]
+
+            self.memory.raiseEvent("cinema/concession_list", "We have: " + names + ". Would you like to order something?")
 
             text = {
                 ("*", "*", "it", "*"): "Abbiamo: {}. Vuoi ordinare qualcosa?".format(names),
                 ("*", "*", "*", "*"): "We have: {}. Would you like to order something?".format(names)
             }
+            buttons={}
+            for i, concession in enumerate(concessions_split):
+                    buttons["concession_{}".format(i)] = {
+                        "it": concession,
+                        "en": concession
+                    }
+            buttons["done"]={
+                "it": "done",
+                "en": "done"
+            }
+
             self.create_action(
                 image="img/concessions.jpeg",
                 text=text,
+                buttons=buttons,
                 filename="concession-list"
             )
             self.mws.csend("im.executeModality('BUTTONS', [])")
-            self.mws.csend("im.execute('concession-list')")
+            answer=self.mws.csend("im.ask('concession-list',timeout=999)")
+            if answer:
+                selected_concession = buttons[answer]["it"]
+                self.memory.insertData("cinema/selected_concession", selected_concession)
+                self.memory.raiseEvent("cinema/selected_concession_from_tablet", "True")
 
-            self.memory.raiseEvent("cinema/concession_list", "We have: " + names + ". Would you like to order something?")
+            
 
 
         elif value == "list_all_movies":
@@ -407,6 +438,12 @@ class CinemaAssistant(object):
             
             movie_list = ", ".join([movie[0] for movie in movies])
             print("Available movies:", movie_list)
+            movie_split=[s.strip() for s in movie_list.split(',')]
+        
+            print("movie_split",movie_split)
+            self.memory.raiseEvent("cinema/all_movies_list", movie_list)
+
+
 
             # Create all movies display action
             text = {
@@ -414,23 +451,25 @@ class CinemaAssistant(object):
                 ("*", "*", "*", "*"): "Movies currently showing: {}".format(movie_list)
             }
             
-            # Create buttons for each movie
-            # buttons = {}
-            # for i, movie in enumerate(movies[:8]):  # Limit to 8 movies for display
-            #     buttons["movie_{}".format(i)] = {
-            #         "it": movie[0],
-            #         "en": movie[0]
-            #     }
-            
+            buttons = {}
+            for i, movie in enumerate(movie_split):
+                buttons["movie_{}".format(i)] = {
+                    "it": movie,
+                    "en": movie
+                }
             self.create_action(
                 image="img/all_movies.jpeg",
                 text=text,
+                buttons=buttons,
                 filename="all-movies-display"
             )
             self.mws.csend("im.executeModality('BUTTONS', [])")
-            self.mws.csend("im.execute('all-movies-display')")
+            answer=self.mws.csend("im.ask('all-movies-display',timeout=999)")
+            if answer:
+                selected_movie = buttons[answer]["it"]
 
-            self.memory.raiseEvent("cinema/all_movies_list", movie_list)
+                self.memory.insertData("cinema/selected_movie", selected_movie)
+                self.memory.raiseEvent("cinema/selected_movie_from_tablet_booking", "True")
 
         elif value == "add_to_order":
             item = self.memory.getData("cinema/selected_concession")
@@ -438,21 +477,37 @@ class CinemaAssistant(object):
 
             if item_db:
                 self.current_order.append((item_db[1],item_db[3]))
-
+                items = self.db.get_concessions()
+                names = ", ".join([item[0] for item in items])
+                concessions_split=[s.strip() for s in names.split(',')]
+            
                 text = {
-                    ("*", "*", "it", "*"): "{} aggiunto al tuo ordine.".format(item_db[1]),
-                    ("*", "*", "*", "*"): "{} added to your order.".format(item_db[1])
+                    ("*", "*", "it", "*"): "{} aggiunto al tuo ordine. Qualcos'altro?".format(item_db[1]),
+                    ("*", "*", "*", "*"): "{} added to your order. Anything else?".format(item_db[1])
                 }
+                buttons={}
+                for i, concession in enumerate(concessions_split):
+                        buttons["concession_{}".format(i)] = {
+                            "it": concession,
+                            "en": concession
+                        }
+                buttons["done"]={
+                    "it": "done",
+                    "en": "done"
+                }
+
                 self.create_action(
                     image="img/order_success.png",
                     text=text,
-                    filename="order-success"
+                    buttons=buttons,
+                    filename="concession-repeat"
                 )
-
                 self.mws.csend("im.executeModality('BUTTONS', [])")
-                self.mws.csend("im.execute('order-success')")
-
-                self.memory.raiseEvent("cinema/concession_found", "True")
+                answer=self.mws.csend("im.ask('concession-repeat',timeout=999)")
+                if answer:
+                    selected_concession = buttons[answer]["it"]
+                    self.memory.insertData("cinema/selected_concession", selected_concession)
+                    self.memory.raiseEvent("cinema/selected_concession_from_tablet", "True")
             else:
 
                 text = {

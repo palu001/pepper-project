@@ -1,9 +1,9 @@
 IMAGE
-<*, *, *, *>:  img/movie_poster_the_mystery_house.jpeg
+<*, *, *, *>:  img/movie_poster_space_warriors.jpeg
 ----
 TEXT
-<*, *, it, *>: A spine-chilling thriller
-<*, *, *, *>: A spine-chilling thriller
+<*, *, it, *>: Battle for the galaxy
+<*, *, *, *>: Battle for the galaxy
 ----
 BUTTONS
 yes

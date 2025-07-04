@@ -2,6 +2,6 @@ IMAGE
 <*, *, *, *>:  img/order_success.png
 ----
 TEXT
-<*, *, it, *>: Popcorn Large aggiunto al tuo ordine.
-<*, *, *, *>: Popcorn Large added to your order.
+<*, *, it, *>: Soda Large aggiunto al tuo ordine.
+<*, *, *, *>: Soda Large added to your order.
 ----

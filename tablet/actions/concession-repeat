@@ -1,9 +1,9 @@
 IMAGE
-<*, *, *, *>:  img/concessions.jpeg
+<*, *, *, *>:  img/order_success.png
 ----
 TEXT
-<*, *, it, *>: Abbiamo: Popcorn Large, Soda Large, Nachos, Candy Mix, Hot Dog. Vuoi ordinare qualcosa?
-<*, *, *, *>: We have: Popcorn Large, Soda Large, Nachos, Candy Mix, Hot Dog. Would you like to order something?
+<*, *, it, *>: Candy Mix aggiunto al tuo ordine. Qualcos'altro?
+<*, *, *, *>: Candy Mix added to your order. Anything else?
 ----
 BUTTONS
 concession_1
