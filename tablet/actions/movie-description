@@ -1,9 +1,9 @@
 IMAGE
-<*, *, *, *>:  img/movie_poster_the_amazing_adventure.jpeg
+<*, *, *, *>:  img/movie_poster_love_in_paris.jpeg
 ----
 TEXT
-<*, *, it, *>: An epic journey of heroes
-<*, *, *, *>: An epic journey of heroes
+<*, *, it, *>: A romantic comedy in the city of love
+<*, *, *, *>: A romantic comedy in the city of love
 ----
 BUTTONS
 yes

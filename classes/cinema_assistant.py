@@ -76,6 +76,9 @@ class CinemaAssistant(object):
             )
             self.mws.csend("im.executeModality('BUTTONS', [])")
             self.mws.csend("im.execute('registration-success')")
+            for key in self.memory.getDataList("cinema/"):
+                if key != "cinema/customer_name":
+                    self.memory.insertData(key, "")
 
 
         elif value == "update_preferences":
@@ -95,8 +98,15 @@ class CinemaAssistant(object):
             )
             self.mws.csend("im.executeModality('BUTTONS', [])")
             self.mws.csend("im.execute('update-success')")
+            for key in self.memory.getDataList("cinema/"):
+                if key != "cinema/customer_name":
+                    self.memory.insertData(key, "")
+
 
         elif value == "recommend_movies":
+            for key in self.memory.getDataList("cinema/"):
+                if key != "cinema/customer_name":
+                    self.memory.insertData(key, "")
             name = self.memory.getData("cinema/customer_name")
             customer = self.db.get_customer_by_name(name)
             age, genre = customer[1], customer[2]
@@ -154,6 +164,9 @@ class CinemaAssistant(object):
 
         #Da modificare per ask
         elif value == "get_showtimes":
+            for key in self.memory.getDataList("cinema/"):
+                if key != "cinema/customer_name" and key != "cinema/selected_movie":
+                    self.memory.insertData(key, "")
             title = self.memory.getData("cinema/selected_movie")
             try:
                 showtimes = self.db.get_showtimes_for_movie(title)
@@ -189,8 +202,6 @@ class CinemaAssistant(object):
                 self.mws.csend("im.executeModality('BUTTONS', [])")
                 answer=self.mws.csend("im.ask('showtimes-display', timeout=999)")
 
-                
-
                 if answer:
                     selected_time = buttons[answer]["it"]
                     self.memory.insertData("cinema/selected_time", selected_time)
@@ -220,6 +231,9 @@ class CinemaAssistant(object):
 
         #Prende un film (anche uno non tra i consigliati)
         elif value == "get_description":
+            for key in self.memory.getDataList("cinema/"):
+                if key != "cinema/customer_name" and key != "cinema/selected_movie":
+                    self.memory.insertData(key, "")
             title = self.memory.getData("cinema/selected_movie")
             try:
                 description = self.db.get_description_for_movie(title)[0][0]
@@ -275,7 +289,9 @@ class CinemaAssistant(object):
             
             
         elif value == "book_showtime":
-
+            for key in self.memory.getDataList("cinema/"):
+                if key != "cinema/customer_name" and key != "cinema/selected_movie" and key != "cinema/selected_time":
+                    self.memory.insertData(key, "")
             name = self.memory.getData("cinema/customer_name")
             title = self.memory.getData("cinema/selected_movie")
             show_time = self.memory.getData("cinema/selected_time")
@@ -315,6 +331,9 @@ class CinemaAssistant(object):
                     "Sorry, booking failed: " + str(e))
 
         if value == "show_directions":
+            for key in self.memory.getDataList("cinema/"):
+                if key != "cinema/customer_name" and key != "cinema/direction_request":
+                    self.memory.insertData(key, "")
             # Point and give verbal directions without moving
             location = self.memory.getData("cinema/direction_request")
             screen_number = None
@@ -351,6 +370,9 @@ class CinemaAssistant(object):
                     self.memory.raiseEvent("cinema/direction_indication", verbal_direction)
 
         elif value == "guide_to_screen":
+            for key in self.memory.getDataList("cinema/"):
+                if key != "cinema/customer_name" and key != "cinema/selected_movie":
+                    self.memory.insertData(key, "")
             screen_number = self.db.get_screen_for_movie(self.memory.getData("cinema/selected_movie"))
             if screen_number:
                 # Store screen number in memory for dialog reference
@@ -374,6 +396,9 @@ class CinemaAssistant(object):
                 self.memory.raiseEvent("cinema/screen_guidance_failed", "Screen not found for movie.")
                 
         elif value == "guide_to_location":
+            for key in self.memory.getDataList("cinema/"):
+                if key != "cinema/customer_name" and key != "cinema/target_location":
+                    self.memory.insertData(key, "")
             # New generalized guidance function
             location = self.memory.getData("cinema/target_location")
             screen_number = None
@@ -424,9 +449,6 @@ class CinemaAssistant(object):
                 self.memory.insertData("cinema/selected_concession", selected_concession)
                 self.memory.raiseEvent("cinema/selected_concession_from_tablet", "True")
 
-            
-
-
         elif value == "list_all_movies":
             print("Listing all available movies:")
         
@@ -438,8 +460,6 @@ class CinemaAssistant(object):
         
             print("movie_split",movie_split)
             self.memory.raiseEvent("cinema/all_movies_list", movie_list)
- 
-
 
             # Create all movies display action
             text = {
@@ -468,6 +488,9 @@ class CinemaAssistant(object):
                 self.memory.raiseEvent("cinema/selected_movie_from_tablet_booking", "True")
 
         elif value == "add_to_order":
+            for key in self.memory.getDataList("cinema/"):
+                if key != "cinema/customer_name" and key != "cinema/selected_concession":
+                    self.memory.insertData(key, "")
             item = self.memory.getData("cinema/selected_concession")
             item_db = self.db.get_concession_item(item)
 

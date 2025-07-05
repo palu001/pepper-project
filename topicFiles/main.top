@@ -109,13 +109,13 @@ proposal: %choose_movie_from_recommendations
             $cinema/description
             Are you interested in this movie?
 
-            u3: (~acceptance)
+            u3: (["e:cinema/interested $cinema/interested==yes" ~acceptance])
                 $cinema/function=get_showtimes
 
                 u4: (e:cinema/available_times)
                     ^gotoReactivate(booking_recommendation)
 
-            u3: (~refusal)
+            u3: (["e:cinema/interested $cinema/interested==no" ~refusal])
                 Ok!
                 ^gotoReactivate(main_hub)
 
@@ -132,15 +132,19 @@ proposal: %choose_movie_from_recommendations
             $cinema/description
             Are you interested in this movie?
 
-            u3: (e:cinema/interested $cinema/interested==yes)
+            u3: (["e:cinema/interested $cinema/interested==yes" ~acceptance])
                 $cinema/function=get_showtimes
 
                 u4: (e:cinema/available_times)
                     ^gotoReactivate(booking_recommendation)
 
-            u3: (e:cinema/interested $cinema/interested==no)
+            u3: (["e:cinema/interested $cinema/interested==no" ~refusal])
                 Ok!
                 ^gotoReactivate(main_hub)
+
+            u3: (*)
+                Sorry, didn't understand, Are you interested in this movie ?
+                ^stayInScope
 
 
 
@@ -171,6 +175,7 @@ proposal: %booking_recommendation
                 u2: (e:cinema/booking_failed)
                     Booking failed, encountered some errors. Retry again, maybe using the tablet could help us understand each other better
                     ^gotoReactivate(booking_recommendation)
+
         u1: (e:cinema/selected_time_from_tablet)
             $cinema/function=book_showtime
             Booking your tickets...
@@ -269,15 +274,15 @@ proposal: %buy_concession
         u2: (e:cinema/selected_concession_from_tablet)
             Adding $cinema/selected_concession to your order 
             $cinema/function=add_to_order
-            u3: (e:cinema/continue_order_from_tablet $cinema/continue_order_from_tablet==yes):
+            u3: (["e:cinema/continue_order_from_tablet $cinema/continue_order_from_tablet==yes" ~acceptance]):
                 ^gotoReactivate(buy_concession)
 
-            u3: (e:cinema/continue_order_from_tablet $cinema/continue_order_from_tablet==cancel):
+            u3: (["e:cinema/continue_order_from_tablet $cinema/continue_order_from_tablet==cancel" cancel]):
                 ok, cancelling your order.
                 $cinema/function=cancel_order
                 ^gotoReactivate(main_hub)
 
-            u3: (e:cinema/continue_order_from_tablet $cinema/continue_order_from_tablet==no):
+            u3: (["e:cinema/continue_order_from_tablet $cinema/continue_order_from_tablet==no" ~refusal]):
                 $cinema/function=finalize_order
                 u4: (e:cinema/order_complete)
                     $cinema/direction_request=concession
