@@ -109,44 +109,19 @@ proposal: %choose_movie_from_recommendations
             $cinema/description
             Are you interested in this movie?
 
-            u3: (["e:cinema/interested $cinema/interested==yes" ~acceptance])
+            u3: (~acceptance)
                 $cinema/function=get_showtimes
 
                 u4: (e:cinema/available_times)
                     ^gotoReactivate(booking_recommendation)
 
-            u3: (["e:cinema/interested $cinema/interested==no" ~refusal])
+            u3: ( ~refusal)
                 Ok!
                 ^gotoReactivate(main_hub)
 
             u3: (*)
                 Sorry, didn't understand, Are you interested in this movie ?
                 ^stayInScope
-
-    u1: (e:cinema/selected_movie_from_tablet_choose)
-
-        I'll get the description for $cinema/selected_movie
-        $cinema/function=get_description
-
-        u2: (e:cinema/description)
-            $cinema/description
-            Are you interested in this movie?
-
-            u3: (["e:cinema/interested $cinema/interested==yes" ~acceptance])
-                $cinema/function=get_showtimes
-
-                u4: (e:cinema/available_times)
-                    ^gotoReactivate(booking_recommendation)
-
-            u3: (["e:cinema/interested $cinema/interested==no" ~refusal])
-                Ok!
-                ^gotoReactivate(main_hub)
-
-            u3: (*)
-                Sorry, didn't understand, Are you interested in this movie ?
-                ^stayInScope
-
-
 
 proposal: %booking_recommendation
     Let's book your tickets, What time would you like to attend $cinema/selected_movie ? 
@@ -175,29 +150,6 @@ proposal: %booking_recommendation
                 u2: (e:cinema/booking_failed)
                     Booking failed, encountered some errors. Retry again, maybe using the tablet could help us understand each other better
                     ^gotoReactivate(booking_recommendation)
-
-        u1: (e:cinema/selected_time_from_tablet)
-            $cinema/function=book_showtime
-            Booking your tickets...
-
-                u2: (e:cinema/booking_success)
-                    $cinema/direction_request=box_office
-                    $cinema/function=show_directions
-                    Booking success! You can retrieve your tickets at the box office. Tell me when you got them.
-
-                    u3: (~done)
-                        ^gotoReactivate(offer_screen_guidance)
-
-                    u3: (~refusal)
-                        Ok, You need to go take the tickets at the box office. Good movie.
-                        ^gotoReactivate(main_hub)
-
-                u2: (e:cinema/booking_failed)
-                    Booking failed, encountered some errors. Retry again, maybe using the tablet could help us understand each other better
-                    ^gotoReactivate(booking_recommendation)
-
-        
-        
 
 proposal: %offer_screen_guidance
         Would you like me to guide you to the screen for $cinema/selected_movie ?
@@ -253,44 +205,12 @@ proposal: %booking
                 $cinema/showtimes_failed or maybe using the tablet could help us understand each other better. 
                 ^gotoReactivate(booking)
 
-        u2: (e:cinema/selected_movie_from_tablet_booking)
-            
-            $cinema/function=get_showtimes
-            
-            u3: (e:cinema/available_times)
-                ^gotoReactivate(booking_recommendation)
-            
-            u3: (e:cinema/showtimes_failed)
-                $cinema/showtimes_failed or maybe using the tablet could help us understand each other better. 
-                ^gotoReactivate(booking)
-
 
 # --- Concessions Info ---
 proposal: %buy_concession
     $cinema/function=concession_info
     u1: (e:cinema/concession_list)
-            $cinema/concession_list
-                
-        u2: (e:cinema/selected_concession_from_tablet)
-            Adding $cinema/selected_concession to your order 
-            $cinema/function=add_to_order
-            u3: (["e:cinema/continue_order_from_tablet $cinema/continue_order_from_tablet==yes" ~acceptance]):
-                ^gotoReactivate(buy_concession)
-
-            u3: (["e:cinema/continue_order_from_tablet $cinema/continue_order_from_tablet==cancel" cancel]):
-                ok, cancelling your order.
-                $cinema/function=cancel_order
-                ^gotoReactivate(main_hub)
-
-            u3: (["e:cinema/continue_order_from_tablet $cinema/continue_order_from_tablet==no" ~refusal]):
-                $cinema/function=finalize_order
-                u4: (e:cinema/order_complete)
-                    $cinema/direction_request=concession
-                    $cinema/function=show_directions
-                    You ordered $cinema/complete_order 
-                    Your total is $cinema/order_total Please pay at the concession stand. I will show you on the tablet. Tell me when you have finished.
-                    u5: (~done)
-                        ^gotoReactivate(main_hub)
+        $cinema/concession_list
 
         u2: (i want _*) 
             Adding $1 to your order ...
@@ -344,7 +264,7 @@ proposal: %buy_concession
 
 proposal: %main_hub
     How can I help you? You can ask for movie recommendations, showtimes, directions, concessions, or update your preferences.
-    $cinema/function = tablet_main_hub
+    $cinema/tablet = tablet_main_hub
     u1: ({*} _~update_prefs {*}) 
         Of course. Let's update your preferences.
         ^gotoReactivate(update_preferences)
@@ -382,8 +302,6 @@ proposal: %main_hub
                 Sorry, i didn't understand. Retry with yes or no.
                 ^stayInScope
                 
-
-
     u1: (~goodbye)
         Thank you for visiting!
         $cinema/function = restart
@@ -391,19 +309,51 @@ proposal: %main_hub
             ^gotoReactivate(restart)
 
     u1: (~ask_concessions)
-        
         ^gotoReactivate(buy_concession)
         
     u1: (*)
         Sorry, I can't help with that. I can provide movie recommendations, showtimes, directions, and concession information. What would you like to do?
         ^stayInScope
+    
+    u1: (e:cinema/tablet_main_hub $cinema/tablet_main_hub == tablet_concessions)
+        ^gotoReactivate(tablet_concession)
+    u1: (e:cinema/tablet_main_hub $cinema/tablet_main_hub == tablet_recommendations)
+        ^gotoReactivate(tablet_recommendations)
+    u1: (e:cinema/tablet_main_hub $cinema/tablet_main_hub == tablet_showtimes)
+        ^gotoReactivate(tablet_showtimes)
+    u1: (e:cinema/tablet_main_hub $cinema/tablet_main_hub == tablet_directions)
+        ^gotoReactivate(tablet_directions)
+    u1: (e:cinema/tablet_main_hub $cinema/tablet_main_hub == tablet_restart)
+        ^gotoReactivate(tablet_restart)
+    u1: (e:cinema/tablet_main_hub $cinema/tablet_main_hub == tablet_genre)
+        Of course. Let's update your preferences.
+        ^gotoReactivate(tablet_genre)
+        
+proposal: %tablet_concession
+    Da fare
+proposal: %tablet_recommendations
+    Da fare
+proposal: %tablet_showtimes
+    Da fare
+proposal: %tablet_directions
+    Da fare
+proposal: %tablet_restart
+    Thank you for visiting!
+    $cinema/tablet = tablet_restart
+    u1: (e:cinema/tablet_restart)
+        ^gotoReactivate(restart)
 
-
-
-
+proposal: %tablet_genre
+    Of course. Let's update your preferences. What movie genre do you like?
+    $cinema/tablet = tablet_genre
+    u1: (e:cinema/tablet_genre_selected $cinema/tablet_genre_selected==True)
+        Ok, I update it.
+        ^gotoReactivate(main_hub)
 # --- Fallback & Clarifications ---
 u: (*)
     Sorry Fatal error, I didn't quite get that. Now you can restart.
-    ^gotoReactivate(restart)
+    $cinema/function = restart
+    u1: (e:cinema/restart)
+        ^gotoReactivate(restart)
 
    

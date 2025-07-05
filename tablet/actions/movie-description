@@ -5,11 +5,3 @@ TEXT
 <*, *, it, *>: A romantic comedy in the city of love
 <*, *, *, *>: A romantic comedy in the city of love
 ----
-BUTTONS
-yes
-<*,*,it,*>: Si, prenota
-<*,*,*,*>:  Yes, book
-no
-<*,*,it,*>: No, non prenotare
-<*,*,*,*>:  No, do not book
-----

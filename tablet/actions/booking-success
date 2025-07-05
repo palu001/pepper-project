@@ -4,10 +4,10 @@ IMAGE
 TEXT
 <*, *, it, *>: Prenotazione confermata!
 Film: Love in Paris
-Orario: 18:30
+Orario: 15:30
 Ritira i biglietti alla biglietteria.
 <*, *, *, *>: Booking confirmed!
 Movie: Love in Paris
-Time: 18:30
+Time: 15:30
 Collect your tickets at the box office.
 ----

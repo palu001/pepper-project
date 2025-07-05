@@ -2,6 +2,6 @@ IMAGE
 <*, *, *, *>:  img/order_complete.jpg
 ----
 TEXT
-<*, *, it, *>: Il tuo ordine e completo: Popcorn Large. Totale: 8.5 euro.
-<*, *, *, *>: Your order is complete: Popcorn Large. Total: 8.5 euros.
+<*, *, it, *>: Il tuo ordine e completo: Hot Dog, Hot Dog, Soda Large. Totale: 24.0 euro.
+<*, *, *, *>: Your order is complete: Hot Dog, Hot Dog, Soda Large. Total: 24.0 euros.
 ----

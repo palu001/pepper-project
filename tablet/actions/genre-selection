@@ -1,0 +1,48 @@
+IMAGE
+<*, *, *, *>:  img/cinema.png
+----
+TEXT
+<*, *, it, *>: Quale genere preferisci, Simone?
+<*, *, *, *>: What genre do you prefer, Simone?
+----
+BUTTONS
+genre_12
+<*,*,it,*>: Fantasy
+<*,*,*,*>:  Fantasy
+genre_11
+<*,*,it,*>: Adventure
+<*,*,*,*>:  Adventure
+genre_10
+<*,*,it,*>: Family
+<*,*,*,*>:  Family
+genre_9
+<*,*,it,*>: Animated
+<*,*,*,*>:  Animated
+genre_8
+<*,*,it,*>: Documentary
+<*,*,*,*>:  Documentary
+genre_7
+<*,*,it,*>: Thriller
+<*,*,*,*>:  Thriller
+genre_6
+<*,*,it,*>: Science fiction
+<*,*,*,*>:  Science fiction
+genre_5
+<*,*,it,*>: Sci-fi
+<*,*,*,*>:  Sci-fi
+genre_4
+<*,*,it,*>: Romance
+<*,*,*,*>:  Romance
+genre_3
+<*,*,it,*>: Horror
+<*,*,*,*>:  Horror
+genre_2
+<*,*,it,*>: Drama
+<*,*,*,*>:  Drama
+genre_1
+<*,*,it,*>: Comedy
+<*,*,*,*>:  Comedy
+genre_0
+<*,*,it,*>: Action
+<*,*,*,*>:  Action
+----

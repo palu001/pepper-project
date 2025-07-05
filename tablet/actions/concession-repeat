@@ -2,17 +2,6 @@ IMAGE
 <*, *, *, *>:  img/order_success.png
 ----
 TEXT
-<*, *, it, *>: Nachos aggiunto al tuo ordine. Qualcos'altro?
-<*, *, *, *>: Nachos added to your order. Anything else?
-----
-BUTTONS
-cancel
-<*,*,it,*>: cancel
-<*,*,*,*>:  cancel
-yes
-<*,*,it,*>: yes
-<*,*,*,*>:  yes
-no
-<*,*,it,*>: no
-<*,*,*,*>:  no
+<*, *, it, *>: Soda Large aggiunto al tuo ordine. Qualcos'altro?
+<*, *, *, *>: Soda Large added to your order. Anything else?
 ----

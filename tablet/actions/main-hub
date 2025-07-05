@@ -2,6 +2,26 @@ IMAGE
 <*, *, *, *>:  img/cinema.png
 ----
 TEXT
-<*, *, it, *>: Come posso aiutarti? Puoi chiedere consigli su: film, orari, indicazioni, concessioni o aggiornare le tue preferenze.
-<*, *, *, *>: How can I help you? You can ask for movie recommendations, showtimes, directions, concessions, or update your preferences.
+<*, *, it, *>: Come posso aiutarti?
+<*, *, *, *>: How can I help you?
+----
+BUTTONS
+tablet_directions
+<*,*,it,*>: Indicazioni
+<*,*,*,*>:  Directions
+tablet_restart
+<*,*,it,*>: Riavvia
+<*,*,*,*>:  Restart
+tablet_recommendations
+<*,*,it,*>: Consigli
+<*,*,*,*>:  Recommendations
+tablet_showtimes
+<*,*,it,*>: Orari
+<*,*,*,*>:  Showtimes
+tablet_concessions
+<*,*,it,*>: Concessioni
+<*,*,*,*>:  Concessions
+tablet_genre
+<*,*,it,*>: Genere
+<*,*,*,*>:  Genre
 ----
