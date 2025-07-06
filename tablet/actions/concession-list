@@ -21,4 +21,7 @@ concession_2
 concession_4
 <*,*,it,*>: Hot Dog
 <*,*,*,*>:  Hot Dog
+cancel
+<*,*,it,*>: cancella
+<*,*,*,*>:  cancel
 ----

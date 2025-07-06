@@ -37,11 +37,17 @@ proposal: %get_name
         $cinema/function = greet_customer
         u2: (e:cinema/customer_identity_check $cinema/customer_identity_check==True) 
             Great! Welcome back, $cinema/customer_name
-                ^gotoReactivate(main_hub)
+                ^gotoReactivate(use_tablet)
         u2: (e:cinema/customer_identity_check $cinema/customer_identity_check==False) 
                 Nice to meet you, $cinema/customer_name! Let's get to know you better.
                 ^gotoReactivate(get_age)
                 
+proposal: %use_tablet
+    Do you want to use tablet in order to communicate?
+    u1: (~acceptance)
+        ^gotoReactivate(tablet_main_hub)
+    u1: (~refusal)
+        ^gotoReactivate(main_hub)
 
 # --- Get Age Group ---
 proposal: %get_age
@@ -63,7 +69,7 @@ proposal: %get_genre
     u1: ({*} _~movie_genres {*})
         $cinema/movie_preference=$1
         $cinema/function = register_customer
-        ^gotoReactivate(main_hub)
+        ^gotoReactivate(use_tablet)
 
     u1: (*)
         Sorry, I didn't recognize that genre. Retry.
@@ -264,7 +270,7 @@ proposal: %buy_concession
 
 proposal: %main_hub
     How can I help you? You can ask for movie recommendations, showtimes, directions, concessions, or update your preferences.
-    $cinema/tablet = tablet_main_hub
+    $cinema/function = main_hub
     u1: ({*} _~update_prefs {*}) 
         Of course. Let's update your preferences.
         ^gotoReactivate(update_preferences)
@@ -315,6 +321,52 @@ proposal: %main_hub
         Sorry, I can't help with that. I can provide movie recommendations, showtimes, directions, and concession information. What would you like to do?
         ^stayInScope
     
+proposal: %tablet_concession
+    Sure, here are the available concession items.
+    $cinema/tablet = tablet_concessions
+
+    u1: (e:cinema/tablet_cancel $cinema/tablet_cancel == True)
+        Your order has been cancelled
+        $cinema/tablet = tablet_cancel_order
+        ^gotoReactivate(tablet_main_hub)
+
+    u1: (e:cinema/tablet_add)
+        Adding $cinema/selected_concession to your order...
+        $cinema/tablet = tablet_add_to_order
+        Item correctly added
+        u2:(e:cinema/tablet_repeat $cinema/tablet_repeat==True)
+            ^gotoReactivate(tablet_concession)
+        u2:(e:cinema/tablet_repeat $cinema/tablet_repeat==False)
+            $cinema/tablet = tablet_finalize_order
+            u3: (e:cinema/tablet_order_complete)
+                $cinema/direction_request=concession
+                $cinema/tablet = tablet_show_directions
+                $cinema/complete_order 
+                Your total is $cinema/order_total Please pay at the concession stand. I will show you on the tablet.
+                u4:(e:cinema/tablet_directions_done)
+                    ^gotoReactivate(tablet_main_hub)
+
+
+    
+
+proposal: %tablet_recommendations
+    Da fare
+proposal: %tablet_showtimes
+    Da fare
+proposal: %tablet_directions
+    Da fare
+
+proposal: %tablet_genre
+    Of course. Let's update your preferences. What movie genre do you like?
+    $cinema/tablet = tablet_genre
+    u1: (e:cinema/tablet_genre_selected $cinema/tablet_genre_selected==True)
+        Ok, I update it.
+        ^gotoReactivate(tablet_main_hub)
+
+proposal: %tablet_main_hub
+    How can I help you? You can ask for movie recommendations, showtimes, directions, concessions, or update your preferences.
+
+    $cinema/tablet = tablet_main_hub
     u1: (e:cinema/tablet_main_hub $cinema/tablet_main_hub == tablet_concessions)
         ^gotoReactivate(tablet_concession)
     u1: (e:cinema/tablet_main_hub $cinema/tablet_main_hub == tablet_recommendations)
@@ -328,27 +380,15 @@ proposal: %main_hub
     u1: (e:cinema/tablet_main_hub $cinema/tablet_main_hub == tablet_genre)
         Of course. Let's update your preferences.
         ^gotoReactivate(tablet_genre)
-        
-proposal: %tablet_concession
-    Da fare
-proposal: %tablet_recommendations
-    Da fare
-proposal: %tablet_showtimes
-    Da fare
-proposal: %tablet_directions
-    Da fare
+
+
+
 proposal: %tablet_restart
     Thank you for visiting!
     $cinema/tablet = tablet_restart
     u1: (e:cinema/tablet_restart)
         ^gotoReactivate(restart)
 
-proposal: %tablet_genre
-    Of course. Let's update your preferences. What movie genre do you like?
-    $cinema/tablet = tablet_genre
-    u1: (e:cinema/tablet_genre_selected $cinema/tablet_genre_selected==True)
-        Ok, I update it.
-        ^gotoReactivate(main_hub)
 # --- Fallback & Clarifications ---
 u: (*)
     Sorry Fatal error, I didn't quite get that. Now you can restart.

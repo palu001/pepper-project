@@ -2,6 +2,14 @@ IMAGE
 <*, *, *, *>:  img/order_success.png
 ----
 TEXT
-<*, *, it, *>: Soda Large aggiunto al tuo ordine. Qualcos'altro?
-<*, *, *, *>: Soda Large added to your order. Anything else?
+<*, *, it, *>: Hot Dog aggiunto al tuo ordine. Qualcos'altro?
+<*, *, *, *>: Hot Dog added to your order. Anything else?
+----
+BUTTONS
+yes
+<*,*,it,*>: si
+<*,*,*,*>:  yes
+done
+<*,*,it,*>: done
+<*,*,*,*>:  done
 ----

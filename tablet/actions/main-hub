@@ -22,6 +22,6 @@ tablet_concessions
 <*,*,it,*>: Concessioni
 <*,*,*,*>:  Concessions
 tablet_genre
-<*,*,it,*>: Genere
-<*,*,*,*>:  Genre
+<*,*,it,*>: Modifica Genere
+<*,*,*,*>:  Update Genre
 ----
