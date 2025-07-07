@@ -301,7 +301,7 @@ proposal: %main_hub
                 ^gotoReactivate(on_guidance_complete)
 
             u3: (~refusal)
-                Alright! Enjoy your movie!
+                Alright!
                 ^gotoReactivate(main_hub)
 
             u3: (*)
@@ -340,7 +340,7 @@ proposal: %tablet_concession
             $cinema/tablet = tablet_finalize_order
             u3: (e:cinema/tablet_order_complete)
                 $cinema/direction_request=concession
-                $cinema/tablet = tablet_show_directions
+                $cinema/tablet = tablet_show_directions_concession
                 $cinema/complete_order 
                 Your total is $cinema/order_total Please pay at the concession stand. I will show you on the tablet.
                 u4:(e:cinema/tablet_directions_done)
@@ -353,8 +353,31 @@ proposal: %tablet_recommendations
     Da fare
 proposal: %tablet_showtimes
     Da fare
+
 proposal: %tablet_directions
-    Da fare
+    Ok, now you need to choose from the tablet where you want to go.
+    $cinema/tablet = tablet_choose_directions
+    u1: (e:cinema/tablet_directions_chosen $cinema/tablet_directions_chosen==True)
+        Ok, I will show you on the tablet the directions for $cinema/direction_request
+        $cinema/tablet = tablet_show_directions
+        u2: (e:cinema/tablet_already_there)
+            $cinema/tablet_already_there 
+            ^gotoReactivate(tablet_main_hub)
+            
+        u2: (e:cinema/tablet_direction_indication)
+            Would you like me to guide you there?
+            $cinema/tablet = tablet_confirm_guide_to_location
+            u3: (e:cinema/tablet_guide_to_location $cinema/tablet_guide_to_location==True)
+                Great, follow me.
+                $cinema/tablet=tablet_guide_to_location
+                u4: (e:cinema/tablet_guidance_complete)
+                We have arrived at the $cinema/direction_request 
+                ^gotoReactivate(tablet_main_hub)
+
+            u3: (e:cinema/tablet_guide_to_location $cinema/tablet_guide_to_location==False)
+                Alright!
+                ^gotoReactivate(tablet_main_hub)
+
 
 proposal: %tablet_genre
     Of course. Let's update your preferences. What movie genre do you like?

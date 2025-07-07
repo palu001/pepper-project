@@ -1,0 +1,15 @@
+IMAGE
+<*, *, *, *>:  img/cinema.png
+----
+TEXT
+<*, *, it, *>: Ti accompagno alla tua destionazione?
+<*, *, *, *>: Shall I guide you to your destination?
+----
+BUTTONS
+yes
+<*,*,it,*>: si
+<*,*,*,*>:  yes
+no
+<*,*,it,*>: no
+<*,*,*,*>:  no
+----

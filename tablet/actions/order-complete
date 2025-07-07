@@ -2,6 +2,6 @@ IMAGE
 <*, *, *, *>:  img/order_complete.jpg
 ----
 TEXT
-<*, *, it, *>: Il tuo ordine e completo: Hot Dog. Totale: 9.0 euro.
-<*, *, *, *>: Your order is complete: Hot Dog. Total: 9.0 euros.
+<*, *, it, *>: Il tuo ordine e completo: Candy Mix, Soda Large. Totale: 10.5 euro.
+<*, *, *, *>: Your order is complete: Candy Mix, Soda Large. Total: 10.5 euros.
 ----

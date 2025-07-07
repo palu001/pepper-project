@@ -1,12 +1,7 @@
 IMAGE
-<*, *, *, *>:  img/concession_path.png
+<*, *, *, *>:  img/exit_path.png
 ----
 TEXT
-<*, *, it, *>: Direzioni per concession
-<*, *, *, *>: Directions to concession
-----
-BUTTONS
-done
-<*,*,it,*>: done
-<*,*,*,*>:  done
+<*, *, it, *>: Direzioni per exit
+<*, *, *, *>: Directions to exit
 ----

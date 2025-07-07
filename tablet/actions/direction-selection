@@ -1,0 +1,48 @@
+IMAGE
+<*, *, *, *>:  img/cinema.png
+----
+TEXT
+<*, *, it, *>: Dove vuoi andare?
+<*, *, *, *>: Where do you want to go?
+----
+BUTTONS
+direction_1
+<*,*,it,*>: screen 1
+<*,*,*,*>:  screen 1
+direction_0
+<*,*,it,*>: bathroom
+<*,*,*,*>:  bathroom
+direction_3
+<*,*,it,*>: screen 3
+<*,*,*,*>:  screen 3
+direction_2
+<*,*,it,*>: screen 2
+<*,*,*,*>:  screen 2
+direction_5
+<*,*,it,*>: screen 5
+<*,*,*,*>:  screen 5
+direction_4
+<*,*,it,*>: screen 4
+<*,*,*,*>:  screen 4
+direction_7
+<*,*,it,*>: screen 7
+<*,*,*,*>:  screen 7
+direction_6
+<*,*,it,*>: screen 6
+<*,*,*,*>:  screen 6
+direction_9
+<*,*,it,*>: concession stand
+<*,*,*,*>:  concession stand
+direction_8
+<*,*,it,*>: screen 8
+<*,*,*,*>:  screen 8
+direction_11
+<*,*,it,*>: entrance
+<*,*,*,*>:  entrance
+direction_10
+<*,*,it,*>: exit
+<*,*,*,*>:  exit
+direction_12
+<*,*,it,*>: box office
+<*,*,*,*>:  box office
+----

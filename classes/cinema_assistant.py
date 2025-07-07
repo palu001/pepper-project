@@ -611,6 +611,12 @@ class CinemaAssistant(object):
             answer = self.mws.csend("im.ask('main-hub', timeout=999)")
             self.memory.raiseEvent("cinema/tablet_main_hub", answer)
 
+        elif value == "tablet_recommendations":
+            self.handle_function("recommend_movies")
+        
+        elif value == "tablet_showtimes":
+            self.handle_function("get_showtimes")
+
         elif value == "tablet_genre":
             name = self.memory.getData("cinema/customer_name")
             genres = ["action", "comedy", "drama", "horror", "romance", "sci-fi", "science fiction", "thriller", "documentary", "animated", "family", "adventure", "fantasy"]
@@ -763,17 +769,84 @@ class CinemaAssistant(object):
 
             self.mws.csend("im.executeModality('BUTTONS', [])")
             self.mws.csend("im.execute('order-complete')")
+        
+        elif value == "tablet_choose_directions":
+            # Ask for directions to a specific location
+            text = {
+                ("*", "*", "it", "*"): "Dove vuoi andare?",
+                ("*", "*", "*", "*"): "Where do you want to go?"
+            }
+            directions = ["bathroom", "screen 1", "screen 2", "screen 3", "screen 4", "screen 5", "screen 6" ,"screen 7", "screen 8", "concession stand", "exit", "entrance", "box office"]
+            buttons = {}
+            for i, direction in enumerate(directions):
+                buttons["direction_{}".format(i)] = {
+                    "it": direction,
+                    "en": direction
+                }
+            self.create_action(
+                image="img/cinema.png",
+                text=text,
+                filename="direction-selection",
+                buttons=buttons
+            )
+            self.mws.csend("im.executeModality('BUTTONS', [])")
+            answer = self.mws.csend("im.ask('direction-selection', timeout=999)")
+            print("Direction selected:", buttons[answer]["en"])
+            self.memory.insertData("cinema/direction_request", buttons[answer]["en"])
+            self.memory.raiseEvent("cinema/tablet_directions_chosen", "True")
 
-        elif value == "tablet_recommendations":
-            self.handle_function("recommend_movies")
+        elif value == "tablet_guide_to_location":
+            # New generalized guidance function
+            location = self.memory.getData("cinema/direction_request")
+            screen_number = None
+
+            self.mws.csend("im.executeModality('BUTTONS', [])")
+            self.mws.csend("im.execute('directions-with-map')")
+
+            if location:
+                match = re.search(r"screen\s*([0-9]+)", location.lower())
+                if match:
+                    screen_number = int(match.group(1))
+                    location="screen"
+                self.motion.guide_to_location(location, screen_number)
+                event_message = "Arrived at {}".format(location)
+                if screen_number:
+                    event_message += " {}".format(screen_number)
+                self.memory.raiseEvent("cinema/tablet_guidance_complete", event_message)
         
-        elif value == "tablet_showtimes":
-            self.handle_function("get_showtimes")
-        
+        elif value == "tablet_confirm_guide_to_location":
+            text = {
+                ("*", "*", "it", "*"): "Ti accompagno alla tua destionazione?",
+                ("*", "*", "*", "*"): "Shall I guide you to your destination?"
+            }
+            buttons = {
+                "yes": {
+                    "it": "si",
+                    "en": "yes"
+                },
+                "no": {
+                    "it": "no",
+                    "en": "no"
+                }
+            }
+            self.create_action(
+                image="img/cinema.png",
+                text=text,
+                filename="guide-to-location",
+                buttons=buttons
+            )
+            self.mws.csend("im.executeModality('BUTTONS', [])")
+            answer = self.mws.csend("im.ask('guide-to-location', timeout=999)")
+            print("Guide to location answer:", answer)
+            if answer == "yes":
+                self.memory.raiseEvent("cinema/tablet_guide_to_location", "True")
+            else:
+                self.memory.raiseEvent("cinema/tablet_guide_to_location", "False") 
+
+
         elif value == "tablet_show_directions":
             # Point and give verbal directions without moving
             location = self.memory.getData("cinema/direction_request")
-            print("location da trovare: ", location)
             screen_number = None
             image = "img/{}_path.png".format(location)  # The generated map
             print("image path ", image)
@@ -793,22 +866,50 @@ class CinemaAssistant(object):
                     ("*", "*", "it", "*"): "Direzioni per {}".format(location),
                     ("*", "*", "*", "*"): "Directions to {}" .format(location)
                 }
-                buttons = {}
-                buttons["done"] = {
-                    "en": "done",
-                    "it": "done"
-                }
                 self.create_action(
                     image=image,  # The generated map
                     text=text,
-                    buttons = buttons,
                     filename="directions-with-map"
                 )
 
                 self.mws.csend("im.executeModality('BUTTONS', [])")
-                self.mws.csend("im.ask('directions-with-map', timeout=999 )")
-                print("verbal_direction ", verbal_direction)
-                self.memory.raiseEvent("cinema/tablet_directions_done", "True")
+                self.mws.csend("im.execute('directions-with-map')")
+            
+                if verbal_direction == "You're already there!":
+                    self.memory.raiseEvent("cinema/tablet_already_there", verbal_direction)
+                else:
+                    self.memory.raiseEvent("cinema/tablet_direction_indication", verbal_direction)
+
+        elif value == "tablet_show_directions_concession":
+            # Point and give verbal directions without moving
+            location = self.memory.getData("cinema/direction_request")
+            print("location da trovare: ", location)
+            screen_number = None
+            image = "img/{}_path.png".format(location)  # The generated map
+            print("image path ", image)
+
+            verbal_direction = self.motion.point_and_describe_direction(location, screen_number)
+
+            text = {
+                ("*", "*", "it", "*"): "Direzioni per {}".format(location),
+                ("*", "*", "*", "*"): "Directions to {}" .format(location)
+            }
+            buttons = {}
+            buttons["done"] = {
+                "en": "done",
+                "it": "done"
+            }
+            self.create_action(
+                image=image,  # The generated map
+                text=text,
+                buttons = buttons,
+                filename="directions-with-map"
+            )
+
+            self.mws.csend("im.executeModality('BUTTONS', [])")
+            self.mws.csend("im.ask('directions-with-map', timeout=999 )")
+            print("verbal_direction ", verbal_direction)
+            self.memory.raiseEvent("cinema/tablet_directions_done", "True")
         
         elif value == "tablet_restart":
             for key in self.memory.getDataList("cinema/"):
