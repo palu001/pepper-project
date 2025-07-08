@@ -1,18 +1,15 @@
 IMAGE
-<*, *, *, *>:  img/movie_poster_the_amazing_adventure.jpeg
+<*, *, *, *>:  img/movie_poster_space_warriors.jpeg
 ----
 TEXT
-<*, *, it, *>: Orari disponibili per 'The Amazing Adventure': 
-<*, *, *, *>: Available showtimes for 'The Amazing Adventure': 
+<*, *, it, *>: Orari disponibili per 'Space Warriors': 
+<*, *, *, *>: Available showtimes for 'Space Warriors': 
 ----
 BUTTONS
 time_0
-<*,*,it,*>: 14:00
-<*,*,*,*>:  14:00
+<*,*,it,*>: 16:00
+<*,*,*,*>:  16:00
 time_1
-<*,*,it,*>: 17:00
-<*,*,*,*>:  17:00
-time_2
-<*,*,it,*>: 20:00
-<*,*,*,*>:  20:00
+<*,*,it,*>: 19:30
+<*,*,*,*>:  19:30
 ----

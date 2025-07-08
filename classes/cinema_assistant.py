@@ -1047,7 +1047,7 @@ class CinemaAssistant(object):
 
             text = {
                 ("*", "*", "it", "*"): "Direzioni per {}".format(location),
-                ("*", "*", "*", "*"): "You can retrive your ticker at the box" .format(location)
+                ("*", "*", "*", "*"): "You can retrieve your ticker at the box" .format(location)
             }
             buttons = {}
             buttons["done"] = {

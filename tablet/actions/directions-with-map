@@ -1,9 +1,9 @@
 IMAGE
-<*, *, *, *>:  img/box_office_path.png
+<*, *, *, *>:  img/concession_path.png
 ----
 TEXT
-<*, *, it, *>: Direzioni per box_office
-<*, *, *, *>: You can retrive your ticker at the box
+<*, *, it, *>: Direzioni per concession
+<*, *, *, *>: Directions to concession
 ----
 BUTTONS
 done

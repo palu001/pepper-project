@@ -412,7 +412,7 @@ proposal: %tablet_directions
 
             u3: (e:cinema/tablet_guide_to_location $cinema/tablet_guide_to_location==False)
                 Alright!
-                ^gotoReactivate(tablet_offer_screen_guidance)
+                ^gotoReactivate(tablet_main_hub)
 
 
 proposal: %tablet_offer_screen_guidance
