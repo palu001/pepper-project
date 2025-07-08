@@ -7,12 +7,12 @@ TEXT
 ----
 BUTTONS
 movie_2
+<*,*,it,*>: Space Warriors
+<*,*,*,*>:  Space Warriors
+movie_0
 <*,*,it,*>: The Mystery House
 <*,*,*,*>:  The Mystery House
-movie_0
+movie_1
 <*,*,it,*>: The Amazing Adventure
 <*,*,*,*>:  The Amazing Adventure
-movie_1
-<*,*,it,*>: Family Fun Time
-<*,*,*,*>:  Family Fun Time
 ----

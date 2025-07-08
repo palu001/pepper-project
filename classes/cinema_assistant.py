@@ -327,6 +327,10 @@ class CinemaAssistant(object):
         if value == "show_directions":
             # Point and give verbal directions without moving
             location = self.memory.getData("cinema/direction_request")
+            if location == "box office":
+                location = "box_office"
+            if location == "concession stand":
+                location = "concession"
             screen_number = None
             image = "img/{}_path.png".format(location)  # The generated map
             print("image path ", image)
@@ -387,6 +391,10 @@ class CinemaAssistant(object):
             # New generalized guidance function
             location = self.memory.getData("cinema/target_location")
             screen_number = None
+            if location == "box office":
+                location = "box_office"
+            if location == "concession stand":
+                location = "concession"
             
             if location:
                 match = re.search(r"screen\s*([0-9]+)", location.lower())
@@ -611,12 +619,112 @@ class CinemaAssistant(object):
             answer = self.mws.csend("im.ask('main-hub', timeout=999)")
             self.memory.raiseEvent("cinema/tablet_main_hub", answer)
 
-        elif value == "tablet_recommendations":
-            self.handle_function("recommend_movies")
         
-        elif value == "tablet_showtimes":
-            self.handle_function("get_showtimes")
+        elif value == "tablet_list_all_movies":
+            print("Listing all available movies:")
+        
+            movies = self.db.get_all_movies()
+            
+            movie_list = ", ".join([movie[0] for movie in movies])
+            print("Available movies:", movie_list)
+            movie_split=[s.strip() for s in movie_list.split(',')]
+        
+            print("movie_split",movie_split)
 
+            # Create all movies display action
+            text = {
+                ("*", "*", "it", "*"): "Film attualmente in programmazione: ",
+                ("*", "*", "*", "*"): "Movies currently showing: "
+            }
+            
+            buttons = {}
+            for i, movie in enumerate(movie_split):
+                buttons["movie_{}".format(i)] = {
+                    "it": movie,
+                    "en": movie
+                }
+            buttons["cancel"] = {
+                "it" : "cancella",
+                "en" : "cancel"
+            }
+            self.create_action(
+                image="img/all_movies.jpeg",
+                text=text,
+                buttons=buttons,
+                filename="all-movies-display"
+            )
+            self.mws.csend("im.executeModality('BUTTONS', [])")
+            answer = self.mws.csend("im.ask('all-movies-display', timeout = 999)")
+            self.memory.raiseEvent("tablet/all_movies_list", movie_list)
+            if answer == "cancel":
+                self.memory.raiseEvent("tablet/cancel_choice", "True")
+            else:
+                print("Film selected:", buttons[answer]["en"])
+                self.memory.insertData("cinema/selected_movie", buttons[answer]["en"])
+                self.memory.raiseEvent("tablet/movie_selected", "True")
+
+        elif value == "tablet_get_showtimes":
+
+            title = self.memory.getData("cinema/selected_movie")
+            
+            showtimes = self.db.get_showtimes_for_movie(title)
+
+            times = ", ".join([s[0] for s in showtimes])
+            times_split=[s.strip() for s in times.split(',')]
+
+            
+
+            # Create showtimes display action
+            text = {
+                ("*", "*", "it", "*"): "Orari disponibili per '{}': ".format(title),
+                ("*", "*", "*", "*"): "Available showtimes for '{}': ".format(title)
+            }
+            
+            # Create buttons for each showtime (Non serve, solo execute)
+            buttons = {}
+            for i, showtime in enumerate(times_split):
+                buttons["time_{}".format(i)] = {
+                    "it": showtime,
+                    "en": showtime
+                }
+            
+            self.create_action(
+                image="img/movie_poster_{}.jpeg".format(title.lower().replace(" ", "_")),
+                text=text,
+                buttons=buttons,
+                filename="showtimes-display"
+            )
+            self.mws.csend("im.executeModality('BUTTONS', [])")
+            answer = self.mws.csend("im.ask('showtimes-display', timeout = 999)")
+
+            print("Time selected:", buttons[answer]["en"])
+            self.memory.insertData("cinema/selected_time", buttons[answer]["en"])
+            self.memory.raiseEvent("tablet/choose_time", "True")
+    
+        elif value == "tablet_book_showtime":
+            name = self.memory.getData("cinema/customer_name")
+            title = self.memory.getData("cinema/selected_movie")
+            show_time = self.memory.getData("cinema/selected_time")
+            print("prima del db")
+            self.db.book_showtime(name, title, show_time)
+            print("booked")
+            text = {
+                ("*", "*", "it", "*"): "Prenotazione confermata!\nFilm: {}\nOrario: {}\nRitira i biglietti alla biglietteria.".format(title, show_time),
+                ("*", "*", "*", "*"): "Booking confirmed!\nMovie: {}\nTime: {}\nCollect your tickets at the box office.".format(title, show_time)
+            }
+            
+            self.create_action(
+                image="img/booking_success.png",
+                text=text,
+                filename="booking-success"
+            )
+            self.mws.csend("im.executeModality('BUTTONS', [])")
+            self.mws.csend("im.execute('booking-success')")
+
+            self.memory.raiseEvent("tablet/booking_success", "True")
+
+
+             
         elif value == "tablet_genre":
             name = self.memory.getData("cinema/customer_name")
             genres = ["action", "comedy", "drama", "horror", "romance", "sci-fi", "science fiction", "thriller", "documentary", "animated", "family", "adventure", "fantasy"]
@@ -798,6 +906,10 @@ class CinemaAssistant(object):
         elif value == "tablet_guide_to_location":
             # New generalized guidance function
             location = self.memory.getData("cinema/direction_request")
+            if location == "box office":
+                location = "box_office"
+            if location == "concession stand":
+                location = "concession"
             screen_number = None
 
             self.mws.csend("im.executeModality('BUTTONS', [])")
@@ -847,6 +959,10 @@ class CinemaAssistant(object):
         elif value == "tablet_show_directions":
             # Point and give verbal directions without moving
             location = self.memory.getData("cinema/direction_request")
+            if location == "box office":
+                location = "box_office"
+            if location == "concession stand":
+                location = "concession"
             screen_number = None
             image = "img/{}_path.png".format(location)  # The generated map
             print("image path ", image)
@@ -883,6 +999,10 @@ class CinemaAssistant(object):
         elif value == "tablet_show_directions_concession":
             # Point and give verbal directions without moving
             location = self.memory.getData("cinema/direction_request")
+            if location == "box office":
+                location = "box_office"
+            if location == "concession stand":
+                location = "concession"
             print("location da trovare: ", location)
             screen_number = None
             image = "img/{}_path.png".format(location)  # The generated map
@@ -910,7 +1030,194 @@ class CinemaAssistant(object):
             self.mws.csend("im.ask('directions-with-map', timeout=999 )")
             print("verbal_direction ", verbal_direction)
             self.memory.raiseEvent("cinema/tablet_directions_done", "True")
+
+        elif value == "tablet_show_directions_box":
+            # Point and give verbal directions without moving
+            location = self.memory.getData("cinema/direction_request")
+            if location == "box office":
+                location = "box_office"
+            if location == "concession stand":
+                location = "concession"
+            print("location da trovare: ", location)
+            screen_number = None
+            image = "img/{}_path.png".format(location)  # The generated map
+            print("image path ", image)
+
+            verbal_direction = self.motion.point_and_describe_direction(location, screen_number)
+
+            text = {
+                ("*", "*", "it", "*"): "Direzioni per {}".format(location),
+                ("*", "*", "*", "*"): "You can retrive your ticker at the box" .format(location)
+            }
+            buttons = {}
+            buttons["done"] = {
+                "en": "done",
+                "it": "done"
+            }
+            self.create_action(
+                image=image,  # The generated map
+                text=text,
+                buttons = buttons,
+                filename="directions-with-map"
+            )
+
+            self.mws.csend("im.executeModality('BUTTONS', [])")
+            self.mws.csend("im.ask('directions-with-map', timeout=999 )")
+            
+            self.memory.raiseEvent("cinema/tablet_directions_done", "True")
         
+        elif value == "tablet_offer_screen_guidance":
+            screen_number = self.db.get_screen_for_movie(self.memory.getData("cinema/selected_movie"))
+            if screen_number:
+                # Store screen number in memory for dialog reference
+                verbal_direction = self.motion.point_and_describe_direction("screen", screen_number)
+
+            
+            text = {
+                ("*", "*", "it", "*"): "Ti guido al film nella sala {}?".format(screen_number),
+                ("*", "*", "*", "*"): "Would you like me to guide you at screen {}".format(screen_number)
+            }
+            buttons = {}
+            buttons["yes"] = {
+                "it" : "si", 
+                "en" : "yes"
+            }
+            buttons["no"] = {
+                "it" : "no", 
+                "en" : "no"
+            }
+            self.create_action(
+                    image="img/screen{}_path.png".format(screen_number),  # The generated map
+                    text=text,
+                    buttons = buttons,
+                    filename="screen-guidance-offer"
+                )  
+            self.mws.csend("im.executeModality('BUTTONS', [])")
+            answer = self.mws.csend("im.ask('screen-guidance-offer', timeout= 999)")
+            if answer == "yes":
+                self.memory.raiseEvent("tablet/screen_guidance","True")
+            else:
+                self.memory.raiseEvent("tablet/screen_guidance","False")
+
+   
+
+
+
+
+        elif value == "tablet_guide_to_screen":
+            screen_number = self.db.get_screen_for_movie(self.memory.getData("cinema/selected_movie"))
+            if screen_number:
+                # Store screen number in memory for dialog reference
+                verbal_direction = self.motion.point_and_describe_direction("screen", screen_number)
+
+                text = {
+                    ("*", "*", "it", "*"): "Sto guidandoti verso lo schermo {}.".format(screen_number),
+                    ("*", "*", "*", "*"): "I am guiding you to screen {}.".format(screen_number)
+                }
+                self.create_action(
+                    image="img/screen{}_path.png".format(screen_number),  # The generated map
+                    text=text,
+                    filename="screen-guidance"
+                )  
+                self.mws.csend("im.executeModality('BUTTONS', [])")
+                self.mws.csend("im.ask('screen-guidance')")
+                self.motion.guide_to_location("screen", screen_number)
+                self.memory.raiseEvent("cinema/screen_guidance_complete", str(screen_number))
+   
+
+
+        elif value == "tablet_offer_recommendation":
+
+            name = self.memory.getData("cinema/customer_name")
+            customer = self.db.get_customer_by_name(name)
+            age, genre = customer[1], customer[2]
+            print(age, genre)
+
+            # Fetch movies by genre and age group
+            movies_by_genre = self.db.get_movies_by_genre(genre)  # Returns list of tuples
+            movies_by_age = self.db.get_recommendations_by_age(age)  # Returns list of tuples
+            print(movies_by_genre,movies_by_age)
+            # Extract titles and use sets for intersection
+            titles_genre = set(m[0] for m in movies_by_genre)
+            titles_age = set(m[0] for m in movies_by_age)
+
+            # Prioritize movies that match both genre and age
+            common_titles = list(titles_genre & titles_age)
+
+            if len(common_titles) < 3:
+                # Fill remaining spots with age-specific titles (if needed)
+                #Cosi te ne consiglia 3 al momento perche ora ci sono solo un film per genere
+                # mentre per eta ci sono piu film
+                remaining = list(titles_age - set(common_titles))
+                suggestions = common_titles + remaining[:3 - len(common_titles)]
+            else:
+                suggestions = common_titles[:3]
+
+            suggestion_str = ", ".join(suggestions)
+
+            text = {
+                ("*", "*", "it", "*"): "****",
+                ("*", "*", "*", "*"): "Some movies you could like are: "
+            }
+
+            buttons = {}
+            for i, movie in enumerate(suggestions):
+                buttons["movie_{}".format(i)] = {
+                    "it": movie,
+                    "en": movie
+                }
+            
+            self.create_action(
+                image="img/recommend_movies.jpeg",
+                text=text,
+                filename="recommend-movies",
+                buttons=buttons
+            )
+
+            self.mws.csend("im.executeModality('BUTTONS', [])")
+            answer = self.mws.csend("im.ask('recommend-movies', timeout = 999)")
+            choice = buttons[answer]["en"]
+            print("recommended movie selceted: ",choice)
+            self.memory.insertData("cinema/selected_movie", choice)
+            self.memory.raiseEvent("tablet/movie_suggestions", "True")
+
+        elif value == "tablet_get_description":
+        
+            title = self.memory.getData("cinema/selected_movie")
+           
+            description = self.db.get_description_for_movie(title)[0][0]
+
+            text = {
+                ("*", "*", "it", "*"): "{}".format(description),
+                ("*", "*", "*", "*"): "{}".format(description)
+            }
+            buttons = {}
+            buttons["interested"] = {
+                "it" : "interested",
+                "en" : "interested"
+            }
+            buttons["cancel"] = {
+                "it" : "cancella",
+                "en" : "cancel"
+            }
+            self.create_action(
+                image="img/movie_poster_{}.jpeg".format(title.lower().replace(" ", "_")),
+                text=text,
+                buttons=buttons,
+                filename="movie-description",
+            )
+            
+            self.mws.csend("im.executeModality('BUTTONS', [])")
+            answer = self.mws.csend("im.ask('movie-description', timeout = 999)")
+            self.memory.raiseEvent("cinema/description", description)
+            if answer == "cancel":
+                self.memory.raiseEvent("tablet/recommend_cancel", "True")
+            else: 
+                self.memory.raiseEvent("tablet/recommend_choice", "True")
+
+
+
+
         elif value == "tablet_restart":
             for key in self.memory.getDataList("cinema/"):
                 self.memory.insertData(key, "")
@@ -928,7 +1235,8 @@ class CinemaAssistant(object):
             self.mws.csend("im.execute('goodbye')")
             self.motion.guide_to_location("entrance")
             self.memory.raiseEvent("cinema/tablet_restart", "True")
-            
+    
+ 
 
     def create_action(self, image=None, text=None, tts=None, buttons=None, filename="actions"):
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

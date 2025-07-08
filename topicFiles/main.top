@@ -350,9 +350,45 @@ proposal: %tablet_concession
     
 
 proposal: %tablet_recommendations
-    Da fare
+    Here's some recommendations
+    $cinema/tablet = tablet_offer_recommendation
+    u1:(e:tablet/movie_suggestions $tablet/movie_suggestions == True)
+        ^gotoReactivate(tablet_get_description)
+
+
+proposal: %tablet_get_description
+    Here is the description for $cinema/selected_movie
+    $cinema/tablet = tablet_get_description
+    u1:(e:tablet/recommend_cancel $tablet/recommend_cancel == True)
+        ^gotoReactivate(tablet_main_hub)
+
+    u1:(e:tablet/recommend_choice $tablet/recommend_choice == True)
+        ^gotoReactivate(tablet_showtimes)
+
+
+proposal: %tablet_list
+    $cinema/tablet = tablet_list_all_movies
+    Which movie would you like to book tickets for?
+    u1:(e:tablet/cancel_choice $tablet/cancel_choice == True)
+        ^gotoReactivate(tablet_main_hub)
+    u1:(e:tablet/movie_selected $tablet/movie_selected == True)
+        ^gotoReactivate(tablet_showtimes)
+
 proposal: %tablet_showtimes
-    Da fare
+    Here you can see the available times of the show 
+    $cinema/tablet = tablet_get_showtimes
+    u1:(e:tablet/choose_time $tablet/choose_time == True)
+        ^gotoReactivate(tablet_booking)
+
+proposal: %tablet_booking
+
+    $cinema/tablet = tablet_book_showtime
+    u1: (e:tablet/booking_success $tablet/booking_success == True )
+        $cinema/direction_request=box_office
+        $cinema/tablet = tablet_show_directions_box
+            u2:(e:cinema/tablet_directions_done)
+                ^gotoReactivate(tablet_offer_screen_guidance)
+
 
 proposal: %tablet_directions
     Ok, now you need to choose from the tablet where you want to go.
@@ -376,7 +412,24 @@ proposal: %tablet_directions
 
             u3: (e:cinema/tablet_guide_to_location $cinema/tablet_guide_to_location==False)
                 Alright!
-                ^gotoReactivate(tablet_main_hub)
+                ^gotoReactivate(tablet_offer_screen_guidance)
+
+
+proposal: %tablet_offer_screen_guidance
+        Would you like me to guide you to the screen for $cinema/selected_movie ?
+        
+        $cinema/tablet = tablet_offer_screen_guidance
+        u1: (e:tablet/screen_guidance $tablet/screen_guidance == True)
+            Great, follow me.
+            $cinema/tablet=tablet_guide_to_screen
+            u2:(e:cinema/screen_guidance_complete)
+                    We have arrived at screen $cinema/screen_guidance_complete  Enjoy the movie!
+                    ^gotoReactivate(tablet_main_hub)
+
+        u1: (e:tablet/screen_guidance $tablet/screen_guidance == False)
+            All right, enjoy your movie
+            ^gotoReactivate(tablet_main_hub)
+
 
 
 proposal: %tablet_genre
@@ -392,14 +445,19 @@ proposal: %tablet_main_hub
     $cinema/tablet = tablet_main_hub
     u1: (e:cinema/tablet_main_hub $cinema/tablet_main_hub == tablet_concessions)
         ^gotoReactivate(tablet_concession)
+
     u1: (e:cinema/tablet_main_hub $cinema/tablet_main_hub == tablet_recommendations)
         ^gotoReactivate(tablet_recommendations)
+
     u1: (e:cinema/tablet_main_hub $cinema/tablet_main_hub == tablet_showtimes)
-        ^gotoReactivate(tablet_showtimes)
+        ^gotoReactivate(tablet_list)
+
     u1: (e:cinema/tablet_main_hub $cinema/tablet_main_hub == tablet_directions)
         ^gotoReactivate(tablet_directions)
+
     u1: (e:cinema/tablet_main_hub $cinema/tablet_main_hub == tablet_restart)
         ^gotoReactivate(tablet_restart)
+
     u1: (e:cinema/tablet_main_hub $cinema/tablet_main_hub == tablet_genre)
         Of course. Let's update your preferences.
         ^gotoReactivate(tablet_genre)

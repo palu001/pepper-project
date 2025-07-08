@@ -1,15 +1,18 @@
 IMAGE
-<*, *, *, *>:  img/movie_poster_love_in_paris.jpeg
+<*, *, *, *>:  img/movie_poster_the_amazing_adventure.jpeg
 ----
 TEXT
-<*, *, it, *>: Orari disponibili per 'Love in Paris': 
-<*, *, *, *>: Available showtimes for 'Love in Paris': 
+<*, *, it, *>: Orari disponibili per 'The Amazing Adventure': 
+<*, *, *, *>: Available showtimes for 'The Amazing Adventure': 
 ----
 BUTTONS
 time_0
-<*,*,it,*>: 15:30
-<*,*,*,*>:  15:30
+<*,*,it,*>: 14:00
+<*,*,*,*>:  14:00
 time_1
-<*,*,it,*>: 18:30
-<*,*,*,*>:  18:30
+<*,*,it,*>: 17:00
+<*,*,*,*>:  17:00
+time_2
+<*,*,it,*>: 20:00
+<*,*,*,*>:  20:00
 ----

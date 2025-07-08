@@ -1,0 +1,15 @@
+IMAGE
+<*, *, *, *>:  img/screen1_path.png
+----
+TEXT
+<*, *, it, *>: Ti guido al film nella sala 1?
+<*, *, *, *>: Would you like me to guide you at screen 1
+----
+BUTTONS
+yes
+<*,*,it,*>: si
+<*,*,*,*>:  yes
+no
+<*,*,it,*>: no
+<*,*,*,*>:  no
+----

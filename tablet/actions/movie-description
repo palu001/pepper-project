@@ -1,7 +1,15 @@
 IMAGE
-<*, *, *, *>:  img/movie_poster_love_in_paris.jpeg
+<*, *, *, *>:  img/movie_poster_the_amazing_adventure.jpeg
 ----
 TEXT
-<*, *, it, *>: A romantic comedy in the city of love
-<*, *, *, *>: A romantic comedy in the city of love
+<*, *, it, *>: An epic journey of heroes
+<*, *, *, *>: An epic journey of heroes
+----
+BUTTONS
+cancel
+<*,*,it,*>: cancella
+<*,*,*,*>:  cancel
+interested
+<*,*,it,*>: interested
+<*,*,*,*>:  interested
 ----
