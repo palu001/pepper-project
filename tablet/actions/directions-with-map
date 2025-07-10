@@ -5,8 +5,3 @@ TEXT
 <*, *, it, *>: Direzioni per concession
 <*, *, *, *>: Directions to concession
 ----
-BUTTONS
-done
-<*,*,it,*>: done
-<*,*,*,*>:  done
-----

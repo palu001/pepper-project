@@ -410,22 +410,72 @@ class CinemaAssistant(object):
                 print("No target location specified.")
                 self.memory.raiseEvent("cinema/guidance_failed", "No target location specified.")
 
+        elif value == "has_preferred":
+             # Ottieni nome utente da memoria
+            customer_name = self.memory.getData("cinema/customer_name")
+            print("customer name: ",customer_name)
+            # Ottieni cibo preferito (piuordinato)
+            preferred_item = self.db.get_most_ordered_concession(customer_name)           
+            print("pref item name: ",preferred_item)
+            if preferred_item:
+                self.memory.insertData("cinema/preferred_item", preferred_item[0])
+                print("calling true")
+                self.memory.raiseEvent("cinema/preferred_list", "True")
+
+            else:
+                print("calling false")
+                self.memory.raiseEvent("cinema/preferred_list", "False")
+             
+        elif value == "preferred_buy":
+            preferred_item = self.memory.getData("cinema/preferred_item")
+
+            text = {
+                ("*", "*", "it", "*"): "Vuoi ordinare qualcosa? Abbiamo: " + preferred_item ,
+                ("*", "*", "*", "*"): "Hey, welcome back to the bar! I know you really like " + preferred_item +" would you like to add it to cart?"
+            }
+
+            buttons = {}
+            buttons["yes"] = {
+                "it": "yes",
+                "en": "yes"
+            }
+            buttons["no"] = {
+                "it": "no",
+                "en": "no"
+            }
+
+            self.create_action(
+                image="img/concessions.jpeg",
+                text=text,
+                buttons=buttons,
+                filename="preferred-list"
+            )
+            self.mws.csend("im.executeModality('BUTTONS', [])")
+            self.mws.csend("im.execute('preferred-list')")
+            self.memory.raiseEvent("cinema/preferred_buy", "True")
+
         elif value == "concession_info":
             self.motion.concession()
             items = self.db.get_concessions()
             names = ", ".join([item[0] for item in items])
-            concessions_split=[s.strip() for s in names.split(',')]
+            concessions_split = [s.strip() for s in names.split(',')]
+
+            # Ottieni nome utente da memoria
+            customer_name = self.memory.getData("cinema/customer_name")
+
+            # Ottieni cibo preferito (piuordinato)
 
             text = {
-                ("*", "*", "it", "*"): "Vuoi ordinare qualcosa? Abbiamo: ",
-                ("*", "*", "*", "*"): "Would you like to order something? We have: " 
+                ("*", "*", "it", "*"): "Vuoi ordinare qualcosa? Abbiamo: " + names + ".",
+                ("*", "*", "*", "*"): "Would you like to order something? We have: " + names + "." 
             }
-            buttons={}
+
+            buttons = {}
             for i, concession in enumerate(concessions_split):
-                    buttons["concession_{}".format(i)] = {
-                        "it": concession,
-                        "en": concession
-                    }
+                buttons["concession_{}".format(i)] = {
+                    "it": concession,
+                    "en": concession
+                }
 
             self.create_action(
                 image="img/concessions.jpeg",
@@ -524,23 +574,38 @@ class CinemaAssistant(object):
             else:
                 complete_order = ", ".join(item[0] for item in self.current_order)
                 self.memory.insertData("cinema/complete_order", complete_order)
-                total = sum(item[1] for item in self.current_order)  # Assuming price is index 1
+                total = sum(item[1] for item in self.current_order)
                 self.memory.insertData("cinema/order_total", total)
+
+                # --- AGGIORNAMENTO DELLA TABELLA DEGLI ORDINI ---
+                from collections import Counter
+                item_names = [item[0] for item in self.current_order]
+                counts = Counter(item_names)
+
+                expanded_list = []
+                for name, count in counts.items():
+                    expanded_list.extend([name] * count)
+
+                customer_name = self.memory.getData("cinema/customer_name")
+                self.db.place_concession_order_list(customer_name, expanded_list)
+
+                # Pulisci ordine corrente
+                
                 text = {
                     ("*", "*", "it", "*"): "Il tuo ordine e completo: {}. Totale: {} euro.".format(complete_order, total),
                     ("*", "*", "*", "*"): "Your order is complete: {}. Total: {} euros.".format(complete_order, total)
                 }
+
                 self.create_action(
-                    image="img/order_complete.jpg",  
+                    image="img/order_complete.jpg",
                     text=text,
                     filename="order-complete"
                 )
                 self.mws.csend("im.executeModality('BUTTONS', [])")
                 self.mws.csend("im.execute('order-complete')")
-
+                self.current_order = []
                 self.memory.raiseEvent("cinema/order_complete", str(total))
-                self.current_order = []  # Clear after processing
-        
+
         elif value == "restart":
             for key in self.memory.getDataList("cinema/"):
                 self.memory.insertData(key, "")

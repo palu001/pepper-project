@@ -213,7 +213,34 @@ proposal: %booking
 
 
 # --- Concessions Info ---
+proposal: %has_preferred
+    $cinema/function = has_preferred
+    u1: (e:cinema/preferred_list $cinema/preferred_list == True)
+        ^gotoReactivate(buy_preferred)
+    u1: (e:cinema/preferred_list $cinema/preferred_list == False)
+        ^gotoReactivate(buy_concession)
+
+proposal: %buy_preferred
+    Hey, welcome back to the bar! I know you really like $cinema/preferred_item would you like to add it to cart?
+    $cinema/function = preferred_buy
+    u1: (~refusal)
+        All right
+        ^gotoReactivate(buy_concession)
+    u1: (~acceptance)
+        Adding $cinema/preferred_item to the cart
+        $cinema/selected_concession=$cinema/preferred_item
+        $cinema/function=add_to_order
+        u2:(e:cinema/concession_found $cinema/concession_found==True)
+            Item correctly added
+            Do you want something else?
+            ^gotoReactivate(buy_concession)
+
+        u2:(e:cinema/concession_found $cinema/concession_found==False)
+            Item doesen't exists. Retry.
+            ^gotoReactivate(buy_concession)
+
 proposal: %buy_concession
+
     $cinema/function=concession_info
     u1: (e:cinema/concession_list)
         $cinema/concession_list
@@ -315,7 +342,7 @@ proposal: %main_hub
             ^gotoReactivate(restart)
 
     u1: (~ask_concessions)
-        ^gotoReactivate(buy_concession)
+        ^gotoReactivate(has_preferred)
         
     u1: (*)
         Sorry, I can't help with that. I can provide movie recommendations, showtimes, directions, and concession information. What would you like to do?

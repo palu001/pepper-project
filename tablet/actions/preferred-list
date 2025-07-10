@@ -1,0 +1,15 @@
+IMAGE
+<*, *, *, *>:  img/concessions.jpeg
+----
+TEXT
+<*, *, it, *>: Vuoi ordinare qualcosa? Abbiamo: Nachos
+<*, *, *, *>: Hey, welcome back to the bar! I know you really like Nachos would you like to add it to cart?
+----
+BUTTONS
+yes
+<*,*,it,*>: yes
+<*,*,*,*>:  yes
+no
+<*,*,it,*>: no
+<*,*,*,*>:  no
+----

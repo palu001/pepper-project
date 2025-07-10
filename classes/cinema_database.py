@@ -67,9 +67,22 @@ class CinemaDatabase(object):
         )
         ''')
 
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS orders (
+            id INTEGER PRIMARY KEY,
+            customer_id INTEGER,
+            concession_id INTEGER,
+            quantity INTEGER DEFAULT 0,
+            UNIQUE (customer_id, concession_id),
+            FOREIGN KEY (customer_id) REFERENCES customers(id),
+            FOREIGN KEY (concession_id) REFERENCES concessions(id)
+        )
+        ''')
+
         self.insert_sample_data(cursor)
         conn.commit()
         conn.close()
+
 
     def register_customer(self, name, age_group, genre):
         conn = self._connect()
@@ -254,3 +267,80 @@ class CinemaDatabase(object):
         movies = cursor.fetchall()
         conn.close()
         return movies
+
+    def place_concession_order_list(self, customer_name, item_list):
+        """
+        item_list: lista di stringhe, ciascuna rappresenta un item_name
+        """
+        conn = self._connect()
+        cursor = conn.cursor()
+        print("entro nella order databse")
+        # Trova ID cliente
+        cursor.execute("SELECT id FROM customers WHERE name = ?", (customer_name,))
+        customer = cursor.fetchone()
+        if not customer:
+            conn.close()
+            raise ValueError("Cliente non trovato")
+            print("cliente non trovato")
+        customer_id = customer[0]
+
+        # Conta occorrenze di ciascun item nella lista
+        from collections import Counter
+        item_counts = Counter(item_list)  # esempio: {'Popcorn Large': 2, 'Hot Dog': 1}
+
+        for item_name, count in item_counts.items():
+            # Trova ID del prodotto
+            cursor.execute("SELECT id FROM concessions WHERE item_name = ?", (item_name,))
+            concession = cursor.fetchone()
+            if not concession:
+                continue  # ignora item non valido
+            concession_id = concession[0]
+
+            # Inserisci o aggiorna quantita
+            cursor.execute('''
+                SELECT quantity FROM orders WHERE customer_id = ? AND concession_id = ?
+            ''', (customer_id, concession_id))
+            row = cursor.fetchone()
+
+            if row:
+                cursor.execute('''
+                    UPDATE orders
+                    SET quantity = quantity + ?
+                    WHERE customer_id = ? AND concession_id = ?
+                ''', (count, customer_id, concession_id))
+            else:
+                cursor.execute('''
+                    INSERT INTO orders (customer_id, concession_id, quantity)
+                    VALUES (?, ?, ?)
+                ''', (customer_id, concession_id, count))
+            
+        print("inserimento avvenuto con successo")
+        conn.commit()
+        conn.close()
+
+    def get_most_ordered_concession(self, customer_name):
+        conn = self._connect()
+        cursor = conn.cursor()
+
+        # Trova ID cliente
+        cursor.execute("SELECT id FROM customers WHERE name = ?", (customer_name,))
+        customer = cursor.fetchone()
+        if not customer:
+            conn.close()
+            raise ValueError("Cliente non trovato")
+        customer_id = customer[0]
+
+        # Recupera l'item piu ordinato
+        cursor.execute('''
+            SELECT c.item_name, o.quantity
+            FROM orders o
+            JOIN concessions c ON o.concession_id = c.id
+            WHERE o.customer_id = ?
+            ORDER BY o.quantity DESC
+            LIMIT 1
+        ''', (customer_id,))
+        
+        most_ordered = cursor.fetchone()
+        conn.close()
+
+        return most_ordered  # restituisce (item_name, quantity) oppure None
