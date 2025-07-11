@@ -1,0 +1,15 @@
+IMAGE
+<*, *, *, *>:  img/movie_feedback.png
+----
+TEXT
+<it, *, *, *>: Ho visto che hai prenotato un biglietto per The Amazing Adventure. Ti e piaciuto?
+<*, *, *, *>: I see you booked a ticket for The Amazing Adventure last time. Did you enjoy it?
+----
+BUTTONS
+yes
+<*,*,it,*>: Si
+<*,*,*,*>:  Yes
+no
+<*,*,it,*>: No
+<*,*,*,*>:  No
+----

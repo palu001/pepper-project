@@ -1,7 +1,12 @@
 IMAGE
-<*, *, *, *>:  img/concession_path.png
+<*, *, *, *>:  img/box_office_path.png
 ----
 TEXT
-<*, *, it, *>: Direzioni per concession
-<*, *, *, *>: Directions to concession
+<*, *, it, *>: Direzioni per box_office
+<*, *, *, *>: You can retrieve your ticket at the box
+----
+BUTTONS
+done
+<*,*,it,*>: done
+<*,*,*,*>:  done
 ----

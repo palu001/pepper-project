@@ -62,6 +62,9 @@ class CinemaDatabase(object):
             customer_id INTEGER,
             showtime_id INTEGER,
             num_tickets INTEGER DEFAULT 1,
+            booking_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,           
+            feedback_status TEXT DEFAULT 'not_rated', -- 'not_rated' or 'rated'
+            liked_movie BOOLEAN, -- True if liked, False if disliked           
             FOREIGN KEY (customer_id) REFERENCES customers(id),
             FOREIGN KEY (showtime_id) REFERENCES showtimes(id)
         )
@@ -344,3 +347,78 @@ class CinemaDatabase(object):
         conn.close()
 
         return most_ordered  # restituisce (item_name, quantity) oppure None
+
+
+    def get_unrated_movie_for_customer(self, customer_name):
+            """
+            Finds the most recent movie a customer booked but hasn't rated yet.
+            Returns the movie title if found, otherwise None.
+            """
+            conn = self._connect()
+            cursor = conn.cursor()
+            cursor.execute('''
+                SELECT m.title
+                FROM bookings b
+                JOIN customers c ON b.customer_id = c.id
+                JOIN showtimes s ON b.showtime_id = s.id
+                JOIN movies m ON s.movie_id = m.id
+                WHERE c.name = ? AND b.feedback_status = 'not_rated'
+                ORDER BY b.booking_date DESC
+                LIMIT 1
+            ''', (customer_name,))
+            result = cursor.fetchone()
+            conn.close()
+            return result[0] if result else None
+    
+    def record_movie_feedback(self, customer_name, movie_title, liked_status):
+        """
+        Records a customer's feedback for a specific movie, marking it as 'rated'.
+        """
+        conn = self._connect()
+        cursor = conn.cursor()
+        # Find the latest unrated booking for this movie and customer
+        cursor.execute('''
+            UPDATE bookings
+            SET feedback_status = 'rated', liked_movie = ?
+            WHERE id = (
+                SELECT b.id FROM bookings b
+                JOIN customers c ON b.customer_id = c.id
+                JOIN showtimes s ON b.showtime_id = s.id
+                JOIN movies m ON s.movie_id = m.id
+                WHERE c.name = ? AND m.title = ? AND b.feedback_status = 'not_rated'
+                ORDER BY b.booking_date DESC
+                LIMIT 1
+            )
+        ''', (liked_status, customer_name, movie_title))
+        conn.commit()
+        conn.close()
+        print("Recorded feedback")
+
+
+    def get_movie_details(self, movie_title):
+            """Retrieves all details for a specific movie, like its genre."""
+            conn = self._connect()
+            conn.row_factory = sqlite3.Row # Allows accessing columns by name
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM movies WHERE title = ?", (movie_title,))
+            details = cursor.fetchone()
+            conn.close()
+            return dict(details) if details else None
+    
+    def get_upcoming_showtime(self,customer_name):
+        conn = self._connect()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT  m.title, s.show_time, s.screen_number
+            FROM bookings b
+            JOIN customers c ON b.customer_id = c.id
+            JOIN showtimes s ON b.showtime_id = s.id
+            JOIN movies m ON s.movie_id = m.id
+            WHERE c.name = ? AND b.feedback_status = 'not_rated'
+            LIMIT 1
+        """, (customer_name,))
+        
+        bookings = cursor.fetchall()
+        conn.close()
+        return bookings

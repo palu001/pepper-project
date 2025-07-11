@@ -1,0 +1,7 @@
+IMAGE
+<*, *, *, *>:  img/recommend_movies.jpeg
+----
+TEXT
+<it, *, *, *>: Visto che ti e piaciuto The Amazing Adventure
+<*, *, *, *>:  Since you liked The Amazing Adventure
+----

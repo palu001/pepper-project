@@ -1,24 +1,27 @@
-from datetime import datetime
+from datetime import datetime,timedelta
+import random
 import re
 import io
 import os
 import time
 import ast
+from datetime import datetime, timedelta
 
 class CinemaAssistant(object):
-    def __init__(self, memory, database, mws, motion_manager):
+    def __init__(self, animation,memory, database, mws, motion_manager):
+        self.animation=animation
         self.memory = memory
         self.db = database
         self.mws = mws
         self.motion = motion_manager
         self.current_order = []  # Track items for order
+        self.is_tablet=False
 
         
     def handle_function(self, value):
         print("Handling function:", value)
     
         if value == "greet_customer":
-
             self.motion.greeting()
             # Reset flags on new greeting
             name = self.memory.getData("cinema/customer_name")
@@ -27,8 +30,8 @@ class CinemaAssistant(object):
                 self.current_customer = customer
 
                 text = {
-                    ("*", "*", "it", "*"): "Bentornato {}  Would you like to use tablet in order to communicate?".format(name),
-                    ("*", "*", "*", "*"): "Welcome back to our cinema {}! Would you like to use tablet in order to communicate?".format(name)
+                    ("*", "*", "it", "*"): "Bentornato {}  ".format(name),
+                    ("*", "*", "*", "*"): "Welcome back to our cinema {}! ".format(name)
                 }
                 self.mws.csend("im.executeModality('BUTTONS', [])")
                 self.create_action(text = text, filename="welcome-back")
@@ -54,6 +57,47 @@ class CinemaAssistant(object):
                 self.mws.csend("im.execute('new-customer-welcome')")
                 self.memory.raiseEvent("cinema/customer_identity_check", 
                     "False")
+     
+        elif value == "check_upcoming_showtime":
+            
+            booking=self.db.get_upcoming_showtime(self.memory.getData("cinema/customer_name"))
+            if not booking:
+                self.memory.raiseEvent("cinema/upcoming_showtime", "False")
+            else:
+                title, show_time_str, screen_number = booking[0]
+                show_time = datetime.strptime(show_time_str, "%H:%M")
+
+                fake_now = show_time - timedelta(minutes=random.randint(10, 15))
+                self.use_biased = 15 <= fake_now.hour <= 20 and random.random() < 0.5
+
+                if self.use_biased:
+                    current_time = fake_now
+                else:
+                    hour = random.randint(15, 20)
+                    minute = random.randint(0, 59)
+                    current_time = datetime.strptime("{:02}:{:02}".format(hour, minute), "%H:%M")
+
+                # Check if current_time is within 15 minutes before the show
+                time_diff = (show_time - current_time).total_seconds() / 60
+                if 0 <= time_diff <= 15:
+                    self.memory.insertData("cinema/upcoming_movie_title", title)
+                    self.memory.insertData("cinema/upcoming_showtime_time", show_time.strftime("%-I:%M %p"))
+                    self.memory.insertData("cinema/screen_number", str(screen_number))
+                    self.memory.raiseEvent("cinema/upcoming_showtime", "True")
+                else:
+                    self.memory.raiseEvent("cinema/upcoming_showtime", "False")
+            
+          
+                
+        elif value == "check_for_feedback":
+            name = self.memory.getData("cinema/customer_name")
+            unrated_movie = self.db.get_unrated_movie_for_customer(name)
+            if unrated_movie and not self.use_biased:
+                self.memory.insertData("cinema/last_watched_movie", unrated_movie)
+                self.memory.raiseEvent("cinema/feedback_needed", "True")
+            else:
+                self.memory.raiseEvent("cinema/feedback_needed", "False")
+        
         elif value == "main_hub":
                 text = {
                     ("*", "*", "it", "*"): "Come posso aiutarti?",
@@ -116,6 +160,40 @@ class CinemaAssistant(object):
             self.mws.csend("im.executeModality('BUTTONS', [])")
             self.mws.csend("im.execute('registration-success')")
 
+
+        elif value == "record_feedback":
+            name = self.memory.getData("cinema/customer_name")
+            movie = self.memory.getData("cinema/last_watched_movie")
+            liked = self.memory.getData("cinema/liked_status") # True or False
+
+            self.db.record_movie_feedback(name, movie, liked)
+
+            # Get user and movie details to form a smart reply.
+            user_profile = self.db.get_customer_by_name(name)
+            user_genre = user_profile[2] if user_profile else "any"
+            movie_details = self.db.get_movie_details(movie) # Assumes DB returns a dict with a 'genre' key
+            movie_genre = movie_details['genre'] if movie_details else "unknown"
+
+            response_text = ""
+            if liked == 'True':
+                if movie_genre.lower() == user_genre.lower():
+                    response_text = "I'm so glad you liked it! It sounds like the perfect {} movie for you.".format(movie_genre)
+                else:
+                    response_text = "That's great! It's always fun to discover a gem outside of your usual {} preference.".format(user_genre)
+            else:  # Disliked
+                if movie_genre.lower() == user_genre.lower():
+                    response_text = "Oh, that's a shame. Even though it's a {} film, this one wasn't for you. I'll remember that for future recommendations.".format(movie_genre)
+                else:
+                    response_text = "I see. That's understandable, since it's a bit different from the {} films you usually prefer. Thanks for the feedback!".format(user_genre)
+
+            
+            if not self.is_tablet:
+                self.memory.raiseEvent("cinema/feedback_response", response_text)
+            else:
+                self.memory.insertData("cinema/feedback_response",response_text)
+
+
+
         elif value == "update_preferences":
             name = self.memory.getData("cinema/customer_name")
             genre = self.memory.getData("cinema/movie_preference")
@@ -135,7 +213,7 @@ class CinemaAssistant(object):
             self.mws.csend("im.execute('update-success')")
 
         elif value == "recommend_movies":
-
+            self.posture.goToPosture("Stand", 1.0) # Speed 0.8
             name = self.memory.getData("cinema/customer_name")
             customer = self.db.get_customer_by_name(name)
             age, genre = customer[1], customer[2]
@@ -181,11 +259,12 @@ class CinemaAssistant(object):
                 filename="recommend-movies",
                 buttons=buttons
             )
-
+            current_posture_after_change = self.posture.getPosture()
+            print("After attempting to go to 'Stand', the current posture is:",current_posture_after_change)
             self.mws.csend("im.executeModality('BUTTONS', [])")
             self.mws.csend("im.execute('recommend-movies')")
             self.memory.raiseEvent("cinema/movie_suggestions", suggestion_str)
-
+            
         #Da modificare per ask
         elif value == "get_showtimes":
 
@@ -303,7 +382,6 @@ class CinemaAssistant(object):
                 )
                 self.mws.csend("im.executeModality('BUTTONS', [])")
                 self.mws.csend("im.execute('booking-success')")
-
                 self.memory.raiseEvent("cinema/booking_success", 
                     "Booking confirmed")
             except Exception as e:
@@ -489,7 +567,6 @@ class CinemaAssistant(object):
 
         elif value == "list_all_movies":
             print("Listing all available movies:")
-        
             movies = self.db.get_all_movies()
             
             movie_list = ", ".join([movie[0] for movie in movies])
@@ -554,7 +631,6 @@ class CinemaAssistant(object):
 
                 self.mws.csend("im.executeModality('BUTTONS', [])")
                 self.mws.csend("im.execute('concession-error')")
-
                 self.memory.raiseEvent("cinema/concession_found", "False")
     
         elif value == "finalize_order":
@@ -604,6 +680,8 @@ class CinemaAssistant(object):
                 self.mws.csend("im.executeModality('BUTTONS', [])")
                 self.mws.csend("im.execute('order-complete')")
                 self.current_order = []
+
+
                 self.memory.raiseEvent("cinema/order_complete", str(total))
 
         elif value == "restart":
@@ -1112,7 +1190,7 @@ class CinemaAssistant(object):
 
             text = {
                 ("*", "*", "it", "*"): "Direzioni per {}".format(location),
-                ("*", "*", "*", "*"): "You can retrieve your ticker at the box" .format(location)
+                ("*", "*", "*", "*"): "You can retrieve your ticket at the box" .format(location)
             }
             buttons = {}
             buttons["done"] = {
@@ -1222,7 +1300,7 @@ class CinemaAssistant(object):
 
             text = {
                 ("*", "*", "it", "*"): "****",
-                ("*", "*", "*", "*"): "Some movies you could like are: "
+                ("*", "*", "*", "*"): "Based on your preferences, some movies you could like are: "
             }
 
             buttons = {}
@@ -1301,6 +1379,75 @@ class CinemaAssistant(object):
             self.motion.guide_to_location("entrance")
             self.memory.raiseEvent("cinema/tablet_restart", "True")
     
+        elif value == "check_feedback_tablet":
+            self.is_tablet=True
+            # This block corresponds to the main part of the %get_movie_feedback_tablet proposal
+            last_movie = self.memory.getData("cinema/last_watched_movie")
+            
+            text = {
+                ("it", "*", "*", "*"): "Ho visto che hai prenotato un biglietto per {}. Ti e piaciuto?".format(last_movie),
+                ("*", "*", "*", "*"): "I see you booked a ticket for {} last time. Did you enjoy it?".format(last_movie)
+            }
+            buttons = {
+                "yes": {
+                    "it": "Si",
+                    "en": "Yes"
+                },
+                "no": {
+                    "it": "No",
+                    "en": "No"
+                }
+            }
+
+            self.create_action(
+                image="img/movie_feedback.png",
+                text=text,
+                buttons=buttons,
+                filename="movie-feedback-request"
+            )
+            
+            # Clear buttons and ask the user for feedback
+            self.mws.csend("im.executeModality('BUTTONS', [])")
+            answer = self.mws.csend("im.ask('movie-feedback-request', timeout=999)")
+
+            # The user's choice raises an event, corresponding to e:tablet/feedback_movie
+            if answer == "yes":
+                self.memory.raiseEvent("tablet/feedback_movie", "True")
+            elif answer == "no":
+                self.memory.raiseEvent("tablet/feedback_movie", "False")
+
+        elif value == "tablet_feedback_response":
+            # This block handles the response after the user has given feedback.
+            # It corresponds to the u2 sections in the proposal.
+            last_movie = self.memory.getData("cinema/last_watched_movie")
+            liked = self.memory.getData("cinema/liked_status")
+            response=self.memory.getData("cinema/feedback_response")
+
+            if liked:
+                response_text = response+ " Since you liked {}".format(last_movie)
+                response_text_it = "Visto che ti e piaciuto {}".format(last_movie)
+            else:
+                response_text = response + " Since you didn't like {}".format(last_movie)
+                response_text_it = "Dato che non ti e piaciuto{}.".format(last_movie)
+            
+            text = {
+                ("it", "*", "*", "*"): response_text_it,
+                ("*", "*", "*", "*"): response_text
+            }
+
+            self.create_action(
+                image="img/recommend_movies.jpeg",
+                text=text,
+                filename="feedback-thank-you"
+            )
+            
+            # Display the confirmation message, then trigger recommendations
+            self.mws.csend("im.executeModality('BUTTONS', [])")
+            self.mws.csend("im.execute('feedback-thank-you')")
+            
+            self.memory.raiseEvent("tablet/feedback_response","True")
+
+
  
 
     def create_action(self, image=None, text=None, tts=None, buttons=None, filename="actions"):

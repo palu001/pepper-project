@@ -12,7 +12,7 @@ concept: (age_groups) ["child" "teen"  "adult" "senior"]
 concept: (directions) ["bathroom" "restroom" "washroom" "screen 1" "screen 2" "screen 3" "screen 4" "screen 5" "screen 6" "screen 7" "screen 8" "theater" "auditorium" "concession" "concession stand" "exit" "entrance" "box office" "ticket office"]
 concept: (concessions) ["popcorn" "soda" "drink" "beverage" "nachos" "candy" "sweets" "snack" "hot dog" "food"]
 concept: (update_prefs) ["update" "preferences" "change" "info" "details" "profile"]
-concept: (ask_recommendation) ["recommend" "watch" "recommendations" "recommendation" "see"]
+concept: (ask_recommendation) ["recommend" "watch" "recommendations" "recommendation" "see" "tips" "tip"]
 concept: (ask_showtimes) ["showtimes" "movie times" "what time are the movies playing" "get showtimes" "what's playing"]
 concept: (ask_directions) ["directions" "where" "get to" "where is"]
 concept: (ask_concessions) ["concessions" "buy snacks" "order food" "what food do you have" "menu" "i'm hungry"]
@@ -20,7 +20,7 @@ concept: (done) ["i'm done" "i am done" "done" "all done" "that's it" "finished"
 
 # --- Global Greeting ---   
 u: (~greetings)
-    Hello! Welcome to our cinema.
+    Hey there! Welcome to our cozy cinema, glad to have you!
     ^gotoReactivate(get_name)
 
 # --- Restart --- 
@@ -37,21 +37,53 @@ proposal: %get_name
         $cinema/function = greet_customer
         u2: (e:cinema/customer_identity_check $cinema/customer_identity_check==True) 
             Great! Welcome back, $cinema/customer_name
+            $cinema/function = check_upcoming_showtime
+            u3: (e:cinema/upcoming_showtime $cinema/upcoming_showtime==True)
+                ^gotoReactivate(showtime_heads_up)
+            u3: (e:cinema/upcoming_showtime $cinema/upcoming_showtime==False)
                 ^gotoReactivate(use_tablet)
         u2: (e:cinema/customer_identity_check $cinema/customer_identity_check==False) 
                 Nice to meet you, $cinema/customer_name! Let's get to know you better.
                 ^gotoReactivate(get_age)
-                
-proposal: %use_tablet
-    Do you want to use tablet in order to communicate?
+
+
+proposal: %showtime_heads_up
+    Heads up! Your movie $cinema/upcoming_movie_title starts in just 10 minutes! Want me to guide you to Screen $cinema/screen_number ?
+
     u1: (~acceptance)
-        ^gotoReactivate(tablet_main_hub)
+        Great, follow me.
+        $cinema/selected_movie = $cinema/upcoming_movie_title
+        $cinema/function=guide_to_screen
+        ^gotoReactivate(on_screen_arrival)
+
     u1: (~refusal)
-        ^gotoReactivate(main_hub)
+        Alright! Enjoy your movie and let me know next time if you liked it!
+        $cinema/function = restart
+        u2: (e:cinema/restart)
+            ^gotoReactivate(restart)
+
+    u1: (*)
+        I might’ve missed that, do you want help getting to your screen?
+        ^stayInScope
+
+proposal: %check_feedback
+    $cinema/function=check_for_feedback
+    u1: (e:cinema/feedback_needed $cinema/feedback_needed==True) 
+        ^gotoReactivate(get_movie_feedback)
+    u1: (e:cinema/feedback_needed $cinema/feedback_needed==False) 
+        Based on your preferences, here are one or more movies for you that are playing today, hurry up and book the tickets!!
+        ^gotoReactivate(offer_recommendation)
+
+proposal: %use_tablet
+    Do you want to use the tablet in order to communicate?
+    u1: (~acceptance)
+        ^gotoReactivate(check_feedback_tablet)
+    u1: (~refusal)
+        ^gotoReactivate(check_feedback)
 
 # --- Get Age Group ---
 proposal: %get_age
-    What age group do you belong to? child, teen, adult, or senior?
+    How would you describe your age group? Child, teen, adult, or senior?
 
     u1: ({*} _~age_groups {*})
         Got it, $1 
@@ -59,12 +91,12 @@ proposal: %get_age
         ^gotoReactivate(get_genre)
 
     u1: (*)
-        Sorry, I didn't get that. Retry.
+        Hmm, I didn’t catch that. Mind trying again?.
         ^stayInScope
         
 # --- Get Movie Genre Preference ---
 proposal: %get_genre
-    What movie genre do you like? 
+    Just one more thing, what kind of movie gets you excited? Action, comedy, sci-fi name your vibe!
 
     u1: ({*} _~movie_genres {*})
         $cinema/movie_preference=$1
@@ -72,8 +104,32 @@ proposal: %get_genre
         ^gotoReactivate(use_tablet)
 
     u1: (*)
-        Sorry, I didn't recognize that genre. Retry.
+        Oops, that genre doesn’t ring a bell. Can you try another one?
         ^stayInScope
+
+
+
+# --- NEW: Post-Movie Feedback ---
+proposal: %get_movie_feedback
+    You saw $cinema/last_watched_movie last time, did you like it?
+    u1: (~acceptance)
+        $cinema/liked_status = True
+        $cinema/function = record_feedback
+        u2: (e:cinema/feedback_response)
+            $cinema/feedback_response
+            Since you've liked $cinema/last_watched_movie , here are one or more movies for you that are playing today, hurry up and book the tickets!!
+            ^gotoReactivate(offer_recommendation)
+    u1: (~refusal)
+        $cinema/liked_status = False
+        $cinema/function = record_feedback
+        u2: (e:cinema/feedback_response)
+            $cinema/feedback_response
+            Since you didn't like $cinema/last_watched_movie , here are one or more movies for you that are playing today, hurry up and book the tickets!!
+            ^gotoReactivate(offer_recommendation)
+    u1: (*) I didn't quite get that. Did you like the movie? Please answer with a yes or no. ^stayInScope
+
+
+
 
 proposal: %update_preferences
     What movie genre do you like? 
@@ -95,7 +151,7 @@ proposal: %offer_recommendation
 
 # --- Choose a Movie given a Recommendation ---
 proposal: %choose_movie_from_recommendations
-    Here some movies you could like: $cinema/movie_suggestions .
+    $cinema/movie_suggestions 
     Do any of these sound good? Just tell me which one you’d like to know more about.
 
     u1: (~refusal)
@@ -144,7 +200,7 @@ proposal: %booking_recommendation
                 u2: (e:cinema/booking_success)
                     $cinema/direction_request=box_office
                     $cinema/function=show_directions
-                    Booking success! You can retrieve your tickets at the box office shown in the tablet. Tell me when you got them.
+                    All set! You can grab your tickets from the box office, it's marked on the tablet. Let me know when you're done, and I’ll help with the next step!
 
                     u3: (~done)
                         ^gotoReactivate(offer_screen_guidance)
@@ -166,7 +222,7 @@ proposal: %offer_screen_guidance
             ^gotoReactivate(on_screen_arrival)
 
         u1: (~refusal)
-            Alright! Enjoy your movie!
+            Alright! Enjoy your movie and let me know next time if you liked it!
             ^gotoReactivate(main_hub)
 
         u1: (*)
@@ -175,7 +231,7 @@ proposal: %offer_screen_guidance
 
 proposal: %on_guidance_complete
     u1: (e:cinema/guidance_complete)
-        We have arrived at the $cinema/target_location . Is there anything else I can help you with?
+        We have arrived at the $cinema/target_location .
         ^gotoReactivate(main_hub)
     u1: (e:cinema/guidance_failed)
         Sorry, I couldn't guide you there. Let me know if you need help with something else.
@@ -183,8 +239,26 @@ proposal: %on_guidance_complete
 
 proposal: %on_screen_arrival
     u1: (e:cinema/screen_guidance_complete)
-        We have arrived at screen $cinema/screen_guidance_complete  Enjoy the movie!
-        ^gotoReactivate(main_hub)
+        We have arrived at screen $cinema/screen_guidance_complete  Enjoy the movie! Inform me when you've finished watching it.
+        u2: (~done)
+            Have you enjoyed the movie?
+            u3: (~refusal)
+                $cinema/liked_status = False
+                $cinema/function = record_feedback
+                u3: (e:cinema/feedback_response)
+                    $cinema/feedback_response
+                    ^gotoReactivate(main_hub)
+            u3: (~acceptance)
+                $cinema/liked_status = True
+                $cinema/function = record_feedback
+                u3: (e:cinema/feedback_response)
+                    $cinema/feedback_response
+                    ^gotoReactivate(main_hub)
+        u2: (~refusal)
+            Fine, i'll ask you another time!
+            ^gotoReactivate(main_hub)
+
+    
     u1: (e:cinema/screen_guidance_failed)
         Sorry, I couldn't find the screen information. Let me know if you need help with something else.
         ^gotoReactivate(main_hub)
@@ -246,7 +320,7 @@ proposal: %buy_concession
         $cinema/concession_list
 
         u2: (i want _*) 
-            Adding $1 to your order ...
+            I'm adding $1 to your order ...
             $cinema/selected_concession=$1
             $cinema/function=add_to_order
 
@@ -256,7 +330,7 @@ proposal: %buy_concession
                 ^gotoReactivate(buy_concession)
 
             u3:(e:cinema/concession_found $cinema/concession_found==False)
-                Item doesen't exists. Retry.
+                It looks like we don't have this item. Would you mind trying with other items?.
                 ^gotoReactivate(buy_concession)
 
         u2: ([
@@ -268,7 +342,7 @@ proposal: %buy_concession
                 $cinema/direction_request=concession
                 $cinema/function=show_directions
                 You ordered $cinema/complete_order 
-                Your total is $cinema/order_total Please pay at the concession stand. I will show you on the tablet. Tell me when you have finished.
+                That will be $cinema/order_total - just head over to the concession stand. Let me know once you’re done!
                 u4: (~done)
                     ^gotoReactivate(main_hub)
 
@@ -296,7 +370,7 @@ proposal: %buy_concession
                 ^gotoReactivate(buy_concession)
 
 proposal: %main_hub
-    How can I help you? You can ask for movie recommendations, showtimes, directions, concessions, or update your preferences.
+    So, what can I do for you today? Want movie tips, snacks, showtimes, directions or maybe change preferences? I’ve got you covered!
     $cinema/function = main_hub
     u1: ({*} _~update_prefs {*}) 
         Of course. Let's update your preferences.
@@ -304,6 +378,7 @@ proposal: %main_hub
    
     u1: ({*} _~ask_recommendation {*}) 
         I'd be happy to find a movie for you.
+        Based on your preferences, here are one or more movies for you that are playing today, hurry up and book the tickets!!
         ^gotoReactivate(offer_recommendation)
 
     u1: (~ask_showtimes)
@@ -328,7 +403,7 @@ proposal: %main_hub
                 ^gotoReactivate(on_guidance_complete)
 
             u3: (~refusal)
-                Alright!
+                Alright! Let me know next time if you liked it.
                 ^gotoReactivate(main_hub)
 
             u3: (*)
@@ -345,7 +420,7 @@ proposal: %main_hub
         ^gotoReactivate(has_preferred)
         
     u1: (*)
-        Sorry, I can't help with that. I can provide movie recommendations, showtimes, directions, and concession information. What would you like to do?
+        Hmm, that’s a bit beyond my usual scope, but I can help with movies, snacks, directions, or your profile. What would you like to do?
         ^stayInScope
     
 proposal: %tablet_concession
@@ -377,7 +452,7 @@ proposal: %tablet_concession
     
 
 proposal: %tablet_recommendations
-    Here's some recommendations
+    Here are some recommendations
     $cinema/tablet = tablet_offer_recommendation
     u1:(e:tablet/movie_suggestions $tablet/movie_suggestions == True)
         ^gotoReactivate(tablet_get_description)
@@ -438,7 +513,7 @@ proposal: %tablet_directions
                 ^gotoReactivate(tablet_main_hub)
 
             u3: (e:cinema/tablet_guide_to_location $cinema/tablet_guide_to_location==False)
-                Alright!
+                Alright! Let me know next time if you liked it.
                 ^gotoReactivate(tablet_main_hub)
 
 
@@ -454,7 +529,7 @@ proposal: %tablet_offer_screen_guidance
                     ^gotoReactivate(tablet_main_hub)
 
         u1: (e:tablet/screen_guidance $tablet/screen_guidance == False)
-            All right, enjoy your movie
+            All right, enjoy your movie and let me know next time if you liked it
             ^gotoReactivate(tablet_main_hub)
 
 
@@ -465,6 +540,24 @@ proposal: %tablet_genre
     u1: (e:cinema/tablet_genre_selected $cinema/tablet_genre_selected==True)
         Ok, I update it.
         ^gotoReactivate(tablet_main_hub)
+
+proposal: %get_movie_feedback_tablet
+    $cinema/tablet = check_feedback_tablet
+    u1: (e:tablet/feedback_movie )
+        $cinema/liked_status = $tablet/feedback_movie
+        $cinema/function = record_feedback
+        $cinema/tablet=tablet_feedback_response
+        u2: (e:tablet/feedback_response)
+            ^gotoReactivate(tablet_recommendations)
+
+
+proposal: %check_feedback_tablet
+    $cinema/function=check_for_feedback
+    u1: (e:cinema/feedback_needed $cinema/feedback_needed==True) 
+        ^gotoReactivate(get_movie_feedback_tablet)
+    u1: (e:cinema/feedback_needed $cinema/feedback_needed==False) 
+        ^gotoReactivate(tablet_recommendations)
+
 
 proposal: %tablet_main_hub
     How can I help you? You can ask for movie recommendations, showtimes, directions, concessions, or update your preferences.

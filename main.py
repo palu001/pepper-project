@@ -43,7 +43,10 @@ def main():
 
     ALMemory = session.service("ALMemory")
     ALMotion = session.service("ALMotion")
+    ALAnimation = session.service("ALAnimationPlayer")
+    
 
+    
     db = CinemaDatabase(project_path)
     db.initialize_database()
     #Initialize tablet
@@ -57,7 +60,7 @@ def main():
 
     motion = MotionManager(ALMotion)
     try:
-        cinema_assistant = CinemaAssistant(ALMemory, db, mws , motion)
+        cinema_assistant = CinemaAssistant(ALAnimation,ALMemory, db, mws , motion)
     except Exception as e:
         print("Failed to initialize Cinema Assistant:", e)
         sys.exit(1)
