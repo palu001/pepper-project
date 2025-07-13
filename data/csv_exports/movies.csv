@@ -1,0 +1,35 @@
+id,title,genre,duration,rating,description,poster_url
+1,The Amazing Adventure,action,120.0,PG-13,An epic journey of heroes,poster1.jpg
+2,Love in Paris,romance,105.0,PG,A romantic comedy in the city of love,poster2.jpg
+3,Space Warriors,sci-fi,140.0,PG-13,Battle for the galaxy,poster3.jpg
+4,The Mystery House,horror,95.0,R,A spine-chilling thriller,poster4.jpg
+5,Family Fun Time,comedy,90.0,G,Perfect for the whole family,poster5.jpg
+6,American Beauty (1999),Drama,,,description not available,
+7,Star Wars: Episode IV - A New Hope (1977),Sci-Fi,,,description not available,
+8,Star Wars: Episode V - The Empire Strikes Back (1980),War,,,description not available,
+9,"Silence of the Lambs, The (1991)",Thriller,,,description not available,
+10,Saving Private Ryan (1998),War,,,description not available,
+11,Raiders of the Lost Ark (1981),Adventure,,,description not available,
+12,"Matrix, The (1999)",Thriller,,,description not available,
+13,"Sixth Sense, The (1999)",Thriller,,,description not available,
+14,Star Wars: Episode VI - Return of the Jedi (1983),War,,,description not available,
+15,Schindler's List (1993),War,,,description not available,
+16,Fargo (1996),Thriller,,,description not available,
+17,Terminator 2: Judgment Day (1991),Thriller,,,description not available,
+18,"Shawshank Redemption, The (1994)",Drama,,,description not available,
+19,Braveheart (1995),War,,,description not available,
+20,"Godfather, The (1972)",Drama,,,description not available,
+21,Back to the Future (1985),Sci-Fi,,,description not available,
+22,"Princess Bride, The (1987)",Romance,,,description not available,
+23,L.A. Confidential (1997),Thriller,,,description not available,
+24,Shakespeare in Love (1998),Romance,,,description not available,
+25,Pulp Fiction (1994),Drama,,,description not available,
+26,Being John Malkovich (1999),Comedy,,,description not available,
+27,Jurassic Park (1993),Sci-Fi,,,description not available,
+28,"Terminator, The (1984)",Thriller,,,description not available,
+29,Toy Story (1995),Comedy,,,description not available,
+30,Forrest Gump (1994),War,,,description not available,
+31,Men in Black (1997),Sci-Fi,,,description not available,
+32,Groundhog Day (1993),Romance,,,description not available,
+33,E.T. the Extra-Terrestrial (1982),Sci-Fi,,,description not available,
+34,Alien (1979),Thriller,,,description not available,

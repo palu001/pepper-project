@@ -1,15 +1,7 @@
 IMAGE
-<*, *, *, *>:  img/movie_poster_space_warriors.jpeg
+<*, *, *, *>:  img/movie_poster_men_in_black_(1997).jpeg
 ----
 TEXT
-<*, *, it, *>: Battle for the galaxy
-<*, *, *, *>: Battle for the galaxy
-----
-BUTTONS
-cancel
-<*,*,it,*>: cancella
-<*,*,*,*>:  cancel
-interested
-<*,*,it,*>: interested
-<*,*,*,*>:  interested
+<*, *, it, *>: description not available
+<*, *, *, *>: description not available
 ----

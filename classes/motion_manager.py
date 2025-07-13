@@ -7,33 +7,6 @@ class MotionManager(object):
         self.cinema_map = CinemaMap()
         self.current_orientation=0
 
-    def greeting(self):
-        try:
-            # Giunti coinvolti
-            names = ["RShoulderPitch", "RShoulderRoll", "RElbowYaw", "RElbowRoll"]
-            
-            # Salva le posizioni iniziali
-            initial_angles = self.motion.getAngles(names, True)
-
-            # Movimento iniziale per preparare il saluto
-            angles = [-0.5, -0.3, 1.0, 0.5]
-            self.motion.angleInterpolation(names, angles, [1.0]*4, True)
-
-            # Movimento del saluto (3 volte avanti e indietro del gomito)
-            for _ in range(3):
-                self.motion.angleInterpolation(["RElbowRoll"], [0.2], [0.3], True)
-                self.motion.angleInterpolation(["RElbowRoll"], [0.8], [0.3], True)
-
-            # Movimento finale prima del rientro
-            self.motion.angleInterpolation(names, [1.5, -0.15, 0.0, 0.0], 1.5, True)
-
-            # Ritorna alla posizione iniziale
-            self.motion.angleInterpolation(names, initial_angles, [1.0]*4, True)
-
-        except Exception as e:
-            print("Greeting failed:", e)
-
-
 
     def point_and_describe_direction(self, target_location, screen_number=None):
         """Point to a location and give verbal directions"""

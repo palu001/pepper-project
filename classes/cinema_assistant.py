@@ -16,13 +16,16 @@ class CinemaAssistant(object):
         self.motion = motion_manager
         self.current_order = []  # Track items for order
         self.is_tablet=False
+        #hour = random.randint(15, 20)
+        hour=18
+        minute = random.randint(0, 59)
+        self.current_time = datetime.strptime("{:02}:{:02}".format(hour, minute), "%H:%M")
 
         
     def handle_function(self, value):
         print("Handling function:", value)
-    
         if value == "greet_customer":
-            self.motion.greeting()
+            self.animation.run(".lastUploadedChoregrapheBehavior/animations/Stand/Gestures/Hey_1",_async=True)
             # Reset flags on new greeting
             name = self.memory.getData("cinema/customer_name")
             customer = self.db.get_customer_by_name(name)
@@ -42,6 +45,7 @@ class CinemaAssistant(object):
                     "True")
                 
             else:
+                self.animation.run(".lastUploadedChoregrapheBehavior/animations/Stand/Gestures/Enthusiastic_4",_async=True)
                 # Create new customer welcome action
                 text = {
                     ("*", "*", "it", "*"): "Benvenuto nel nostro cinema! Raccogliamo alcune informazioni per migliorare la tua esperienza.",
@@ -59,27 +63,19 @@ class CinemaAssistant(object):
                     "False")
      
         elif value == "check_upcoming_showtime":
-            
-            booking=self.db.get_upcoming_showtime(self.memory.getData("cinema/customer_name"))
+            name = self.memory.getData("cinema/customer_name")
+            booking = self.db.get_unrated_movie_for_customer(name)
             if not booking:
                 self.memory.raiseEvent("cinema/upcoming_showtime", "False")
             else:
-                title, show_time_str, screen_number = booking[0]
+                title, show_time_str, screen_number = booking
                 show_time = datetime.strptime(show_time_str, "%H:%M")
 
-                fake_now = show_time - timedelta(minutes=random.randint(10, 15))
-                self.use_biased = 15 <= fake_now.hour <= 20 and random.random() < 0.5
-
-                if self.use_biased:
-                    current_time = fake_now
-                else:
-                    hour = random.randint(15, 20)
-                    minute = random.randint(0, 59)
-                    current_time = datetime.strptime("{:02}:{:02}".format(hour, minute), "%H:%M")
-
-                # Check if current_time is within 15 minutes before the show
-                time_diff = (show_time - current_time).total_seconds() / 60
+                print(show_time,self.current_time)
+                time_diff = (show_time - self.current_time).total_seconds() / 60
+                print(time_diff)
                 if 0 <= time_diff <= 15:
+                    self.animation.run(".lastUploadedChoregrapheBehavior/animations/Stand/Gestures/Excited_1",_async=True)
                     self.memory.insertData("cinema/upcoming_movie_title", title)
                     self.memory.insertData("cinema/upcoming_showtime_time", show_time.strftime("%-I:%M %p"))
                     self.memory.insertData("cinema/screen_number", str(screen_number))
@@ -91,14 +87,23 @@ class CinemaAssistant(object):
                 
         elif value == "check_for_feedback":
             name = self.memory.getData("cinema/customer_name")
-            unrated_movie = self.db.get_unrated_movie_for_customer(name)
-            if unrated_movie and not self.use_biased:
-                self.memory.insertData("cinema/last_watched_movie", unrated_movie)
-                self.memory.raiseEvent("cinema/feedback_needed", "True")
+            booking = self.db.get_unrated_movie_for_customer(name)
+            
+            if booking:
+                unrated_movie, show_time_str, screen_number = booking
+                show_time = datetime.strptime(show_time_str, "%H:%M")
+                print("cur,show",self.current_time,show_time)
+                if self.current_time>show_time:
+                    self.animation.run(".lastUploadedChoregrapheBehavior/animations/Stand/Gestures/Thinking_4",_async=True)
+                    self.memory.insertData("cinema/last_watched_movie", unrated_movie)
+                    self.memory.raiseEvent("cinema/feedback_needed", "True")
+                else:
+                    self.memory.raiseEvent("cinema/feedback_needed", "False")
             else:
                 self.memory.raiseEvent("cinema/feedback_needed", "False")
         
         elif value == "main_hub":
+                self.animation.run(".lastUploadedChoregrapheBehavior/animations/Stand/BodyTalk/BodyTalk_10",_async=True)
                 text = {
                     ("*", "*", "it", "*"): "Come posso aiutarti?",
                     ("*", "*", "*", "*"): "How can I help you?"
@@ -146,6 +151,7 @@ class CinemaAssistant(object):
             print("Registering customer")
             self.db.register_customer(name, age,genre)
             print("Customer registered successfully.")
+            self.animation.run(".lastUploadedChoregrapheBehavior/animations/Stand/Gestures/Yes_1",_async=True)
             # Create registration success action
             text = {
                 ("*", "*", "it", "*"): "Perfetto {}! Il tuo profilo e stato creato.  Would you like to use tablet in order to communicate?".format(name),
@@ -176,11 +182,13 @@ class CinemaAssistant(object):
 
             response_text = ""
             if liked == 'True':
+                self.animation.run(".lastUploadedChoregrapheBehavior/animations/Stand/Emotions/Positive/Happy_4",_async=True)
                 if movie_genre.lower() == user_genre.lower():
                     response_text = "I'm so glad you liked it! It sounds like the perfect {} movie for you.".format(movie_genre)
                 else:
                     response_text = "That's great! It's always fun to discover a gem outside of your usual {} preference.".format(user_genre)
             else:  # Disliked
+                self.animation.run(".lastUploadedChoregrapheBehavior/animations/Stand/Emotions/Neutral/Embarrassed_1",_async=True)
                 if movie_genre.lower() == user_genre.lower():
                     response_text = "Oh, that's a shame. Even though it's a {} film, this one wasn't for you. I'll remember that for future recommendations.".format(movie_genre)
                 else:
@@ -199,6 +207,7 @@ class CinemaAssistant(object):
             genre = self.memory.getData("cinema/movie_preference")
             self.db.update_customer_preferences(name, genre)
             # Create registration success action
+            self.animation.run(".lastUploadedChoregrapheBehavior/animations/Stand/Gestures/Yes_2",_async=True)
             text = {
                 ("*", "*", "it", "*"): "Perfetto {}! Il tuo profilo e stato aggiornato. Preferenza: {}.".format(name, genre),
                 ("*", "*", "*", "*"): "Perfect {}! Your profile has been updated. Preference: {}.".format(name, genre)
@@ -213,31 +222,41 @@ class CinemaAssistant(object):
             self.mws.csend("im.execute('update-success')")
 
         elif value == "recommend_movies":
-            self.posture.goToPosture("Stand", 1.0) # Speed 0.8
+            self.animation.run(".lastUploadedChoregrapheBehavior/animations/Stand/Gestures/YouKnowWhat_1",_async=True)
             name = self.memory.getData("cinema/customer_name")
             customer = self.db.get_customer_by_name(name)
-            age, genre = customer[1], customer[2]
-            print(age, genre)
+            customer_id,name,age, genre = customer
+            liked_count = self.db.get_liked_movie_count(customer_id)
+            print(age, genre,liked_count)
 
-            # Fetch movies by genre and age group
-            movies_by_genre = self.db.get_movies_by_genre(genre)  # Returns list of tuples
-            movies_by_age = self.db.get_recommendations_by_age(age)  # Returns list of tuples
-            print(movies_by_genre,movies_by_age)
-            # Extract titles and use sets for intersection
-            titles_genre = set(m[0] for m in movies_by_genre)
-            titles_age = set(m[0] for m in movies_by_age)
+            available_movies = self.db.get_available_showtime_titles()
+            available_titles_set = set(available_movies)
 
-            # Prioritize movies that match both genre and age
-            common_titles = list(titles_genre & titles_age)
-
-            if len(common_titles) < 3:
-                # Fill remaining spots with age-specific titles (if needed)
-                #Cosi te ne consiglia 3 al momento perche ora ci sono solo un film per genere
-                # mentre per eta ci sono piu film
-                remaining = list(titles_age - set(common_titles))
-                suggestions = common_titles + remaining[:3 - len(common_titles)]
+            if liked_count > 1:
+                # Recommend using RotatE model
+                recommendations = self.db.load_model_and_recommend(name)  # This returns a list of movie names (strings)
+                # Intersect with available showtimes
+                suggestions = [title for title in recommendations if title in available_titles_set][:3]
             else:
-                suggestions = common_titles[:3]
+                # Fetch movies by genre and age group
+                movies_by_genre = self.db.get_movies_by_genre(genre)  # Returns list of tuples
+                movies_by_age = self.db.get_recommendations_by_age(age)  # Returns list of tuples
+                print(movies_by_genre,movies_by_age)
+                # Extract titles and use sets for intersection
+                titles_genre = set(m[0] for m in movies_by_genre)
+                titles_age = set(m[0] for m in movies_by_age)
+
+                # Prioritize movies that match both genre and age
+                common_titles = list(titles_genre & titles_age)
+
+                if len(common_titles) < 3:
+                    # Fill remaining spots with age-specific titles (if needed)
+                    #Cosi te ne consiglia 3 al momento perche ora ci sono solo un film per genere
+                    # mentre per eta ci sono piu film
+                    remaining = list(titles_age - set(common_titles))
+                    suggestions = common_titles + remaining[:3 - len(common_titles)]
+                else:
+                    suggestions = common_titles[:3]
 
             suggestion_str = ", ".join(suggestions)
 
@@ -259,8 +278,6 @@ class CinemaAssistant(object):
                 filename="recommend-movies",
                 buttons=buttons
             )
-            current_posture_after_change = self.posture.getPosture()
-            print("After attempting to go to 'Stand', the current posture is:",current_posture_after_change)
             self.mws.csend("im.executeModality('BUTTONS', [])")
             self.mws.csend("im.execute('recommend-movies')")
             self.memory.raiseEvent("cinema/movie_suggestions", suggestion_str)
@@ -269,8 +286,10 @@ class CinemaAssistant(object):
         elif value == "get_showtimes":
 
             title = self.memory.getData("cinema/selected_movie")
+            title=re.sub(r'\(\s+(\d{4})\s*\)', r'(\1)', title)
             try:
                 showtimes = self.db.get_showtimes_for_movie(title)
+                print("showww",showtimes)
 
                 #Really important to check if showtimes is empty and send exception
                 var_used_to_get_exception = showtimes[0][0]  
@@ -325,8 +344,11 @@ class CinemaAssistant(object):
 
         #Prende un film (anche uno non tra i consigliati)
         elif value == "get_description":
+            self.animation.run(".lastUploadedChoregrapheBehavior/animations/Stand/Gestures/YouKnowWhat_2",_async=True)
             title = self.memory.getData("cinema/selected_movie")
+            title=re.sub(r'\(\s+(\d{4})\s*\)', r'(\1)', title)
             try:
+                print("descrizioneegafaf",self.db.get_description_for_movie(title))
                 description = self.db.get_description_for_movie(title)[0][0]
 
                 text = {
@@ -367,6 +389,7 @@ class CinemaAssistant(object):
         elif value == "book_showtime":
             name = self.memory.getData("cinema/customer_name")
             title = self.memory.getData("cinema/selected_movie")
+            title=re.sub(r'\(\s+(\d{4})\s*\)', r'(\1)', title)
             show_time = self.memory.getData("cinema/selected_time")
             try:
                 self.db.book_showtime(name, title, show_time)
@@ -382,6 +405,7 @@ class CinemaAssistant(object):
                 )
                 self.mws.csend("im.executeModality('BUTTONS', [])")
                 self.mws.csend("im.execute('booking-success')")
+                self.animation.run(".lastUploadedChoregrapheBehavior/animations/Stand/Emotions/Positive/Hysterical_1",_async=True)
                 self.memory.raiseEvent("cinema/booking_success", 
                     "Booking confirmed")
             except Exception as e:
@@ -443,7 +467,9 @@ class CinemaAssistant(object):
                     self.memory.raiseEvent("cinema/direction_indication", verbal_direction)
 
         elif value == "guide_to_screen":
-            screen_number = self.db.get_screen_for_movie(self.memory.getData("cinema/selected_movie"))
+            title=self.memory.getData("cinema/selected_movie")
+            title=re.sub(r'\(\s+(\d{4})\s*\)', r'(\1)', title)
+            screen_number = self.db.get_screen_for_movie()
             if screen_number:
                 # Store screen number in memory for dialog reference
                 verbal_direction = self.motion.point_and_describe_direction("screen", screen_number)
@@ -533,7 +559,8 @@ class CinemaAssistant(object):
             self.memory.raiseEvent("cinema/preferred_buy", "True")
 
         elif value == "concession_info":
-            self.motion.concession()
+            #self.motion.concession()
+            self.animation.run(".lastUploadedChoregrapheBehavior/animations/Stand/Gestures/ShowTablet_2",_async=True)
             items = self.db.get_concessions()
             names = ", ".join([item[0] for item in items])
             concessions_split = [s.strip() for s in names.split(',')]
@@ -595,6 +622,7 @@ class CinemaAssistant(object):
             )
             self.mws.csend("im.executeModality('BUTTONS', [])")
             self.mws.csend("im.execute('all-movies-display')")
+            self.animation.run(".lastUploadedChoregrapheBehavior/animations/Stand/Gestures/ShowTablet_3",_async=True)
             self.memory.raiseEvent("cinema/all_movies_list", movie_list)
 
         elif value == "add_to_order":
@@ -631,6 +659,7 @@ class CinemaAssistant(object):
 
                 self.mws.csend("im.executeModality('BUTTONS', [])")
                 self.mws.csend("im.execute('concession-error')")
+                self.animation.run(".lastUploadedChoregrapheBehavior/animations/Stand/Emotions/Positive/Happy_4",_async=True)
                 self.memory.raiseEvent("cinema/concession_found", "False")
     
         elif value == "finalize_order":
@@ -646,6 +675,7 @@ class CinemaAssistant(object):
                 )
                 self.mws.csend("im.executeModality('BUTTONS', [])")
                 self.mws.csend("im.execute('order-empty')")
+                self.animation.run(".lastUploadedChoregrapheBehavior/animations/Stand/Gestures/Desperate_1",_async=True)
                 self.memory.raiseEvent("cinema/order_error", "Empty order")
             else:
                 complete_order = ", ".join(item[0] for item in self.current_order)
@@ -681,10 +711,11 @@ class CinemaAssistant(object):
                 self.mws.csend("im.execute('order-complete')")
                 self.current_order = []
 
-
+                self.animation.run(".lastUploadedChoregrapheBehavior/animations/Stand/Gestures/Excited_1",_async=True)
                 self.memory.raiseEvent("cinema/order_complete", str(total))
 
         elif value == "restart":
+            self.animation.run(".lastUploadedChoregrapheBehavior/animations/Stand/Gestures/Hey_1",_async=True)
             for key in self.memory.getDataList("cinema/"):
                 self.memory.insertData(key, "")
             text = {
@@ -1300,7 +1331,7 @@ class CinemaAssistant(object):
 
             text = {
                 ("*", "*", "it", "*"): "****",
-                ("*", "*", "*", "*"): "Based on your preferences, some movies you could like are: "
+                ("*", "*", "*", "*"): "I ran your taste through my brainy algorithm, these movies could be your thing today, hurry up and buy the tickets!"
             }
 
             buttons = {}

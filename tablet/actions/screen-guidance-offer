@@ -1,9 +1,9 @@
 IMAGE
-<*, *, *, *>:  img/screen3_path.png
+<*, *, *, *>:  img/screen2_path.png
 ----
 TEXT
-<*, *, it, *>: Ti guido al film nella sala 3?
-<*, *, *, *>: Would you like me to guide you at screen 3
+<*, *, it, *>: Ti guido al film nella sala 2?
+<*, *, *, *>: Would you like me to guide you at screen 2
 ----
 BUTTONS
 yes

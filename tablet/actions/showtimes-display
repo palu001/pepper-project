@@ -1,15 +1,12 @@
 IMAGE
-<*, *, *, *>:  img/movie_poster_space_warriors.jpeg
+<*, *, *, *>:  img/movie_poster_jurassic_park_(1993).jpeg
 ----
 TEXT
-<*, *, it, *>: Orari disponibili per 'Space Warriors': 
-<*, *, *, *>: Available showtimes for 'Space Warriors': 
+<*, *, it, *>: Orari disponibili per 'Jurassic Park (1993)': 
+<*, *, *, *>: Available showtimes for 'Jurassic Park (1993)': 
 ----
 BUTTONS
 time_0
-<*,*,it,*>: 16:00
-<*,*,*,*>:  16:00
-time_1
-<*,*,it,*>: 19:30
-<*,*,*,*>:  19:30
+<*,*,it,*>: 15:30
+<*,*,*,*>:  15:30
 ----

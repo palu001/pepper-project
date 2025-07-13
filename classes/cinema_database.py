@@ -1,10 +1,16 @@
 import sqlite3
 import os
+import numpy as np
+from classes.rotate_model_tf import RotatEModel
+import tensorflow as tf 
+from collections import Counter, defaultdict
+from classes.recommendation_dataset import KGBuilder
+import random
 
 class CinemaDatabase(object):
     def __init__(self, project_path):
         self.db_path = os.path.join(project_path, "data/cinema.db")
-
+        self.builder=KGBuilder()
     def _connect(self):
         return sqlite3.connect(self.db_path)
 
@@ -29,7 +35,7 @@ class CinemaDatabase(object):
             genre TEXT,
             duration INTEGER,
             rating TEXT,
-            description TEXT,
+            description TEXT DEFAULT 'description not available' ,
             poster_url TEXT
         )
         ''')
@@ -41,7 +47,7 @@ class CinemaDatabase(object):
             screen_number INTEGER,
             show_time TEXT,
             available_seats INTEGER,
-            price REAL,
+            price REAL DEFAULT 5,
             FOREIGN KEY (movie_id) REFERENCES movies (id)
         )
         ''')
@@ -83,6 +89,7 @@ class CinemaDatabase(object):
         ''')
 
         self.insert_sample_data(cursor)
+        self.load_from_kg_and_populate(cursor=cursor, conn=conn) 
         conn.commit()
         conn.close()
 
@@ -221,7 +228,7 @@ class CinemaDatabase(object):
     def get_customer_by_name(self, name):
         conn = self._connect()
         cursor = conn.cursor()
-        cursor.execute("SELECT name, age_group, preferences FROM customers WHERE name = ?", (name,))
+        cursor.execute("SELECT id, name, age_group, preferences FROM customers WHERE name = ?", (name,))
         result = cursor.fetchone()
         conn.close()
         return result
@@ -321,6 +328,9 @@ class CinemaDatabase(object):
         conn.commit()
         conn.close()
 
+
+
+
     def get_most_ordered_concession(self, customer_name):
         conn = self._connect()
         cursor = conn.cursor()
@@ -357,7 +367,7 @@ class CinemaDatabase(object):
             conn = self._connect()
             cursor = conn.cursor()
             cursor.execute('''
-                SELECT m.title
+                SELECT m.title, s.show_time, s.screen_number
                 FROM bookings b
                 JOIN customers c ON b.customer_id = c.id
                 JOIN showtimes s ON b.showtime_id = s.id
@@ -368,7 +378,7 @@ class CinemaDatabase(object):
             ''', (customer_name,))
             result = cursor.fetchone()
             conn.close()
-            return result[0] if result else None
+            return result if result else None
     
     def record_movie_feedback(self, customer_name, movie_title, liked_status):
         """
@@ -394,31 +404,225 @@ class CinemaDatabase(object):
         conn.close()
         print("Recorded feedback")
 
-
-    def get_movie_details(self, movie_title):
-            """Retrieves all details for a specific movie, like its genre."""
-            conn = self._connect()
-            conn.row_factory = sqlite3.Row # Allows accessing columns by name
-            cursor = conn.cursor()
-            cursor.execute("SELECT * FROM movies WHERE title = ?", (movie_title,))
-            details = cursor.fetchone()
-            conn.close()
-            return dict(details) if details else None
-    
-    def get_upcoming_showtime(self,customer_name):
+    def get_liked_movie_count(self, customer_id):
         conn = self._connect()
         cursor = conn.cursor()
-
-        cursor.execute("""
-            SELECT  m.title, s.show_time, s.screen_number
-            FROM bookings b
-            JOIN customers c ON b.customer_id = c.id
-            JOIN showtimes s ON b.showtime_id = s.id
-            JOIN movies m ON s.movie_id = m.id
-            WHERE c.name = ? AND b.feedback_status = 'not_rated'
-            LIMIT 1
-        """, (customer_name,))
-        
-        bookings = cursor.fetchall()
+        cursor.execute('''
+            SELECT COUNT(*) FROM bookings
+            WHERE customer_id = ? AND liked_movie = 1
+        ''', (customer_id,))
+        count = cursor.fetchone()[0]
         conn.close()
-        return bookings
+        return count
+
+
+    def get_movie_details(self, movie_title):
+        """Retrieves all details for a specific movie, like its genre."""
+        conn = self._connect()
+        conn.row_factory = sqlite3.Row # Allows accessing columns by name
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM movies WHERE title = ?", (movie_title,))
+        details = cursor.fetchone()
+        conn.close()
+        return dict(details) if details else None
+    
+    def get_available_showtime_titles(self):
+        conn = self._connect()
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT DISTINCT m.title
+            FROM showtimes s
+            JOIN movies m ON s.movie_id = m.id
+            WHERE s.available_seats > 0
+        ''')
+        results = cursor.fetchall()
+        conn.close()
+        return [r[0] for r in results]
+        
+    def get_movie_titles_by_ids(self, movie_ids):
+        if not movie_ids:
+            return []
+
+        conn = self._connect()
+        cursor = conn.cursor()
+        placeholders = ",".join("?" for _ in movie_ids)
+        query = "SELECT title FROM movies WHERE id IN ({})".format(placeholders)
+        cursor.execute(query, movie_ids)
+        results = cursor.fetchall()
+        conn.close()
+
+        return [row[0] for row in results]
+
+
+
+    
+    def build_vocab(self,files):
+        entity2id, relation2id = {}, {}
+        eid = 0
+        rid = 0
+        for file in files:
+            with open(file) as f:
+                for line in f:
+                    h, r, t = line.strip().split("\t")
+                    if h not in entity2id:
+                        entity2id[h] = eid
+                        eid += 1
+                    if t not in entity2id:
+                        entity2id[t] = eid
+                        eid += 1
+                    if r not in relation2id:
+                        relation2id[r] = rid
+                        rid += 1
+        return entity2id, relation2id
+
+    def load_model_and_recommend(self, username):
+        entity2id, relation2id = self.build_vocab(["data/kg.txt"])
+        id2entity = {v: k for k, v in entity2id.items()}
+
+        model = RotatEModel(num_entities=len(entity2id), num_relations=len(relation2id), embedding_dim=10)
+        saver = model.get_saver()
+
+        with tf.Session() as sess:
+            saver.restore(sess, "../checkpoints/rotate_model.ckpt")
+            print("Model loaded from checkpoint.")
+
+            top_movie_ids = self.recommend_top_k("user_{}".format(username), model, sess, entity2id, relation2id, id2entity, k=5)
+
+            # Extract movie numeric IDs (e.g., movie_23 -> 23)
+            movie_ids = [int(mid.split("_")[1]) for mid in top_movie_ids if mid.startswith("movie_")]
+
+            # Query titles from DB
+            return self.get_movie_titles_by_ids(movie_ids)
+
+   
+    def recommend_top_k(user_str, model, sess, entity2id, relation2id, id2entity, k=5):
+        user_id = entity2id.get(user_str)
+        relation_id = relation2id.get("likes")
+        movie_ids = [eid for ent, eid in entity2id.items() if ent.startswith("movie_")]
+
+        scores = model.get_score_op(sess, user_id, relation_id, movie_ids)
+        top_indices = np.argsort(scores)[-k:][::-1]
+        top_movie_ids = [movie_ids[i] for i in top_indices]
+        return [id2entity[mid] for mid in top_movie_ids]
+
+
+    def load_from_kg_and_populate(self, user_to_add="user_6", cursor=None, conn=None):
+        # Determine if we need to create a new connection or use an existing one
+        _close_conn = False
+        if conn is None or cursor is None:
+            conn = self._connect()
+            cursor = conn.cursor()
+            _close_conn = True # Flag to close connection at the end if we opened it
+        # Load KG
+        kg_triples = self.builder.load_kg_file()
+        movie_likes = [triple for triple in kg_triples if triple[1] == "likes"]
+
+        # Build movie genres from KG
+        genre_map = {}
+        for subj, pred, obj in kg_triples:
+            if pred == "is_genre":
+                movie_id = subj  # e.g., "movie_123"
+                genre = obj.replace("genre_", "").replace("_", " ")
+                genre_map[movie_id] = genre
+
+        # Count likes per movie
+        movie_like_counts = {}
+        for _, _, movie in movie_likes:
+            movie_like_counts[movie] = movie_like_counts.get(movie, 0) + 1
+
+        # Load movie titles from file
+        movie_titles = {}
+        with open(self.builder.movies_file, 'r') as f:
+            for line in f:
+                parts = line.strip().split("::")
+                if len(parts) >= 3:
+                    movie_id, title, _ = parts
+                    movie_titles["movie_" + movie_id] = title
+
+
+        # Insert top 100 most liked movies
+        top_movies = sorted(movie_like_counts.items(), key=lambda x: x[1], reverse=True)[:100]
+        inserted_movies = []
+
+        for movie_uri, _ in top_movies:
+            title = movie_titles.get(movie_uri)
+            genre = genre_map.get(movie_uri)
+            print(title,genre)
+
+            cursor.execute('''
+                INSERT INTO movies (title, genre, duration, rating, poster_url)
+                VALUES (?, ?, NULL, NULL, NULL)
+            ''', (title, genre))
+            inserted_movies.append((cursor.lastrowid, movie_uri))  # Save DB id and URI
+
+        conn.commit()
+
+        # Step 3: Add one user from KG
+        user_age = None
+        for subj, pred, obj in kg_triples:
+            if subj == user_to_add and pred == "has_age":
+                user_age = obj.replace("agegroup_", "")
+                break
+        user_numeric_id = int(user_to_add.split('_')[-1])
+        user_name="franco"
+        cursor.execute('''
+            INSERT INTO customers (id, name, age_group, preferences, visit_count)
+            VALUES (?, ?, ?, NULL, 1)
+        ''', (user_numeric_id,user_name, user_age))
+        user_db_id = cursor.lastrowid
+
+        # Get all movies the user likes
+        liked_movies = [triple[2] for triple in movie_likes if triple[0] == user_to_add]
+
+        for movie_uri in liked_movies:
+            title = movie_titles.get(movie_uri)
+            genre = genre_map.get(movie_uri)
+
+            # Check if already inserted
+            cursor.execute("SELECT id FROM movies WHERE title = ?", (title,))
+            row = cursor.fetchone()
+            if row:
+                movie_id = row[0]
+            else:
+                cursor.execute('''
+                    INSERT INTO movies (title, genre, duration, rating, description, poster_url)
+                    VALUES (?, ?, NULL, NULL, NULL, NULL)
+                ''', (title, genre))
+                movie_id = cursor.lastrowid
+                inserted_movies.append((movie_id, movie_uri))
+
+            # Add booking (with liked_movie = True)
+            cursor.execute('''
+                INSERT INTO bookings (customer_id, showtime_id, num_tickets, liked_movie)
+                VALUES (?, NULL, 1, 1)
+            ''', (user_db_id,))
+
+        conn.commit()
+
+        # Step 4: Add 50 showtimes with non-overlapping random times
+        used_times = set()
+        count = 0
+        for movie_id, _ in inserted_movies:
+            if count >= 50:
+                break
+
+            # Find available time and screen combo
+            for _ in range(100):  # limit attempts
+                hour = random.randint(15, 21)
+                minute = random.choice([0, 30])
+                show_time = "%02d:%02d" % (hour, minute)
+                screen = random.randint(1, 5)
+
+                if (screen, show_time) not in used_times:
+                    used_times.add((screen, show_time))
+                    break
+
+            cursor.execute('''
+                INSERT INTO showtimes (movie_id, screen_number, show_time, available_seats, price)
+                VALUES (?, ?, ?, ?, ?)
+            ''', (movie_id, screen, show_time, 50, 10.0))
+            count += 1
+
+        if _close_conn: # Only commit and close if we opened the connection
+            conn.commit()
+            conn.close()
