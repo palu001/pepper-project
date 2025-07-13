@@ -469,7 +469,7 @@ class CinemaAssistant(object):
         elif value == "guide_to_screen":
             title=self.memory.getData("cinema/selected_movie")
             title=re.sub(r'\(\s+(\d{4})\s*\)', r'(\1)', title)
-            screen_number = self.db.get_screen_for_movie()
+            screen_number = self.db.get_screen_for_movie(title)
             if screen_number:
                 # Store screen number in memory for dialog reference
                 verbal_direction = self.motion.point_and_describe_direction("screen", screen_number)

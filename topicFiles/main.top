@@ -245,13 +245,13 @@ proposal: %on_screen_arrival
             u3: (~refusal)
                 $cinema/liked_status = False
                 $cinema/function = record_feedback
-                u3: (e:cinema/feedback_response)
+                u4: (e:cinema/feedback_response)
                     $cinema/feedback_response
                     ^gotoReactivate(main_hub)
             u3: (~acceptance)
                 $cinema/liked_status = True
                 $cinema/function = record_feedback
-                u3: (e:cinema/feedback_response)
+                u4: (e:cinema/feedback_response)
                     $cinema/feedback_response
                     ^gotoReactivate(main_hub)
         u2: (~refusal)

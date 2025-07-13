@@ -193,11 +193,11 @@ class CinemaDatabase(object):
     def insert_sample_data(self, cursor):
         """Insert sample cinema data"""
         movies = [
-            (1, "The Amazing Adventure", "action", 120, "PG-13", "An epic journey of heroes", "poster1.jpg"),
-            (2, "Love in Paris", "romance", 105, "PG", "A romantic comedy in the city of love", "poster2.jpg"),
-            (3, "Space Warriors", "sci-fi", 140, "PG-13", "Battle for the galaxy", "poster3.jpg"),
-            (4, "The Mystery House", "horror", 95, "R", "A spine-chilling thriller", "poster4.jpg"),
-            (5, "Family Fun Time", "comedy", 90, "G", "Perfect for the whole family", "poster5.jpg")
+            (50000, "The Amazing Adventure", "action", 120, "PG-13", "An epic journey of heroes", "poster1.jpg"),
+            (50001, "Love in Paris", "romance", 105, "PG", "A romantic comedy in the city of love", "poster2.jpg"),
+            (50002, "Space Warriors", "sci-fi", 140, "PG-13", "Battle for the galaxy", "poster3.jpg"),
+            (50003, "The Mystery House", "horror", 95, "R", "A spine-chilling thriller", "poster4.jpg"),
+            (50004, "Family Fun Time", "comedy", 90, "G", "Perfect for the whole family", "poster5.jpg")
         ]
         cursor.executemany('INSERT OR REPLACE INTO movies VALUES (?,?,?,?,?,?,?)', movies)
 
@@ -478,16 +478,16 @@ class CinemaDatabase(object):
     def load_model_and_recommend(self, username):
         entity2id, relation2id = self.build_vocab(["data/kg.txt"])
         id2entity = {v: k for k, v in entity2id.items()}
-
+        user_id=self.get_customer_by_name(username)[0]
         model = RotatEModel(num_entities=len(entity2id), num_relations=len(relation2id), embedding_dim=10)
         saver = model.get_saver()
 
         with tf.Session() as sess:
-            saver.restore(sess, "../checkpoints/rotate_model.ckpt")
+            saver.restore(sess, "checkpoints/rotate_model.ckpt")
             print("Model loaded from checkpoint.")
 
-            top_movie_ids = self.recommend_top_k("user_{}".format(username), model, sess, entity2id, relation2id, id2entity, k=5)
-
+            top_movie_ids = self.recommend_top_k("user_{}".format(user_id), model, sess, entity2id, relation2id, id2entity, 5)
+            print("tooop",top_movie_ids)
             # Extract movie numeric IDs (e.g., movie_23 -> 23)
             movie_ids = [int(mid.split("_")[1]) for mid in top_movie_ids if mid.startswith("movie_")]
 
@@ -495,10 +495,11 @@ class CinemaDatabase(object):
             return self.get_movie_titles_by_ids(movie_ids)
 
    
-    def recommend_top_k(user_str, model, sess, entity2id, relation2id, id2entity, k=5):
+    def recommend_top_k(self, user_str, model, sess, entity2id, relation2id, id2entity, k=5):
         user_id = entity2id.get(user_str)
         relation_id = relation2id.get("likes")
         movie_ids = [eid for ent, eid in entity2id.items() if ent.startswith("movie_")]
+
 
         scores = model.get_score_op(sess, user_id, relation_id, movie_ids)
         top_indices = np.argsort(scores)[-k:][::-1]
@@ -548,11 +549,10 @@ class CinemaDatabase(object):
             title = movie_titles.get(movie_uri)
             genre = genre_map.get(movie_uri)
             print(title,genre)
-
             cursor.execute('''
-                INSERT INTO movies (title, genre, duration, rating, poster_url)
-                VALUES (?, ?, NULL, NULL, NULL)
-            ''', (title, genre))
+                INSERT INTO movies (id,title, genre, duration, rating, poster_url)
+                VALUES (?, ?, ?, NULL, NULL, NULL)
+            ''', (movie_uri.split("_")[1],title, genre))
             inserted_movies.append((cursor.lastrowid, movie_uri))  # Save DB id and URI
 
         conn.commit()

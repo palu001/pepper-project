@@ -6,13 +6,10 @@ TEXT
 <*, *, *, *>: Some movies you could like are: 
 ----
 BUTTONS
-movie_2
-<*,*,it,*>: Men in Black (1997)
-<*,*,*,*>:  Men in Black (1997)
 movie_0
-<*,*,it,*>: Jurassic Park (1993)
-<*,*,*,*>:  Jurassic Park (1993)
+<*,*,it,*>: Toy Story (1995)
+<*,*,*,*>:  Toy Story (1995)
 movie_1
-<*,*,it,*>: Pulp Fiction (1994)
-<*,*,*,*>:  Pulp Fiction (1994)
+<*,*,it,*>: Shakespeare in Love (1998)
+<*,*,*,*>:  Shakespeare in Love (1998)
 ----
