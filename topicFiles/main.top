@@ -36,7 +36,10 @@ proposal: %get_name
         $cinema/customer_name=$1
         $cinema/function = greet_customer
         u2: (e:cinema/customer_identity_check $cinema/customer_identity_check==True) 
-            Great! Welcome back, $cinema/customer_name
+            
+            ["Welcome back, buddy! $cinema/customer_name $cinema/customer_age==child"
+            "Yo $cinema/customer_name, good to see you again! $cinema/customer_age==teen"
+            "Welcome back, $cinema/customer_name. $cinema/customer_age==adult"]
             $cinema/function = check_upcoming_showtime
             u3: (e:cinema/upcoming_showtime $cinema/upcoming_showtime==True)
                 ^gotoReactivate(showtime_heads_up)
@@ -75,7 +78,10 @@ proposal: %check_feedback
         ^gotoReactivate(offer_recommendation)
 
 proposal: %use_tablet
-    Do you want to use the tablet in order to communicate?
+    ["Wanna use the tablet to chat? It’s super easy! $cinema/customer_age==child"
+    "Need the tablet? Might be quicker. $cinema/customer_age==teen"
+    "Would you prefer to use the tablet for communication? $cinema/customer_age==adult"]
+
     u1: (~acceptance)
         ^gotoReactivate(check_feedback_tablet)
     u1: (~refusal)
@@ -83,7 +89,7 @@ proposal: %use_tablet
 
 # --- Get Age Group ---
 proposal: %get_age
-    How would you describe your age group? Child, teen, adult, or senior?
+    How would you describe your age group? Child, teen, adult?
 
     u1: ({*} _~age_groups {*})
         Got it, $1 
@@ -111,7 +117,9 @@ proposal: %get_genre
 
 # --- NEW: Post-Movie Feedback ---
 proposal: %get_movie_feedback
-    You saw $cinema/last_watched_movie last time, did you like it?
+    You saw $cinema/last_watched_movie last time. ["Did you like the movie, buddy? $cinema/customer_age==child"
+    "So, what’d you think? Was it a hit or a miss? $cinema/customer_age==teen"
+    "Did you enjoy the film? $cinema/customer_age==adult"]
     u1: (~acceptance)
         $cinema/liked_status = True
         $cinema/function = record_feedback
@@ -200,7 +208,8 @@ proposal: %booking_recommendation
                 u2: (e:cinema/booking_success)
                     $cinema/direction_request=box_office
                     $cinema/function=show_directions
-                    All set! You can grab your tickets from the box office, it's marked on the tablet. Let me know when you're done, and I’ll help with the next step!
+                    ["All set! Ask your parents to grab the tickets at the box office—it’s on the tablet. Let me know when you're done! $cinema/customer_age==child"
+                    "Done! Tickets are at the box office, you can see it on the tablet. Let me know when you’ve got them!"]
 
                     u3: (~done)
                         ^gotoReactivate(offer_screen_guidance)
@@ -214,10 +223,14 @@ proposal: %booking_recommendation
                     ^gotoReactivate(booking_recommendation)
 
 proposal: %offer_screen_guidance
-        Would you like me to guide you to the screen for $cinema/selected_movie ?
+        ["Ready to go to your screen? $cinema/customer_age==child"
+        "Want me to guide you to your screen now? $cinema/customer_age==teen"
+        "Would you like directions to the auditorium? $cinema/customer_age==adult"]
 
         u1: (~acceptance)
-            Great, follow me.
+            ["Yay! Follow me! $cinema/customer_age==child"
+            "Cool, follow me! $cinema/customer_age==teen"
+            "Certainly—please follow me. $cinema/customer_age==adult"]
             $cinema/function=guide_to_screen
             ^gotoReactivate(on_screen_arrival)
 
@@ -239,7 +252,9 @@ proposal: %on_guidance_complete
 
 proposal: %on_screen_arrival
     u1: (e:cinema/screen_guidance_complete)
-        We have arrived at screen $cinema/screen_guidance_complete  Enjoy the movie! Inform me when you've finished watching it.
+         ["Woohoo! We made it to your screen! $cinema/customer_age==child"
+     "You’re all set! Movie's right here. $cinema/customer_age==teen"
+     "We’ve arrived at screen $cinema/screen_guidance_complete. $cinema/customer_age==adult"]  Enjoy the movie! Inform me when you've finished watching it.
         u2: (~done)
             Have you enjoyed the movie?
             u3: (~refusal)
@@ -370,7 +385,10 @@ proposal: %buy_concession
                 ^gotoReactivate(buy_concession)
 
 proposal: %main_hub
-    So, what can I do for you today? Want movie tips, snacks, showtimes, directions or maybe change preferences? I’ve got you covered!
+    ["Hey there, what do you wanna do? Find a movie? Grab snacks? $cinema/customer_age==child"
+    "Yo, need movie tips, snacks, update preferences or directions? I got you. $cinema/customer_age==teen"
+    "How can I assist you today? Movie suggestions, snacks, showtimes, or profile updates? $cinema/customer_age==adult"]
+
     $cinema/function = main_hub
     u1: ({*} _~update_prefs {*}) 
         Of course. Let's update your preferences.

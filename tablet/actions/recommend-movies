@@ -6,10 +6,13 @@ TEXT
 <*, *, *, *>: Some movies you could like are: 
 ----
 BUTTONS
+movie_2
+<*,*,it,*>: Love in Paris
+<*,*,*,*>:  Love in Paris
 movie_0
-<*,*,it,*>: Toy Story (1995)
-<*,*,*,*>:  Toy Story (1995)
+<*,*,it,*>: The Amazing Adventure
+<*,*,*,*>:  The Amazing Adventure
 movie_1
-<*,*,it,*>: Shakespeare in Love (1998)
-<*,*,*,*>:  Shakespeare in Love (1998)
+<*,*,it,*>: Space Warriors
+<*,*,*,*>:  Space Warriors
 ----

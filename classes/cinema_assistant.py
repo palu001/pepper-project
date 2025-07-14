@@ -32,7 +32,7 @@ class CinemaAssistant(object):
             customer = self.db.get_customer_by_name(name)
             if customer:
                 self.current_customer = customer
-
+                self.memory.insertData("cinema/customer_age", customer[2])
                 text = {
                     ("*", "*", "it", "*"): "Bentornato {}  ".format(name),
                     ("*", "*", "*", "*"): "Welcome back to our cinema {}! ".format(name)
@@ -151,6 +151,7 @@ class CinemaAssistant(object):
             
             print("Registering customer")
             self.db.register_customer(name, age,genre)
+            self.current_customer=self.db.get_customer_by_name(name)
             print("Customer registered successfully.")
             self.animation.run(".lastUploadedChoregrapheBehavior/animations/Stand/Gestures/Yes_1",_async=True)
             # Create registration success action
@@ -176,7 +177,7 @@ class CinemaAssistant(object):
             self.db.record_movie_feedback(name, movie, liked)
 
             # Get user and movie details to form a smart reply.
-            user_profile = self.db.get_customer_by_name(name)
+            user_profile = self.current_customer
             user_genre = user_profile[2] if user_profile else "any"
             movie_details = self.db.get_movie_details(movie) # Assumes DB returns a dict with a 'genre' key
             movie_genre = movie_details['genre'] if movie_details else "unknown"
@@ -225,15 +226,14 @@ class CinemaAssistant(object):
         elif value == "recommend_movies":
             self.animation.run(".lastUploadedChoregrapheBehavior/animations/Stand/Gestures/YouKnowWhat_1",_async=True)
             name = self.memory.getData("cinema/customer_name")
-            customer = self.db.get_customer_by_name(name)
-            customer_id,name,age, genre = customer
+            customer_id,name,age, genre = self.current_customer
             liked_count = self.db.get_liked_movie_count(customer_id)
             print(age, genre,liked_count)
 
             available_movies = self.db.get_available_showtime_titles()
             available_titles_set = set(available_movies)
 
-            if liked_count > 1:
+            if liked_count > 5:
                 # Recommend using RotatE model
                 recommendations = self.db.load_model_and_recommend(name)  # This returns a list of movie names (strings)
                 # Intersect with available showtimes
@@ -1304,8 +1304,8 @@ class CinemaAssistant(object):
         elif value == "tablet_offer_recommendation":
 
             name = self.memory.getData("cinema/customer_name")
-            customer = self.db.get_customer_by_name(name)
-            age, genre = customer[1], customer[2]
+            customer = self.current_customer
+            age, genre = customer[2], customer[3]
             print(age, genre)
 
             # Fetch movies by genre and age group
