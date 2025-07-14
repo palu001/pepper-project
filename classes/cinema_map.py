@@ -12,7 +12,7 @@ class CinemaMap:
     def __init__(self, scale=0.3):
         # Define nodes in the cinema (x, y coordinates in meters)
         self.current_position="entrance"
-        self.nodes = {
+        base_nodes= {
             'entrance': (0, 0),
             'lobby_center': (-3, 0),
             'box_office': (-3, -2),
@@ -39,7 +39,7 @@ class CinemaMap:
         }
         self.nodes = {
             name: (x * scale, y * scale)
-            for name, (x, y) in self.nodes.items()
+            for name, (x, y) in base_nodes.items()
         }
 
     # Define edges (connections between nodes)
