@@ -799,7 +799,7 @@ class CinemaAssistant(object):
             print("Listing all available movies:")
         
             movies = self.db.get_all_movies()
-            
+            movies = movies[:6]
             movie_list = ", ".join([movie[0] for movie in movies])
             print("Available movies:", movie_list)
             movie_split=[s.strip() for s in movie_list.split(',')]
