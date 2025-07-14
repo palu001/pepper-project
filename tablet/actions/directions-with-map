@@ -3,10 +3,5 @@ IMAGE
 ----
 TEXT
 <*, *, it, *>: Direzioni per box_office
-<*, *, *, *>: You can retrieve your ticket at the box
-----
-BUTTONS
-done
-<*,*,it,*>: done
-<*,*,*,*>:  done
+<*, *, *, *>: Directions to box_office
 ----

@@ -17,8 +17,9 @@ class CinemaAssistant(object):
         self.current_order = []  # Track items for order
         self.is_tablet=False
         #hour = random.randint(15, 20)
-        hour=18
-        minute = random.randint(0, 59)
+        hour=19
+        #minute = random.randint(0, 59)
+        minute=15
         self.current_time = datetime.strptime("{:02}:{:02}".format(hour, minute), "%H:%M")
 
         
@@ -1331,8 +1332,8 @@ class CinemaAssistant(object):
 
             text = {
                 ("*", "*", "it", "*"): "****",
-                ("*", "*", "*", "*"): "I ran your taste through my brainy algorithm, these movies could be your thing today, hurry up and buy the tickets!"
-            }
+                ("*", "*", "*", "*"): "Based on your preferences, here are one or more movies for you that are playing today, hurry up and book the tickets!!"
+            } 
 
             buttons = {}
             for i, movie in enumerate(suggestions):

@@ -71,7 +71,7 @@ proposal: %check_feedback
     u1: (e:cinema/feedback_needed $cinema/feedback_needed==True) 
         ^gotoReactivate(get_movie_feedback)
     u1: (e:cinema/feedback_needed $cinema/feedback_needed==False) 
-        Based on your preferences, here are one or more movies for you that are playing today, hurry up and book the tickets!!
+        I ran your taste through my brainy algorithm, these movies could be your thing today, hurry up and buy the tickets!
         ^gotoReactivate(offer_recommendation)
 
 proposal: %use_tablet
@@ -378,7 +378,7 @@ proposal: %main_hub
    
     u1: ({*} _~ask_recommendation {*}) 
         I'd be happy to find a movie for you.
-        Based on your preferences, here are one or more movies for you that are playing today, hurry up and book the tickets!!
+        I ran your taste through my brainy algorithm, these movies could be your thing today, hurry up and buy the tickets!
         ^gotoReactivate(offer_recommendation)
 
     u1: (~ask_showtimes)

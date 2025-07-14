@@ -11,6 +11,7 @@ class CinemaDatabase(object):
     def __init__(self, project_path):
         self.db_path = os.path.join(project_path, "data/cinema.db")
         self.builder=KGBuilder()
+        random.seed(42)
     def _connect(self):
         return sqlite3.connect(self.db_path)
 
@@ -487,7 +488,6 @@ class CinemaDatabase(object):
             print("Model loaded from checkpoint.")
 
             top_movie_ids = self.recommend_top_k("user_{}".format(user_id), model, sess, entity2id, relation2id, id2entity, 5)
-            print("tooop",top_movie_ids)
             # Extract movie numeric IDs (e.g., movie_23 -> 23)
             movie_ids = [int(mid.split("_")[1]) for mid in top_movie_ids if mid.startswith("movie_")]
 

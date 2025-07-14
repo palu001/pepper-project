@@ -1,12 +1,12 @@
 IMAGE
-<*, *, *, *>:  img/movie_poster_jurassic_park_(1993).jpeg
+<*, *, *, *>:  img/movie_poster_shakespeare_in_love_(1998).jpeg
 ----
 TEXT
-<*, *, it, *>: Orari disponibili per 'Jurassic Park (1993)': 
-<*, *, *, *>: Available showtimes for 'Jurassic Park (1993)': 
+<*, *, it, *>: Orari disponibili per 'Shakespeare in Love (1998)': 
+<*, *, *, *>: Available showtimes for 'Shakespeare in Love (1998)': 
 ----
 BUTTONS
 time_0
-<*,*,it,*>: 15:30
-<*,*,*,*>:  15:30
+<*,*,it,*>: 19:30
+<*,*,*,*>:  19:30
 ----

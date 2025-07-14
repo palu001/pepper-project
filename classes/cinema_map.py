@@ -9,7 +9,7 @@ import os
 class CinemaMap:
     """Graph-based representation of the cinema layout"""
     
-    def __init__(self):
+    def __init__(self, scale=0.3):
         # Define nodes in the cinema (x, y coordinates in meters)
         self.current_position="entrance"
         self.nodes = {
@@ -36,6 +36,10 @@ class CinemaMap:
             'screen8_entrance': (-14, 3),
             'screen8': (-14, 5),
             'exit': (-15, 0)
+        }
+        self.nodes = {
+            name: (x * scale, y * scale)
+            for name, (x, y) in self.nodes.items()
         }
 
     # Define edges (connections between nodes)

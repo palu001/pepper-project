@@ -3,11 +3,11 @@ IMAGE
 ----
 TEXT
 <*, *, it, *>: Prenotazione confermata!
-Film: Jurassic Park (1993)
-Orario: 15:30
+Film: Shakespeare in Love (1998)
+Orario: 19:30
 Ritira i biglietti alla biglietteria.
 <*, *, *, *>: Booking confirmed!
-Movie: Jurassic Park (1993)
-Time: 15:30
+Movie: Shakespeare in Love (1998)
+Time: 19:30
 Collect your tickets at the box office.
 ----
