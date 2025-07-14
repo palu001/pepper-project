@@ -6,7 +6,7 @@ import os
 import time
 import ast
 from datetime import datetime, timedelta
-
+ 
 class CinemaAssistant(object):
     def __init__(self, animation,memory, database, mws, motion_manager):
         self.animation=animation
@@ -596,7 +596,7 @@ class CinemaAssistant(object):
         elif value == "list_all_movies":
             print("Listing all available movies:")
             movies = self.db.get_all_movies()
-            
+            movies = movies[:6]
             movie_list = ", ".join([movie[0] for movie in movies])
             print("Available movies:", movie_list)
             movie_split=[s.strip() for s in movie_list.split(',')]
