@@ -70,17 +70,17 @@ You’ll need to activate Pepper using a license key from SoftBank Robotics
 - Go to **File → Import content → Folder** and choose for the animations directory in this repository.
 - Go to **Connection** and press **Upload to the robot and Play**.
 - Memorize the pepper port in **Edit→ Preferences → Virtual Robot**
-### 4. Set Up the Tablet
+### 9. Set Up the Tablet
 Navigate to the Docker folder and execute:
 ```bash
 ./run_nginx.bash path/to/pepper-project/tablet
 ```
-### 9. Launch MODIM (tmux)
+### 10. Launch MODIM (tmux)
 ```bash
 export PEPPER_PORT=<your_pepper_port>
 python ws_server.py -robot pepper
 ```
-### 10. Launch the main in playground (tmux)
+### 11. Launch the main in playground (tmux)
 ```bash
 python main.py --pport <your_pepper_port>
 ```
