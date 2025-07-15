@@ -30,7 +30,8 @@ pepper-project/
 ├── data/                 # Knowledge graphs and dataset for the traning of the graph model
 ├── tablet/               # Tablet UI layouts and related assets (e.g., images, actions)
 ├── topicsFiles/          # Choregraphe topics
-└── README.md             # Project documentation
+├── README.md             # Project documentation
+└── main.py               # Launch the full Pepper assistant interaction pipeline
 ```
 ## ⚙️ Setup Instructions
 
