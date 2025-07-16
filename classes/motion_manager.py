@@ -60,13 +60,11 @@ class MotionManager(object):
             # Ritorna alla posizione iniziale
             self.motion.angleInterpolation(names, initial_angles, [1.0]*4, True)
             
-            # Generate verbal directi
-            verbal_direction = "Go "
             
             # Add landmarks if available
             landmarks = self._get_landmarks_on_path(path)
             if landmarks:
-                verbal_direction += ". {}".format(landmarks)
+                verbal_direction = "{}".format(landmarks)
                 
             # Hold pointing position briefly
             import time

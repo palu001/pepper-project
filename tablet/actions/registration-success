@@ -2,6 +2,6 @@ IMAGE
 <*, *, *, *>:  img/registration_success.jpeg
 ----
 TEXT
-<*, *, it, *>: Perfetto fra! Il tuo profilo e stato creato.  Would you like to use tablet in order to communicate?
-<*, *, *, *>: Perfect fra! Your profile has been created.  Would you like to use tablet in order to communicate?
+<*, *, it, *>: Perfetto gab! Il tuo profilo e stato creato.  Would you like to use tablet in order to communicate?
+<*, *, *, *>: Perfect gab! Your profile has been created.  Would you like to use tablet in order to communicate?
 ----

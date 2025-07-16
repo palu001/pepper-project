@@ -1,7 +1,7 @@
 IMAGE
-<*, *, *, *>:  img/box_office_path.png
+<*, *, *, *>:  img/bathroom_path.png
 ----
 TEXT
-<*, *, it, *>: Direzioni per box_office
-<*, *, *, *>: Directions to box_office
+<*, *, it, *>: Direzioni per bathroom
+<*, *, *, *>: Directions to bathroom
 ----

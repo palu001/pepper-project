@@ -618,7 +618,8 @@ class CinemaDatabase(object):
         # Step 4: Add 50 showtimes with non-overlapping random times
         used_times = set()
         count = 0
-        for movie_id, _ in random.shuffle(inserted_movies):
+        random.shuffle(inserted_movies) 
+        for movie_id, _ in inserted_movies:
             if count >= 50:
                 break
 
