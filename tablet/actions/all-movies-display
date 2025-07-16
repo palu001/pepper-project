@@ -6,22 +6,25 @@ TEXT
 <*, *, *, *>: Movies currently showing: 
 ----
 BUTTONS
+movie_6
+<*,*,it,*>: Forrest Gump (1994)
+<*,*,*,*>:  Forrest Gump (1994)
 movie_4
-<*,*,it,*>: Family Fun Time
-<*,*,*,*>:  Family Fun Time
+<*,*,it,*>: Shawshank Redemption
+<*,*,*,*>:  Shawshank Redemption
+movie_5
+<*,*,it,*>: The (1994)
+<*,*,*,*>:  The (1994)
 movie_2
-<*,*,it,*>: Space Warriors
-<*,*,*,*>:  Space Warriors
+<*,*,it,*>: Star Wars: Episode IV - A New Hope (1977)
+<*,*,*,*>:  Star Wars: Episode IV - A New Hope (1977)
 movie_3
-<*,*,it,*>: The Mystery House
-<*,*,*,*>:  The Mystery House
+<*,*,it,*>: Pulp Fiction (1994)
+<*,*,*,*>:  Pulp Fiction (1994)
 movie_0
-<*,*,it,*>: The Amazing Adventure
-<*,*,*,*>:  The Amazing Adventure
+<*,*,it,*>: Toy Story (1995)
+<*,*,*,*>:  Toy Story (1995)
 movie_1
-<*,*,it,*>: Love in Paris
-<*,*,*,*>:  Love in Paris
-cancel
-<*,*,it,*>: cancella
-<*,*,*,*>:  cancel
+<*,*,it,*>: Braveheart (1995)
+<*,*,*,*>:  Braveheart (1995)
 ----

@@ -7,12 +7,12 @@ TEXT
 ----
 BUTTONS
 movie_2
-<*,*,it,*>: Love in Paris
-<*,*,*,*>:  Love in Paris
+<*,*,it,*>: Men in Black (1997)
+<*,*,*,*>:  Men in Black (1997)
 movie_0
-<*,*,it,*>: The Amazing Adventure
-<*,*,*,*>:  The Amazing Adventure
+<*,*,it,*>: Jurassic Park (1993)
+<*,*,*,*>:  Jurassic Park (1993)
 movie_1
-<*,*,it,*>: Space Warriors
-<*,*,*,*>:  Space Warriors
+<*,*,it,*>: Pulp Fiction (1994)
+<*,*,*,*>:  Pulp Fiction (1994)
 ----
