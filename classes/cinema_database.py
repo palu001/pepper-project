@@ -454,6 +454,18 @@ class CinemaDatabase(object):
 
         return [row[0] for row in results]
 
+    def get_booked_movie_ids_by_user(self, user_id):
+        conn = self._connect()
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT DISTINCT s.movie_id
+            FROM bookings b
+            JOIN showtimes s ON b.showtime_id = s.id
+            WHERE b.customer_id = ?
+        ''', (user_id,))
+        result = [row[0] for row in cursor.fetchall()]
+        conn.close()
+        return result
 
 
     
@@ -480,6 +492,9 @@ class CinemaDatabase(object):
         entity2id, relation2id = self.build_vocab(["data/kg.txt"])
         id2entity = {v: k for k, v in entity2id.items()}
         user_id=self.get_customer_by_name(username)[0]
+        booked_movie_ids = self.get_booked_movie_ids_by_user(user_id)
+        booked_entity_ids = {"movie_{}".format(mid) for mid in booked_movie_ids}
+
         model = RotatEModel(num_entities=len(entity2id), num_relations=len(relation2id), embedding_dim=10)
         saver = model.get_saver()
 
@@ -487,15 +502,16 @@ class CinemaDatabase(object):
             saver.restore(sess, "checkpoints/rotate_model.ckpt")
             print("Model loaded from checkpoint.")
 
-            top_movie_ids = self.recommend_top_k("user_{}".format(user_id), model, sess, entity2id, relation2id, id2entity, 5)
+            top_movie_ids = self.recommend_top_k("user_{}".format(user_id), model, sess, entity2id, relation2id, id2entity, 20)
             # Extract movie numeric IDs (e.g., movie_23 -> 23)
-            movie_ids = [int(mid.split("_")[1]) for mid in top_movie_ids if mid.startswith("movie_")]
+            # Filter out movies already booked
+            unseen_movie_ids = [mid for mid in top_movie_ids if mid not in booked_entity_ids]
 
-            # Query titles from DB
+            movie_ids = [int(mid.split("_")[1]) for mid in unseen_movie_ids if mid.startswith("movie_")]
             return self.get_movie_titles_by_ids(movie_ids)
 
    
-    def recommend_top_k(self, user_str, model, sess, entity2id, relation2id, id2entity, k=5):
+    def recommend_top_k(self, user_str, model, sess, entity2id, relation2id, id2entity, k=20):
         user_id = entity2id.get(user_str)
         relation_id = relation2id.get("likes")
         movie_ids = [eid for ent, eid in entity2id.items() if ent.startswith("movie_")]
@@ -602,7 +618,7 @@ class CinemaDatabase(object):
         # Step 4: Add 50 showtimes with non-overlapping random times
         used_times = set()
         count = 0
-        for movie_id, _ in inserted_movies:
+        for movie_id, _ in random.shuffle(inserted_movies):
             if count >= 50:
                 break
 

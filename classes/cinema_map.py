@@ -135,7 +135,7 @@ class CinemaMap:
             
         return path if path[0] == start else None
     
-    def draw_map_with_path(self, end, save_path='cinema_map_path.png'):
+    def draw_map_with_path(self, end, bathroom_busy,save_path='cinema_map_path.png'):
         path = self.find_shortest_path(end)
         if not path:
             print("No path found.")
@@ -153,15 +153,22 @@ class CinemaMap:
 
         # Draw all nodes
         for node, (x, y) in self.nodes.items():
-            color = 'black'
-            size = 30
-            ax.scatter(x, y, c=color, s=size, zorder=2)
-
-            # Use readable label (shorten names for clarity)
             label = node.replace('_', ' ').title()
             if "Screen" in label and "_" in node:
                 label = label.replace(" Entrance", "")
-            ax.text(x + 0.2, y + 0.2, label, fontsize=7, color='black', zorder=3)
+
+            # Indicate busy bathroom
+            if node.lower() == "bathroom" and bathroom_busy:
+                color = 'red'
+                size = 100
+                ax.scatter(x, y, c=color, s=size, marker='X', zorder=6, label='Bathroom Busy')
+                ax.text(x + 0.2, y + 0.2, label + " (Busy)", fontsize=7, color='red', zorder=7)
+            else:
+                color = 'black'
+                size = 30
+                ax.scatter(x, y, c=color, s=size, zorder=2)
+                ax.text(x + 0.2, y + 0.2, label, fontsize=7, color='black', zorder=3)
+
 
         # Highlight path
         path_coords = [self.nodes[node] for node in path]

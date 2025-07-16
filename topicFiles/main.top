@@ -39,7 +39,7 @@ proposal: %get_name
             
             ["Welcome back, buddy! $cinema/customer_name $cinema/customer_age==child"
             "Yo $cinema/customer_name, good to see you again! $cinema/customer_age==teen"
-            "Welcome back, $cinema/customer_name. $cinema/customer_age==adult"]
+            "Welcome back, $cinema/customer_name $cinema/customer_age==adult"]
             $cinema/function = check_upcoming_showtime
             u3: (e:cinema/upcoming_showtime $cinema/upcoming_showtime==True)
                 ^gotoReactivate(showtime_heads_up)
@@ -427,6 +427,9 @@ proposal: %main_hub
             u3: (*)
                 Sorry, i didn't understand. Retry with yes or no.
                 ^stayInScope
+        u2: (e:cinema/bathroom)
+            Unfortunately the bathroom is temporarily busy. Maybe try later? 
+            ^gotoReactivate(main_hub)
                 
     u1: (~goodbye)
         Thank you for visiting!

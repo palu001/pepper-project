@@ -6,6 +6,7 @@ class MotionManager(object):
         self.motion = motion_proxy
         self.cinema_map = CinemaMap()
         self.current_orientation=0
+        self.bathroom_busy=False
 
 
     def point_and_describe_direction(self, target_location, screen_number=None):
@@ -22,7 +23,7 @@ class MotionManager(object):
                 return "I'm not sure where that is."
             
             save_path = target_node + "_path.png"
-            path=self.cinema_map.draw_map_with_path(target_node, save_path=save_path)
+            path=self.cinema_map.draw_map_with_path(target_node, bathroom_busy=self.bathroom_busy,save_path=save_path)
             
             if not path or len(path) < 2:
                 return "You're already there!"

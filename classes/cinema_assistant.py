@@ -16,6 +16,7 @@ class CinemaAssistant(object):
         self.motion = motion_manager
         self.current_order = []  # Track items for order
         self.is_tablet=False
+        self.bathroom_busy=False
         #hour = random.randint(15, 20)
         hour=19
         #minute = random.randint(0, 59)
@@ -434,6 +435,7 @@ class CinemaAssistant(object):
                 location = "box_office"
             if location == "concession stand":
                 location = "concession"
+            self.motion.bathroom_busy=self.bathroom_busy
             screen_number = None
             image = "img/{}_path.png".format(location)  # The generated map
             print("image path ", image)
@@ -461,7 +463,13 @@ class CinemaAssistant(object):
 
                 self.mws.csend("im.executeModality('BUTTONS', [])")
                 self.mws.csend("im.execute('directions-with-map')")
-            
+
+                if location == "bathroom":
+                    if self.bathroom_busy:
+                        self.memory.raiseEvent("cinema/bathroom", verbal_direction)
+                    else:
+                        self.bathroom_busy=True
+                
                 if verbal_direction == "You're already there!":
                     self.memory.raiseEvent("cinema/already_there", verbal_direction)
                 else:
