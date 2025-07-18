@@ -7,6 +7,7 @@ import sys
 import os
 import time
 import signal
+import math
 from classes.motion_manager import MotionManager
 from classes.cinema_database import CinemaDatabase
 from classes.cinema_assistant import CinemaAssistant
@@ -98,6 +99,27 @@ def main():
 
     tablet_sub = ALMemory.subscriber("cinema/tablet")
     tablet_sub.signal.connect(cinema_assistant.handle_tablet)
+
+    # Simulated human position (relative to robot)
+    human_position = (1.0, 0.0)  # 1 meter in front
+    distance = math.sqrt(human_position[0]**2 + human_position[1]**2)
+    sonar_key = 'Device/SubDeviceList/Platform/Front/Sonar/Sensor/Value'
+    ALMemory.insertData(sonar_key, distance)
+    # Read back the value
+    sonar_value = ALMemory.getData(sonar_key)
+    print("Simulated sonar value: {}".format(sonar_value))
+    if sonar_value < 2.0:
+        print("Human detected.")
+        try:
+                ALMotion.moveTo(human_position[0], human_position[1], 0.0)
+                ALDialog.forceInput("hi")
+                print("Robot moved toward human.")
+        except Exception as e:
+            print("Motion error:", e)
+    else:
+        print("No human detected.")
+
+
 
     print("Cinema Assistant is running...")
     try:

@@ -22,6 +22,7 @@ concept: (done) ["i'm done" "i am done" "done" "all done" "that's it" "finished"
 u: (~greetings)
     Hey there! Welcome to our cozy cinema, glad to have you!
     ^gotoReactivate(get_name)
+    
 
 # --- Restart --- 
 proposal: %restart
