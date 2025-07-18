@@ -118,9 +118,9 @@ proposal: %get_genre
 
 # --- NEW: Post-Movie Feedback ---
 proposal: %get_movie_feedback
-    You saw $cinema/last_watched_movie last time. ["Did you like the movie, buddy? $cinema/customer_age==child"
-    "So, what’d you think? Was it a hit or a miss? $cinema/customer_age==teen"
-    "Did you enjoy the film? $cinema/customer_age==adult"]
+    You saw $cinema/last_watched_movie last time. ["Did you like the movie, buddy? Let me know and wait for me to update my super-human algorithm! $cinema/customer_age==child"
+    "So, what’d you think? Was it a hit or a miss? Let me know and wait for me to update my super-human algorithm! $cinema/customer_age==teen"
+    "Did you enjoy the film? Let me know and wait for me to update my super-human algorithm! $cinema/customer_age==adult"]
     u1: (~acceptance)
         $cinema/liked_status = True
         $cinema/function = record_feedback

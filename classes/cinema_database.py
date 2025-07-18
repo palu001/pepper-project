@@ -103,25 +103,58 @@ class CinemaDatabase(object):
         if row:
             cursor.execute("UPDATE customers SET visit_count = visit_count + 1, preferences = ? WHERE name = ?", (genre, name))
         else:
-            cursor.execute("INSERT INTO customers (name, age_group, preferences, visit_count) VALUES (?, ?, ?, 1)",
-                        (name, age_group, genre))
-        conn.commit()
-        conn.close()
+            cursor.execute("SELECT MAX(id) FROM customers")
+            max_id = cursor.fetchone()[0]
+            next_id = max(6040, max_id if max_id else 6040) + 1
 
-    def update_customer_preferences(self, name, genre):
-        conn = self._connect()
-        cursor = conn.cursor()
-        cursor.execute("UPDATE customers SET preferences = ? WHERE name = ?", (genre, name))
+            # Insert new customer with next_id
+            cursor.execute(
+                "INSERT INTO customers (id, name, age_group, preferences, visit_count) VALUES (?, ?, ?, ?, 1)",
+                (next_id, name, age_group, genre)
+            )
         conn.commit()
         conn.close()
 
     def get_movies_by_genre(self, genre):
         conn = self._connect()
         cursor = conn.cursor()
-        cursor.execute("SELECT title, description FROM movies WHERE genre = ?", (genre,))
+        cursor.execute("""
+            SELECT DISTINCT m.title, m.description
+            FROM movies m
+            JOIN showtimes s ON m.id = s.movie_id
+            WHERE m.genre = ?
+        """, (genre,))
         movies = cursor.fetchall()
         conn.close()
         return movies
+
+    def get_recommendations_by_age(self, age_group):
+        conn = self._connect()
+        cursor = conn.cursor()
+        if age_group == "child":
+            cursor.execute("""
+                SELECT DISTINCT m.title, m.description
+                FROM movies m
+                JOIN showtimes s ON m.id = s.movie_id
+                WHERE m.rating IN ('G', 'PG')
+            """)
+        elif age_group == "teen":
+            cursor.execute("""
+                SELECT DISTINCT m.title, m.description
+                FROM movies m
+                JOIN showtimes s ON m.id = s.movie_id
+                WHERE m.rating IN ('PG', 'PG-13')
+            """)
+        else:
+            cursor.execute("""
+                SELECT DISTINCT m.title, m.description
+                FROM movies m
+                JOIN showtimes s ON m.id = s.movie_id
+            """)
+        movies = cursor.fetchall()
+        conn.close()
+        return movies
+
 
     def get_recommendations_by_age(self, age_group):
         conn = self._connect()
@@ -400,7 +433,7 @@ class CinemaDatabase(object):
                 ORDER BY b.booking_date DESC
                 LIMIT 1
             )
-        ''', (liked_status, customer_name, movie_title))
+        ''', (1 if liked_status=='True' else 0, customer_name, movie_title))
         conn.commit()
         conn.close()
         print("Recorded feedback")
@@ -466,6 +499,40 @@ class CinemaDatabase(object):
         result = [row[0] for row in cursor.fetchall()]
         conn.close()
         return result
+    
+
+    
+    def retrain_model(self):
+        from classes.train_and_eval import train_rotate  # Assuming your training script is named like this
+        train_rotate()
+
+    def append_feedback_to_kg(self, user_name, movie_title):
+        conn = self._connect()
+        cursor = conn.cursor()
+        
+        cursor.execute("SELECT id FROM customers WHERE name = ?", (user_name,))
+        user_row = cursor.fetchone()
+        cursor.execute("SELECT id FROM movies WHERE title = ?", (movie_title,))
+        movie_row = cursor.fetchone()
+        conn.close()
+
+        if not user_row or not movie_row:
+            print("User or movie not found")
+            return
+
+        user_id, movie_id = user_row[0], movie_row[0]
+        user_str = "user_{}".format(user_id)
+        movie_str = "movie_{}".format(movie_id)
+        new_triple = "{}\tlikes\t{}\n".format(user_str,movie_str)
+
+        with open("data/train.txt", "a") as f:
+            f.write(new_triple)
+        with open("data/kg.txt", "a") as f:
+            f.write(new_triple)
+
+
+
+
 
 
     
@@ -502,16 +569,20 @@ class CinemaDatabase(object):
             saver.restore(sess, "checkpoints/rotate_model.ckpt")
             print("Model loaded from checkpoint.")
 
-            top_movie_ids = self.recommend_top_k("user_{}".format(user_id), model, sess, entity2id, relation2id, id2entity, 20)
+            top_movie_ids = self.recommend_top_k("user_{}".format(user_id), model, sess, entity2id, relation2id, id2entity, 3500)
+            print(top_movie_ids,"top_movie_ids")
             # Extract movie numeric IDs (e.g., movie_23 -> 23)
             # Filter out movies already booked
             unseen_movie_ids = [mid for mid in top_movie_ids if mid not in booked_entity_ids]
 
             movie_ids = [int(mid.split("_")[1]) for mid in unseen_movie_ids if mid.startswith("movie_")]
-            return self.get_movie_titles_by_ids(movie_ids)
+            print("movie ids",movie_ids)
+            titles=self.get_movie_titles_by_ids(movie_ids)
+            print(titles,"titles")
+            return titles
 
    
-    def recommend_top_k(self, user_str, model, sess, entity2id, relation2id, id2entity, k=20):
+    def recommend_top_k(self, user_str, model, sess, entity2id, relation2id, id2entity, k=3500):
         user_id = entity2id.get(user_str)
         relation_id = relation2id.get("likes")
         movie_ids = [eid for ent, eid in entity2id.items() if ent.startswith("movie_")]
@@ -519,6 +590,7 @@ class CinemaDatabase(object):
 
         scores = model.get_score_op(sess, user_id, relation_id, movie_ids)
         top_indices = np.argsort(scores)[-k:][::-1]
+        print(top_indices,"top_indices")
         top_movie_ids = [movie_ids[i] for i in top_indices]
         return [id2entity[mid] for mid in top_movie_ids]
 
@@ -558,17 +630,24 @@ class CinemaDatabase(object):
 
 
         # Insert top 100 most liked movies
-        top_movies = sorted(movie_like_counts.items(), key=lambda x: x[1], reverse=True)[:100]
+        top_movies = sorted(movie_like_counts.items(), key=lambda x: x[1], reverse=True)[:300]
+        print(len(top_movies),"len_top_ovies")
         inserted_movies = []
 
         for movie_uri, _ in top_movies:
             title = movie_titles.get(movie_uri)
             genre = genre_map.get(movie_uri)
-            print(title,genre)
+            # Ensure Unicode
+            if isinstance(title, bytes):
+                title = title.decode('latin-1')
+
+            if isinstance(genre, bytes):
+                 genre = genre.decode('latin-1')
+
             cursor.execute('''
                 INSERT INTO movies (id,title, genre, duration, rating, poster_url)
                 VALUES (?, ?, ?, NULL, NULL, NULL)
-            ''', (movie_uri.split("_")[1],title, genre))
+            ''', (int(movie_uri.split("_")[1]),title, genre))
             inserted_movies.append((cursor.lastrowid, movie_uri))  # Save DB id and URI
 
         conn.commit()

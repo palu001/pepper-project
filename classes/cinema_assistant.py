@@ -18,7 +18,7 @@ class CinemaAssistant(object):
         self.is_tablet=False
         self.bathroom_busy=False
         #hour = random.randint(15, 20)
-        hour=19
+        hour=21
         #minute = random.randint(0, 59)
         minute=15
         self.current_time = datetime.strptime("{:02}:{:02}".format(hour, minute), "%H:%M")
@@ -182,14 +182,34 @@ class CinemaAssistant(object):
             user_genre = user_profile[2] if user_profile else "any"
             movie_details = self.db.get_movie_details(movie) # Assumes DB returns a dict with a 'genre' key
             movie_genre = movie_details['genre'] if movie_details else "unknown"
-
+            customer_id= self.current_customer[0]
+            liked_count = self.db.get_liked_movie_count(customer_id)
+            print("liked_count",liked_count)
             response_text = ""
             if liked == 'True':
+                self.db.append_feedback_to_kg(name, movie)
                 self.animation.run(".lastUploadedChoregrapheBehavior/animations/Stand/Emotions/Positive/Happy_4",_async=True)
                 if movie_genre.lower() == user_genre.lower():
                     response_text = "I'm so glad you liked it! It sounds like the perfect {} movie for you.".format(movie_genre)
                 else:
                     response_text = "That's great! It's always fun to discover a gem outside of your usual {} preference.".format(user_genre)
+                if liked_count >= 1:
+                    
+                    text = {
+                        ("*", "*", "it", "*"): "****",
+                        ("*", "*", "*", "*"): "Currently updating! "
+                    }
+
+                    self.create_action(
+                        image="img/loading.png",
+                        text=text,
+                        filename="updating"
+                    )
+                    self.mws.csend("im.executeModality('BUTTONS', [])")
+                    self.mws.csend("im.execute('updating')")
+                    
+                    self.db.retrain_model()
+
             else:  # Disliked
                 self.animation.run(".lastUploadedChoregrapheBehavior/animations/Stand/Emotions/Neutral/Embarrassed_1",_async=True)
                 if movie_genre.lower() == user_genre.lower():
@@ -234,9 +254,10 @@ class CinemaAssistant(object):
             available_movies = self.db.get_available_showtime_titles()
             available_titles_set = set(available_movies)
 
-            if liked_count > 5:
+            if liked_count >=1:
                 # Recommend using RotatE model
                 recommendations = self.db.load_model_and_recommend(name)  # This returns a list of movie names (strings)
+                print(recommendations,"recommendations")
                 # Intersect with available showtimes
                 suggestions = [title for title in recommendations if title in available_titles_set][:3]
             else:
@@ -255,7 +276,7 @@ class CinemaAssistant(object):
                     # Fill remaining spots with age-specific titles (if needed)
                     #Cosi te ne consiglia 3 al momento perche ora ci sono solo un film per genere
                     # mentre per eta ci sono piu film
-                    remaining = list(titles_age - set(common_titles))
+                    remaining = list(titles_genre - set(common_titles))
                     suggestions = common_titles + remaining[:3 - len(common_titles)]
                 else:
                     suggestions = common_titles[:3]

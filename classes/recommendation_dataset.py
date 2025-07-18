@@ -2,13 +2,13 @@ import os
 import random
 
 class KGBuilder(object):
-    def __init__(self, ratings_file="../data/ratings.dat",
+    def __init__(self, ratings_file="data/ratings.dat",
         users_file="data/users.dat",
         movies_file="data/movies.dat",
         out_train="data/train.txt",
         out_test="data/test.txt",
         out_kg="data/kg.txt",
-        test_ratio=0.2, subset_ratio=0.2, subset_method='top_movies'):
+        test_ratio=0.2, subset_ratio=1.0, subset_method='top_movies'):
         
         self.ratings_file = ratings_file
         self.users_file = users_file
@@ -51,7 +51,7 @@ class KGBuilder(object):
                 if len(parts) < 3:
                     continue
                 movie_id, title, genres = parts
-                genre_list = genres.split("|")
+                genre_list = [genre.lower() for genre in genres.split("|")]
                 self.movie_genres[movie_id] = genre_list
                 for genre in genre_list:
                     self.kg_triples.append(("movie_" + movie_id, "is_genre", "genre_" + genre.replace(" ", "_")))

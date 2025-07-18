@@ -82,12 +82,12 @@ def recommend_top_k(user_str, model, sess, entity2id, relation2id, id2entity, k=
     return [id2entity[mid] for mid in top_movie_ids]
 
 def train_rotate():
-    entity2id, relation2id = build_vocab(["../data/kg.txt"])
+    entity2id, relation2id = build_vocab(["data/kg.txt"])
     id2entity = {v: k for k, v in entity2id.items()}
     id2relation = {v: k for k, v in relation2id.items()}
 
-    train_triples = load_triples("../data/train.txt", entity2id, relation2id)
-    test_triples = load_triples("../data/test.txt", entity2id, relation2id)
+    train_triples = load_triples("data/train.txt", entity2id, relation2id)
+    test_triples = load_triples("data/test.txt", entity2id, relation2id)
     print(len(train_triples))
 
     model = RotatEModel(num_entities=len(entity2id), num_relations=len(relation2id), embedding_dim=10)
@@ -96,7 +96,7 @@ def train_rotate():
 
     batch_size = 10000  
 
-    for epoch in range(500):
+    for epoch in range(40):
         # Shuffle training triples each epoch
         for batch_triples in batch_iter(train_triples, batch_size):
             neg_batch = generate_negative_samples(batch_triples, len(entity2id))
@@ -121,15 +121,15 @@ def train_rotate():
             print("Epoch %d - Loss: %.4f" % (epoch, loss))
 
 
-    evaluate(model, sess, test_triples, entity2id, relation2id, id2entity)
+    # evaluate(model, sess, test_triples, entity2id, relation2id, id2entity)
 
-    print("\nTop 5 recommendations for user_1:")
-    top_movies = recommend_top_k("user_1", model, sess, entity2id, relation2id, id2entity, k=5)
-    for movie in top_movies:
-        print("  -", movie)
+    # print("\nTop 5 recommendations for user_1:")
+    # top_movies = recommend_top_k("user_1", model, sess, entity2id, relation2id, id2entity, k=5)
+    # for movie in top_movies:
+    #     print("  -", movie)
     saver = model.get_saver()
-    saver.save(sess, "../checkpoints/rotate_model.ckpt")
-    print("Model saved to ../checkpoints/rotate_model.ckpt")
+    saver.save(sess, "checkpoints/rotate_model.ckpt")
+    print("Model saved to checkpoints/rotate_model.ckpt")
 
 if __name__ == "__main__":
     train_rotate()

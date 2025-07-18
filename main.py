@@ -11,6 +11,7 @@ import math
 from classes.motion_manager import MotionManager
 from classes.cinema_database import CinemaDatabase
 from classes.cinema_assistant import CinemaAssistant
+from classes.recommendation_dataset import KGBuilder
 
 try:
     sys.path.insert(0, os.getenv('MODIM_HOME')+'/src/GUI')
@@ -118,6 +119,15 @@ def main():
             print("Motion error:", e)
     else:
         print("No human detected.")
+
+    builder = KGBuilder(ratings_file="data/ratings.dat",
+        users_file="data/users.dat",
+        movies_file="data/movies.dat",
+        out_train="data/train.txt",
+        out_test="data/test.txt",
+        out_kg="data/kg.txt",
+        test_ratio=0.2, subset_ratio=0.1, subset_method='balanced')
+    builder.build_kg()
 
 
 

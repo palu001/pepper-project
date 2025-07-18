@@ -1,12 +1,12 @@
 IMAGE
-<*, *, *, *>:  img/movie_poster_shakespeare_in_love_(1998).jpeg
+<*, *, *, *>:  img/movie_poster_absolute_power_(1997).jpeg
 ----
 TEXT
-<*, *, it, *>: Orari disponibili per 'Shakespeare in Love (1998)': 
-<*, *, *, *>: Available showtimes for 'Shakespeare in Love (1998)': 
+<*, *, it, *>: Orari disponibili per 'Absolute Power (1997)': 
+<*, *, *, *>: Available showtimes for 'Absolute Power (1997)': 
 ----
 BUTTONS
 time_0
-<*,*,it,*>: 19:30
-<*,*,*,*>:  19:30
+<*,*,it,*>: 16:30
+<*,*,*,*>:  16:30
 ----
