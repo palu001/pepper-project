@@ -46021,5 +46021,3 @@ user_834	likes	movie_2406
 user_2681	likes	movie_2054
 user_5393	likes	movie_949
 user_4976	likes	movie_3081
-user_6041	likes	movie_2706
-user_6041	likes	movie_2706

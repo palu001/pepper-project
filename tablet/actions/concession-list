@@ -2,8 +2,8 @@ IMAGE
 <*, *, *, *>:  img/concessions.jpeg
 ----
 TEXT
-<*, *, it, *>: Vuoi ordinare qualcosa? Abbiamo: Popcorn Large, Soda Large, Nachos, Candy Mix, Hot Dog.
-<*, *, *, *>: Would you like to order something? We have: Popcorn Large, Soda Large, Nachos, Candy Mix, Hot Dog.
+<*, *, it, *>: Vuoi ordinare qualcosa? Abbiamo: 
+<*, *, *, *>: Would you like to order something? We have: 
 ----
 BUTTONS
 concession_1

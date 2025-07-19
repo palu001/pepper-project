@@ -181,7 +181,7 @@ class CinemaMap:
             ax.scatter(ex, ey, c='blue', s=80, label='End', zorder=5)
 
         # Clean and format
-        ax.set_title('Cinema Map with Path', fontsize=14)
+        #ax.set_title('Cinema Map with Path', fontsize=14)
         ax.axis('equal')
         ax.axis('off')  # Hide axes for a cleaner look
         ax.legend(loc='lower left', fontsize=8)

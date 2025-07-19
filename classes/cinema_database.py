@@ -94,7 +94,13 @@ class CinemaDatabase(object):
         conn.commit()
         conn.close()
 
-
+    def update_customer_preferences(self, name, genre):
+        conn = self._connect()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE customers SET preferences = ? WHERE name = ?", (genre, name))
+        conn.commit()
+        conn.close()
+        
     def register_customer(self, name, age_group, genre):
         conn = self._connect()
         cursor = conn.cursor()

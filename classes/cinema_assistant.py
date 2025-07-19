@@ -586,8 +586,8 @@ class CinemaAssistant(object):
             # Ottieni cibo preferito (piuordinato)
 
             text = {
-                ("*", "*", "it", "*"): "Vuoi ordinare qualcosa? Abbiamo: " + names + ".",
-                ("*", "*", "*", "*"): "Would you like to order something? We have: " + names + "." 
+                ("*", "*", "it", "*"): "Vuoi ordinare qualcosa? Abbiamo: ",
+                ("*", "*", "*", "*"): "Would you like to order something? We have: " 
             }
 
             buttons = {}

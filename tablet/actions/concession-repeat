@@ -2,6 +2,6 @@ IMAGE
 <*, *, *, *>:  img/order_success.png
 ----
 TEXT
-<*, *, it, *>: Nachos aggiunto al tuo ordine. Qualcos'altro?
-<*, *, *, *>: Nachos added to your order. Anything else?
+<*, *, it, *>: Candy Mix aggiunto al tuo ordine. Qualcos'altro?
+<*, *, *, *>: Candy Mix added to your order. Anything else?
 ----

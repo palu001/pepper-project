@@ -1,7 +1,7 @@
 IMAGE
-<*, *, *, *>:  img/screen2_path.png
+<*, *, *, *>:  img/screen1_path.png
 ----
 TEXT
-<*, *, it, *>: Sto guidandoti verso lo schermo 2.
-<*, *, *, *>: I am guiding you to screen 2.
+<*, *, it, *>: Sto guidandoti verso lo schermo 1.
+<*, *, *, *>: I am guiding you to screen 1.
 ----

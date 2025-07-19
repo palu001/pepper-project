@@ -1,1 +1,482 @@
-[]
+[
+    {
+        "id": 1,
+        "movie_id": 1,
+        "screen_number": 1,
+        "show_time": "14:00",
+        "available_seats": 45,
+        "price": 12.5
+    },
+    {
+        "id": 2,
+        "movie_id": 1,
+        "screen_number": 1,
+        "show_time": "17:00",
+        "available_seats": 30,
+        "price": 12.5
+    },
+    {
+        "id": 3,
+        "movie_id": 1,
+        "screen_number": 1,
+        "show_time": "20:00",
+        "available_seats": 15,
+        "price": 15.0
+    },
+    {
+        "id": 4,
+        "movie_id": 2,
+        "screen_number": 2,
+        "show_time": "15:30",
+        "available_seats": 60,
+        "price": 12.5
+    },
+    {
+        "id": 5,
+        "movie_id": 2,
+        "screen_number": 2,
+        "show_time": "18:30",
+        "available_seats": 40,
+        "price": 15.0
+    },
+    {
+        "id": 6,
+        "movie_id": 3,
+        "screen_number": 3,
+        "show_time": "16:00",
+        "available_seats": 25,
+        "price": 15.0
+    },
+    {
+        "id": 7,
+        "movie_id": 3,
+        "screen_number": 3,
+        "show_time": "19:30",
+        "available_seats": 10,
+        "price": 15.0
+    },
+    {
+        "id": 8,
+        "movie_id": 4,
+        "screen_number": 4,
+        "show_time": "21:00",
+        "available_seats": 35,
+        "price": 15.0
+    },
+    {
+        "id": 9,
+        "movie_id": 5,
+        "screen_number": 5,
+        "show_time": "13:00",
+        "available_seats": 80,
+        "price": 10.0
+    },
+    {
+        "id": 10,
+        "movie_id": 5,
+        "screen_number": 5,
+        "show_time": "15:00",
+        "available_seats": 70,
+        "price": 10.0
+    },
+    {
+        "id": 11,
+        "movie_id": 2067,
+        "screen_number": 2,
+        "show_time": "16:00",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 12,
+        "movie_id": 293,
+        "screen_number": 5,
+        "show_time": "21:30",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 13,
+        "movie_id": 1479,
+        "screen_number": 2,
+        "show_time": "21:00",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 14,
+        "movie_id": 1961,
+        "screen_number": 5,
+        "show_time": "15:30",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 15,
+        "movie_id": 2995,
+        "screen_number": 1,
+        "show_time": "17:30",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 16,
+        "movie_id": 2203,
+        "screen_number": 1,
+        "show_time": "20:30",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 17,
+        "movie_id": 2243,
+        "screen_number": 5,
+        "show_time": "20:00",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 18,
+        "movie_id": 599,
+        "screen_number": 5,
+        "show_time": "20:30",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 19,
+        "movie_id": 1285,
+        "screen_number": 1,
+        "show_time": "16:30",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 20,
+        "movie_id": 2683,
+        "screen_number": 2,
+        "show_time": "21:30",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 21,
+        "movie_id": 7,
+        "screen_number": 2,
+        "show_time": "20:00",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 22,
+        "movie_id": 3101,
+        "screen_number": 1,
+        "show_time": "20:00",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 23,
+        "movie_id": 1197,
+        "screen_number": 5,
+        "show_time": "16:00",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 24,
+        "movie_id": 3424,
+        "screen_number": 4,
+        "show_time": "21:00",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 25,
+        "movie_id": 2054,
+        "screen_number": 3,
+        "show_time": "17:30",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 26,
+        "movie_id": 1267,
+        "screen_number": 5,
+        "show_time": "21:00",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 27,
+        "movie_id": 1459,
+        "screen_number": 2,
+        "show_time": "16:30",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 28,
+        "movie_id": 940,
+        "screen_number": 4,
+        "show_time": "15:00",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 29,
+        "movie_id": 2706,
+        "screen_number": 2,
+        "show_time": "17:30",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 30,
+        "movie_id": 1282,
+        "screen_number": 5,
+        "show_time": "19:00",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 31,
+        "movie_id": 1277,
+        "screen_number": 4,
+        "show_time": "18:30",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 32,
+        "movie_id": 1288,
+        "screen_number": 1,
+        "show_time": "19:00",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 33,
+        "movie_id": 3253,
+        "screen_number": 2,
+        "show_time": "19:00",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 34,
+        "movie_id": 50009,
+        "screen_number": 2,
+        "show_time": "20:30",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 35,
+        "movie_id": 1446,
+        "screen_number": 3,
+        "show_time": "17:00",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 36,
+        "movie_id": 2082,
+        "screen_number": 3,
+        "show_time": "19:00",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 37,
+        "movie_id": 2288,
+        "screen_number": 3,
+        "show_time": "15:00",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 38,
+        "movie_id": 2991,
+        "screen_number": 3,
+        "show_time": "19:30",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 39,
+        "movie_id": 1284,
+        "screen_number": 3,
+        "show_time": "18:00",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 40,
+        "movie_id": 1292,
+        "screen_number": 1,
+        "show_time": "21:30",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 41,
+        "movie_id": 1641,
+        "screen_number": 4,
+        "show_time": "15:30",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 42,
+        "movie_id": 3948,
+        "screen_number": 4,
+        "show_time": "17:30",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 43,
+        "movie_id": 1136,
+        "screen_number": 3,
+        "show_time": "20:00",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 44,
+        "movie_id": 1617,
+        "screen_number": 4,
+        "show_time": "19:00",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 45,
+        "movie_id": 1266,
+        "screen_number": 4,
+        "show_time": "18:00",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 46,
+        "movie_id": 2066,
+        "screen_number": 1,
+        "show_time": "15:00",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 47,
+        "movie_id": 968,
+        "screen_number": 3,
+        "show_time": "16:30",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 48,
+        "movie_id": 3060,
+        "screen_number": 5,
+        "show_time": "19:30",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 49,
+        "movie_id": 916,
+        "screen_number": 4,
+        "show_time": "16:30",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 50,
+        "movie_id": 648,
+        "screen_number": 2,
+        "show_time": "18:30",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 51,
+        "movie_id": 3409,
+        "screen_number": 2,
+        "show_time": "15:00",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 52,
+        "movie_id": 3578,
+        "screen_number": 4,
+        "show_time": "21:30",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 53,
+        "movie_id": 587,
+        "screen_number": 3,
+        "show_time": "20:30",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 54,
+        "movie_id": 3794,
+        "screen_number": 4,
+        "show_time": "20:30",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 55,
+        "movie_id": 3039,
+        "screen_number": 3,
+        "show_time": "16:00",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 56,
+        "movie_id": 900,
+        "screen_number": 1,
+        "show_time": "15:30",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 57,
+        "movie_id": 3067,
+        "screen_number": 1,
+        "show_time": "21:00",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 58,
+        "movie_id": 581,
+        "screen_number": 4,
+        "show_time": "16:00",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 59,
+        "movie_id": 3936,
+        "screen_number": 4,
+        "show_time": "20:00",
+        "available_seats": 50,
+        "price": 10.0
+    },
+    {
+        "id": 60,
+        "movie_id": 265,
+        "screen_number": 5,
+        "show_time": "17:30",
+        "available_seats": 50,
+        "price": 10.0
+    }
+]

@@ -2,6 +2,6 @@ IMAGE
 <*, *, *, *>:  img/order_complete.jpg
 ----
 TEXT
-<*, *, it, *>: Il tuo ordine e completo: Nachos. Totale: 7.5 euro.
-<*, *, *, *>: Your order is complete: Nachos. Total: 7.5 euros.
+<*, *, it, *>: Il tuo ordine e completo: Candy Mix. Totale: 4.5 euro.
+<*, *, *, *>: Your order is complete: Candy Mix. Total: 4.5 euros.
 ----

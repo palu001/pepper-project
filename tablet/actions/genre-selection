@@ -2,8 +2,8 @@ IMAGE
 <*, *, *, *>:  img/cinema.png
 ----
 TEXT
-<*, *, it, *>: Quale genere preferisci, fra?
-<*, *, *, *>: What genre do you prefer, fra?
+<*, *, it, *>: Quale genere preferisci, Simone?
+<*, *, *, *>: What genre do you prefer, Simone?
 ----
 BUTTONS
 genre_12

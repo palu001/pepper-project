@@ -5,8 +5,8 @@ language: enu
 concept: (myname) ["my name is" "i'm" "i am" "call me" "they call me" "you can call me" "i go by"]
 concept: (greetings) ^rand["hi" "hello" "hello there" "hey there" "good morning" "hey" "hi there" "good afternoon" "good evening" "greetings" "good day"]
 concept: (goodbye) ["goodbye" "bye" "farewell" "see you later" "take care"]
-concept: (acceptance) ["yes" "yeah" "yep" "ok" "sure" "of course" "sounds good" "alright"]
-concept: (refusal) ["no" "nope" "nah" "not now" "maybe later" "i'm good"]
+concept: (acceptance) ["yes" "yeah" "yep" "ok" "sure" "of course" "sounds good" "alright" "yes thanks"]
+concept: (refusal) ["no" "nope" "nah" "not now" "maybe later" "i'm good" "no thanks"]
 concept: (movie_genres) ["action" "comedy" "drama" "horror" "romance" "sci-fi" "science fiction" "thriller" "documentary" "animated" "family" "adventure" "fantasy"]
 concept: (age_groups) ["child" "teen"  "adult" "senior"]
 concept: (directions) ["bathroom" "restroom" "washroom" "screen 1" "screen 2" "screen 3" "screen 4" "screen 5" "screen 6" "screen 7" "screen 8" "theater" "auditorium" "concession" "concession stand" "exit" "entrance" "box office" "ticket office"]
@@ -84,7 +84,7 @@ proposal: %use_tablet
     "Would you prefer to use the tablet for communication? $cinema/customer_age==adult"]
 
     u1: (~acceptance)
-        ^gotoReactivate(check_feedback_tablet)
+        ^gotoReactivate(tablet_main_hub)
     u1: (~refusal)
         ^gotoReactivate(check_feedback)
 
@@ -400,7 +400,7 @@ proposal: %main_hub
         I ran your taste through my brainy algorithm, these movies could be your thing today, hurry up and buy the tickets!
         ^gotoReactivate(offer_recommendation)
 
-    u1: (~ask_showtimes)
+    u1: ({*} ~ask_showtimes {*})
         I can get you the showtimes. Which movie are you interested in?
         ^gotoReactivate(booking)
         
@@ -438,7 +438,7 @@ proposal: %main_hub
         u1: (e:cinema/restart)
             ^gotoReactivate(restart)
 
-    u1: (~ask_concessions)
+    u1: ({*} ~ask_concessions {*})
         ^gotoReactivate(has_preferred)
         
     u1: (*)

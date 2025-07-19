@@ -58469,5 +58469,3 @@ movie_3950	is_genre	genre_drama
 movie_3951	is_genre	genre_drama
 movie_3952	is_genre	genre_drama
 movie_3952	is_genre	genre_thriller
-user_6041	likes	movie_2706
-user_6041	likes	movie_2706

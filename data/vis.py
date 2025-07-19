@@ -46,7 +46,7 @@ def db_to_json(db_filepath, table_name):
 if __name__ == "__main__":
     # Create a dummy database for demonstration
     dummy_db_filepath = "cinema.db"
-    dummy_table_name = "orders"
+    dummy_table_name = "showtimes"
 
 
     # Convert the dummy database table to JSON

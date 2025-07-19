@@ -1,12 +1,12 @@
 IMAGE
-<*, *, *, *>:  img/movie_poster_absolute_power_(1997).jpeg
+<*, *, *, *>:  img/movie_poster_kolya_(1996).jpeg
 ----
 TEXT
-<*, *, it, *>: Orari disponibili per 'Absolute Power (1997)': 
-<*, *, *, *>: Available showtimes for 'Absolute Power (1997)': 
+<*, *, it, *>: Orari disponibili per 'Kolya (1996)': 
+<*, *, *, *>: Available showtimes for 'Kolya (1996)': 
 ----
 BUTTONS
 time_0
-<*,*,it,*>: 16:30
-<*,*,*,*>:  16:30
+<*,*,it,*>: 17:00
+<*,*,*,*>:  17:00
 ----
