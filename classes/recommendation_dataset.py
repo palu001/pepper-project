@@ -149,8 +149,7 @@ class KGBuilder(object):
                         users.remove(user)
             
             self.likes = selected_likes
-        
-        print("Selected likes out of original using  method")
+    
     
     def split_likes(self):
         random.shuffle(self.likes)

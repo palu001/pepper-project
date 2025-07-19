@@ -288,7 +288,6 @@ class CinemaDatabase(object):
         ''', (movie_title, show_time))
         showtime_id = cursor.fetchone()[0]
     
-        print("showtime_id relativo a: ",movie_title, show_time," e: ",showtime_id)
         if not showtime_id:
             conn.close()
             raise ValueError("Spettacolo non trovato")
@@ -318,7 +317,6 @@ class CinemaDatabase(object):
         """
         conn = self._connect()
         cursor = conn.cursor()
-        print("entro nella order databse")
         # Trova ID cliente
         cursor.execute("SELECT id FROM customers WHERE name = ?", (customer_name,))
         customer = cursor.fetchone()
@@ -358,7 +356,6 @@ class CinemaDatabase(object):
                     VALUES (?, ?, ?)
                 ''', (customer_id, concession_id, count))
             
-        print("inserimento avvenuto con successo")
         conn.commit()
         conn.close()
 
@@ -436,7 +433,6 @@ class CinemaDatabase(object):
         ''', (1 if liked_status=='True' else 0, customer_name, movie_title))
         conn.commit()
         conn.close()
-        print("Recorded feedback")
 
     def get_liked_movie_count(self, customer_id):
         conn = self._connect()
@@ -570,15 +566,12 @@ class CinemaDatabase(object):
             print("Model loaded from checkpoint.")
 
             top_movie_ids = self.recommend_top_k("user_{}".format(user_id), model, sess, entity2id, relation2id, id2entity, 3500)
-            print(top_movie_ids,"top_movie_ids")
             # Extract movie numeric IDs (e.g., movie_23 -> 23)
             # Filter out movies already booked
             unseen_movie_ids = [mid for mid in top_movie_ids if mid not in booked_entity_ids]
 
             movie_ids = [int(mid.split("_")[1]) for mid in unseen_movie_ids if mid.startswith("movie_")]
-            print("movie ids",movie_ids)
             titles=self.get_movie_titles_by_ids(movie_ids)
-            print(titles,"titles")
             return titles
 
    
@@ -590,7 +583,6 @@ class CinemaDatabase(object):
 
         scores = model.get_score_op(sess, user_id, relation_id, movie_ids)
         top_indices = np.argsort(scores)[-k:][::-1]
-        print(top_indices,"top_indices")
         top_movie_ids = [movie_ids[i] for i in top_indices]
         return [id2entity[mid] for mid in top_movie_ids]
 
@@ -631,7 +623,6 @@ class CinemaDatabase(object):
 
         # Insert top 100 most liked movies
         top_movies = sorted(movie_like_counts.items(), key=lambda x: x[1], reverse=True)[:300]
-        print(len(top_movies),"len_top_ovies")
         inserted_movies = []
 
         for movie_uri, _ in top_movies:

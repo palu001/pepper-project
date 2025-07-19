@@ -73,9 +73,7 @@ class CinemaAssistant(object):
                 title, show_time_str, screen_number = booking
                 show_time = datetime.strptime(show_time_str, "%H:%M")
 
-                print(show_time,self.current_time)
                 time_diff = (show_time - self.current_time).total_seconds() / 60
-                print(time_diff)
                 if 0 <= time_diff <= 15:
                     self.animation.run(".lastUploadedChoregrapheBehavior/animations/Stand/Gestures/Excited_1",_async=True)
                     self.memory.insertData("cinema/upcoming_movie_title", title)
@@ -94,7 +92,7 @@ class CinemaAssistant(object):
             if booking:
                 unrated_movie, show_time_str, screen_number = booking
                 show_time = datetime.strptime(show_time_str, "%H:%M")
-                print("cur,show",self.current_time,show_time)
+                print("current_time is {}, show_time is {}".format(self.current_time,show_time))
                 if self.current_time>show_time:
                     self.animation.run(".lastUploadedChoregrapheBehavior/animations/Stand/Gestures/Thinking_4",_async=True)
                     self.memory.insertData("cinema/last_watched_movie", unrated_movie)
@@ -184,7 +182,6 @@ class CinemaAssistant(object):
             movie_genre = movie_details['genre'] if movie_details else "unknown"
             customer_id= self.current_customer[0]
             liked_count = self.db.get_liked_movie_count(customer_id)
-            print("liked_count",liked_count)
             response_text = ""
             if liked == 'True':
                 self.db.append_feedback_to_kg(name, movie)
@@ -249,7 +246,6 @@ class CinemaAssistant(object):
             name = self.memory.getData("cinema/customer_name")
             customer_id,name,age, genre = self.current_customer
             liked_count = self.db.get_liked_movie_count(customer_id)
-            print(age, genre,liked_count)
 
             available_movies = self.db.get_available_showtime_titles()
             available_titles_set = set(available_movies)
@@ -257,14 +253,12 @@ class CinemaAssistant(object):
             if liked_count >=1:
                 # Recommend using RotatE model
                 recommendations = self.db.load_model_and_recommend(name)  # This returns a list of movie names (strings)
-                print(recommendations,"recommendations")
                 # Intersect with available showtimes
                 suggestions = [title for title in recommendations if title in available_titles_set][:3]
             else:
                 # Fetch movies by genre and age group
                 movies_by_genre = self.db.get_movies_by_genre(genre)  # Returns list of tuples
                 movies_by_age = self.db.get_recommendations_by_age(age)  # Returns list of tuples
-                print(movies_by_genre,movies_by_age)
                 # Extract titles and use sets for intersection
                 titles_genre = set(m[0] for m in movies_by_genre)
                 titles_age = set(m[0] for m in movies_by_age)
@@ -312,7 +306,6 @@ class CinemaAssistant(object):
             title=re.sub(r'\(\s+(\d{4})\s*\)', r'(\1)', title)
             try:
                 showtimes = self.db.get_showtimes_for_movie(title)
-                print("showww",showtimes)
 
                 #Really important to check if showtimes is empty and send exception
                 var_used_to_get_exception = showtimes[0][0]  
@@ -371,7 +364,6 @@ class CinemaAssistant(object):
             title = self.memory.getData("cinema/selected_movie")
             title=re.sub(r'\(\s+(\d{4})\s*\)', r'(\1)', title)
             try:
-                print("descrizioneegafaf",self.db.get_description_for_movie(title))
                 description = self.db.get_description_for_movie(title)[0][0]
 
                 text = {
@@ -458,13 +450,10 @@ class CinemaAssistant(object):
                 location = "concession"
             self.motion.bathroom_busy=self.bathroom_busy
             screen_number = None
-            image = "img/{}_path.png".format(location)  # The generated map
-            print("image path ", image)
+            image = "img/{}_path.png".format(location)  
             if location:
                 # Try to extract screen number from location string
                 match = re.search(r"screen\s*([0-9]+)", location.lower())
-                print("Location:", location)
-                print("Match:", match)
                 if match:
                     screen_number = int(match.group(1))
                     location="screen"
@@ -547,17 +536,13 @@ class CinemaAssistant(object):
         elif value == "has_preferred":
              # Ottieni nome utente da memoria
             customer_name = self.memory.getData("cinema/customer_name")
-            print("customer name: ",customer_name)
             # Ottieni cibo preferito (piuordinato)
-            preferred_item = self.db.get_most_ordered_concession(customer_name)           
-            print("pref item name: ",preferred_item)
+            preferred_item = self.db.get_most_ordered_concession(customer_name)
             if preferred_item:
                 self.memory.insertData("cinema/preferred_item", preferred_item[0])
-                print("calling true")
                 self.memory.raiseEvent("cinema/preferred_list", "True")
 
             else:
-                print("calling false")
                 self.memory.raiseEvent("cinema/preferred_list", "False")
              
         elif value == "preferred_buy":
@@ -623,14 +608,10 @@ class CinemaAssistant(object):
             self.memory.raiseEvent("cinema/concession_list", "We have: " + names + ". Would you like to order something?")
 
         elif value == "list_all_movies":
-            print("Listing all available movies:")
             movies = self.db.get_all_movies()
             movies = movies[:6]
             movie_list = ", ".join([movie[0] for movie in movies])
-            print("Available movies:", movie_list)
             movie_split=[s.strip() for s in movie_list.split(',')]
-        
-            print("movie_split",movie_split)
 
             # Create all movies display action
             text = {
@@ -779,7 +760,6 @@ class CinemaAssistant(object):
 
 
     def handle_tablet(self, value):
-        print("Handling tablet event:", value)
 
         if value == "tablet_main_hub":
             
@@ -825,15 +805,11 @@ class CinemaAssistant(object):
 
         
         elif value == "tablet_list_all_movies":
-            print("Listing all available movies:")
         
             movies = self.db.get_all_movies()
             movies = movies[:6]
             movie_list = ", ".join([movie[0] for movie in movies])
-            print("Available movies:", movie_list)
             movie_split=[s.strip() for s in movie_list.split(',')]
-        
-            print("movie_split",movie_split)
 
             # Create all movies display action
             text = {
@@ -901,7 +877,6 @@ class CinemaAssistant(object):
             self.mws.csend("im.executeModality('BUTTONS', [])")
             answer = self.mws.csend("im.ask('showtimes-display', timeout = 999)")
 
-            print("Time selected:", buttons[answer]["en"])
             self.memory.insertData("cinema/selected_time", buttons[answer]["en"])
             self.memory.raiseEvent("tablet/choose_time", "True")
     
@@ -909,9 +884,7 @@ class CinemaAssistant(object):
             name = self.memory.getData("cinema/customer_name")
             title = self.memory.getData("cinema/selected_movie")
             show_time = self.memory.getData("cinema/selected_time")
-            print("prima del db")
             self.db.book_showtime(name, title, show_time)
-            print("booked")
             text = {
                 ("*", "*", "it", "*"): "Prenotazione confermata!\nFilm: {}\nOrario: {}\nRitira i biglietti alla biglietteria.".format(title, show_time),
                 ("*", "*", "*", "*"): "Booking confirmed!\nMovie: {}\nTime: {}\nCollect your tickets at the box office.".format(title, show_time)
@@ -952,7 +925,6 @@ class CinemaAssistant(object):
             )
             self.mws.csend("im.executeModality('BUTTONS', [])")
             answer = self.mws.csend("im.ask('genre-selection', timeout=999)")
-            print("Genre selected:", answer)
             if answer.startswith("genre_"):
                 genre_index = int(answer.split("_")[1])
                 genre = genres[genre_index]
@@ -1005,7 +977,6 @@ class CinemaAssistant(object):
                 self.memory.raiseEvent("cinema/tablet_cancel","True")
             else:
                 cibo = buttons[answer]["en"]
-                print("CIBO: ",cibo)
 
                 self.memory.insertData("cinema/selected_concession", cibo)
                 self.memory.raiseEvent("cinema/tablet_add",cibo)
@@ -1169,12 +1140,9 @@ class CinemaAssistant(object):
                 location = "concession"
             screen_number = None
             image = "img/{}_path.png".format(location)  # The generated map
-            print("image path ", image)
             if location:
                 # Try to extract screen number from location string
                 match = re.search(r"screen\s*([0-9]+)", location.lower())
-                print("Location:", location)
-                print("Match:", match)
                 if match:
                     screen_number = int(match.group(1))
                     location="screen"
@@ -1207,10 +1175,8 @@ class CinemaAssistant(object):
                 location = "box_office"
             if location == "concession stand":
                 location = "concession"
-            print("location da trovare: ", location)
             screen_number = None
-            image = "img/{}_path.png".format(location)  # The generated map
-            print("image path ", image)
+            image = "img/{}_path.png".format(location) 
 
             verbal_direction = self.motion.point_and_describe_direction(location, screen_number)
 
@@ -1232,7 +1198,6 @@ class CinemaAssistant(object):
 
             self.mws.csend("im.executeModality('BUTTONS', [])")
             self.mws.csend("im.ask('directions-with-map', timeout=999 )")
-            print("verbal_direction ", verbal_direction)
             self.memory.raiseEvent("cinema/tablet_directions_done", "True")
 
         elif value == "tablet_show_directions_box":
@@ -1242,10 +1207,8 @@ class CinemaAssistant(object):
                 location = "box_office"
             if location == "concession stand":
                 location = "concession"
-            print("location da trovare: ", location)
             screen_number = None
-            image = "img/{}_path.png".format(location)  # The generated map
-            print("image path ", image)
+            image = "img/{}_path.png".format(location) 
 
             verbal_direction = self.motion.point_and_describe_direction(location, screen_number)
 
@@ -1332,30 +1295,38 @@ class CinemaAssistant(object):
 
         elif value == "tablet_offer_recommendation":
 
+            self.animation.run(".lastUploadedChoregrapheBehavior/animations/Stand/Gestures/YouKnowWhat_1",_async=True)
             name = self.memory.getData("cinema/customer_name")
-            customer = self.current_customer
-            age, genre = customer[2], customer[3]
-            print(age, genre)
+            customer_id,name,age, genre = self.current_customer
+            liked_count = self.db.get_liked_movie_count(customer_id)
 
-            # Fetch movies by genre and age group
-            movies_by_genre = self.db.get_movies_by_genre(genre)  # Returns list of tuples
-            movies_by_age = self.db.get_recommendations_by_age(age)  # Returns list of tuples
-            print(movies_by_genre,movies_by_age)
-            # Extract titles and use sets for intersection
-            titles_genre = set(m[0] for m in movies_by_genre)
-            titles_age = set(m[0] for m in movies_by_age)
+            available_movies = self.db.get_available_showtime_titles()
+            available_titles_set = set(available_movies)
 
-            # Prioritize movies that match both genre and age
-            common_titles = list(titles_genre & titles_age)
-
-            if len(common_titles) < 3:
-                # Fill remaining spots with age-specific titles (if needed)
-                #Cosi te ne consiglia 3 al momento perche ora ci sono solo un film per genere
-                # mentre per eta ci sono piu film
-                remaining = list(titles_age - set(common_titles))
-                suggestions = common_titles + remaining[:3 - len(common_titles)]
+            if liked_count >=1:
+                # Recommend using RotatE model
+                recommendations = self.db.load_model_and_recommend(name)  # This returns a list of movie names (strings)
+                # Intersect with available showtimes
+                suggestions = [title for title in recommendations if title in available_titles_set][:3]
             else:
-                suggestions = common_titles[:3]
+                # Fetch movies by genre and age group
+                movies_by_genre = self.db.get_movies_by_genre(genre)  # Returns list of tuples
+                movies_by_age = self.db.get_recommendations_by_age(age)  # Returns list of tuples
+                # Extract titles and use sets for intersection
+                titles_genre = set(m[0] for m in movies_by_genre)
+                titles_age = set(m[0] for m in movies_by_age)
+
+                # Prioritize movies that match both genre and age
+                common_titles = list(titles_genre & titles_age)
+
+                if len(common_titles) < 3:
+                    # Fill remaining spots with age-specific titles (if needed)
+                    #Cosi te ne consiglia 3 al momento perche ora ci sono solo un film per genere
+                    # mentre per eta ci sono piu film
+                    remaining = list(titles_genre - set(common_titles))
+                    suggestions = common_titles + remaining[:3 - len(common_titles)]
+                else:
+                    suggestions = common_titles[:3]
 
             suggestion_str = ", ".join(suggestions)
 
@@ -1381,7 +1352,6 @@ class CinemaAssistant(object):
             self.mws.csend("im.executeModality('BUTTONS', [])")
             answer = self.mws.csend("im.ask('recommend-movies', timeout = 999)")
             choice = buttons[answer]["en"]
-            print("recommended movie selceted: ",choice)
             self.memory.insertData("cinema/selected_movie", choice)
             self.memory.raiseEvent("tablet/movie_suggestions", "True")
 

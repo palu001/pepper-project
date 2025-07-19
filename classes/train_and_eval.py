@@ -88,7 +88,6 @@ def train_rotate():
 
     train_triples = load_triples("data/train.txt", entity2id, relation2id)
     test_triples = load_triples("data/test.txt", entity2id, relation2id)
-    print(len(train_triples))
 
     model = RotatEModel(num_entities=len(entity2id), num_relations=len(relation2id), embedding_dim=10)
     sess = tf.Session()
