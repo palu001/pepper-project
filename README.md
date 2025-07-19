@@ -80,7 +80,18 @@ Navigate to the Docker folder and execute:
 export PEPPER_PORT=<your_pepper_port>
 python ws_server.py -robot pepper
 ```
-### 11. Launch the main in playground (tmux)
+### 11. Install Requirements (tmux)
+```bash
+pip install tensorflow==1.14.0 \
+    protobuf==3.6.1 \
+    grpcio==1.23.0 \
+    keras-applications==1.0.8 \
+    keras-preprocessing==1.1.0 \
+    mock==3.0.5 \
+    enum34==1.1.10 \
+    wrapt==1.11.2
+```
+### 12. Launch the main in playground (tmux)
 ```bash
 python main.py --pport <your_pepper_port>
 ```
