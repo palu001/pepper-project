@@ -31,6 +31,7 @@ pepper-project/
 ├── tablet/               # Tablet UI layouts and related assets (e.g., images, actions)
 ├── topicsFiles/          # Choregraphe topics
 ├── README.md             # Project documentation
+├── HRI_RBC.pdf           # Project Report
 └── main.py               # Launch the full Pepper assistant interaction pipeline
 ```
 ## ⚙️ Setup Instructions
